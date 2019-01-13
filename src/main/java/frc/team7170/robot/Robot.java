@@ -11,7 +11,9 @@ public class Robot extends TimedRobot {
     public void disabledInit() {}
 
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+
+    }
 
     @Override
     public void teleopInit() {}
