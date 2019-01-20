@@ -1,7 +1,9 @@
 package frc.team7170.lib.networktables;
 
-import edu.wpi.first.networktables.*;
-import frc.team7170.util.ReflectUtil;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.RpcAnswer;
+import frc.team7170.lib.util.ReflectUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Method;

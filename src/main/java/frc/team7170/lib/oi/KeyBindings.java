@@ -62,13 +62,13 @@ public final class KeyBindings {
         controllerMap.put(controller.getName(), controller);
     }
 
-    public static void registerAxisActions(AxisAction[] actions) {
+    public static void registerAxisActions(AxisAction... actions) {
         for (AxisAction action : actions) {
             axisActionMap.put(action.name(), action);
         }
     }
 
-    public static void registerButtonActions(ButtonAction[] actions) {
+    public static void registerButtonActions(ButtonAction... actions) {
         for (ButtonAction action : actions) {
             buttonActionMap.put(action.name(), action);
         }

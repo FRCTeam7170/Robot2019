@@ -6,7 +6,7 @@ import frc.team7170.robot.Constants;
 
 public class Climb {
 
-    private static final Climb INSTANCE = new Climb();
+    public static final Climb INSTANCE = new Climb();
 
     private final TalonSRX mBackTalonMaster = new TalonSRX(Constants.CAN.BACK_CLIMB_TALON_1);
     private final TalonSRX mBackTalonFollower = new TalonSRX(Constants.CAN.BACK_CLIMB_TALON_2);
@@ -16,9 +16,5 @@ public class Climb {
     private Climb() {
         mBackTalonFollower.follow(mBackTalonMaster);
         mFrontTalonFollower.follow(mFrontTalonMaster);
-    }
-
-    public static Climb getInstance() {
-        return INSTANCE;
     }
 }
