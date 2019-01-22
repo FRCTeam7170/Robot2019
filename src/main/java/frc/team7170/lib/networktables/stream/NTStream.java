@@ -9,38 +9,21 @@ import java.util.LinkedList;
 
 public abstract class NTStream<T> {
 
-    public static class Builder {
+    abstract static class Builder {
 
-        private final NetworkTableType kind;
         private NetworkTableEntry receivingEntry;
         private NetworkTableEntry transmittingEntry;
         private int cacheSize = 100;
         private int minSendSize = 0;
 
-        public Builder(NetworkTableType kind) {
-            switch (kind) {
-                case kBoolean:
-                case kBooleanArray:
-                case kDouble:
-                case kDoubleArray:
-                case kString:
-                case kStringArray:
-                    break;
-                default:
-                    throw new IllegalArgumentException("only the three basic NetworkTableTypes and " +
-                            "their array variants are supported");
-            }
-            this.kind = kind;
-        }
-
         public Builder receivingEntry(NetworkTableEntry receivingEntry) {
-            assertMatchingEntryType(receivingEntry, kind);
+            checkMatchingEntryType(receivingEntry);
             this.receivingEntry = receivingEntry;
             return this;
         }
 
         public Builder transmittingEntry(NetworkTableEntry transmittingEntry) {
-            assertMatchingEntryType(transmittingEntry, kind);
+            checkMatchingEntryType(transmittingEntry);
             this.transmittingEntry = transmittingEntry;
             return this;
         }
@@ -62,43 +45,23 @@ public abstract class NTStream<T> {
             if (transmittingEntry != null && cacheSize < minSendSize) {
                 throw new IllegalStateException("cacheSize must be bigger than minSendSize");
             }
-            return new NTStream(this);
+            return buildInstance();
         }
 
-        private static void assertMatchingEntryType(NetworkTableEntry entry, NetworkTableType kind) {
-            NetworkTableType entryType = entry.getType();
-            switch (kind) {
-                case kBoolean:
-                case kBooleanArray:
-                    if (entryType == NetworkTableType.kUnassigned) {
-                        entry.setBooleanArray(new boolean[] {});
-                    } else if (entryType != NetworkTableType.kBooleanArray) {
-                        entryTypeDiscrepancyError(entryType, kind);
-                    }
-                    break;
-                case kDouble:
-                case kDoubleArray:
-                    if (entryType == NetworkTableType.kUnassigned) {
-                        entry.setDoubleArray(new double[] {});
-                    } else if (entryType != NetworkTableType.kDoubleArray) {
-                        entryTypeDiscrepancyError(entryType, kind);
-                    }
-                    break;
-                case kString:
-                case kStringArray:
-                    if (entryType == NetworkTableType.kUnassigned) {
-                        entry.setStringArray(new String[] {});
-                    } else if (entryType != NetworkTableType.kStringArray) {
-                        entryTypeDiscrepancyError(entryType, kind);
-                    }
-                    break;
+        private void checkMatchingEntryType(NetworkTableEntry entry) {
+            NetworkTableType entryType = receivingEntry.getType();
+            if (entryType == NetworkTableType.kUnassigned) {
+                setUnassignedEntry(entry);
+            } else if (!isMatchingEntryType(receivingEntry)) {
+                throw new IllegalStateException("invalid entry type (" + entryType.name() + ")");
             }
         }
 
-        private static void entryTypeDiscrepancyError(NetworkTableType entryType, NetworkTableType kind) {
-            throw new IllegalStateException("entry type (" + entryType.name() + ") and given data type ("
-                    + kind.name() + ") conflict");
-        }
+        abstract boolean isMatchingEntryType(NetworkTableEntry entry);
+
+        abstract void setUnassignedEntry(NetworkTableEntry entry);
+
+        abstract NTStream buildInstance();
     }
 
     private static class LimitedCache<E> extends LinkedList<E> {
@@ -124,15 +87,13 @@ public abstract class NTStream<T> {
         }
     }
 
-    private final NetworkTableType kind;
-    private final NetworkTableEntry receivingEntry;
-    private final NetworkTableEntry transmittingEntry;
+    final NetworkTableEntry receivingEntry;
+    final NetworkTableEntry transmittingEntry;
     private final int minSendSize;
     private final LimitedCache<T> cache;
 
-    private NTStream(Builder builder) {
+    NTStream(Builder builder) {
         // Sanity checks are done in the builder.
-        this.kind = builder.kind;
         this.receivingEntry = builder.receivingEntry;
         this.transmittingEntry = builder.transmittingEntry;
         this.minSendSize = builder.minSendSize;
@@ -141,7 +102,7 @@ public abstract class NTStream<T> {
 
     public T[] read() {
         assertReadable("cannot read a write-only stream");
-        T[] data = rawRead();
+        T[] data = getReceiving();
         clearReceiving();
         return data;
     }
@@ -156,10 +117,13 @@ public abstract class NTStream<T> {
         return write(Arrays.asList(data));
     }
 
+    @SuppressWarnings("unchecked")
     public boolean flush(boolean force) {
         assertWriteable("cannot flush a read-only stream");
-        if () {
-
+        if (!outputBlocked() && (force || enoughDataInCache())) {
+            setTransmitting((T[]) cache.toArray());
+            cache.clear();
+            return true;
         }
         return false;
     }
@@ -169,7 +133,11 @@ public abstract class NTStream<T> {
     }
 
     private boolean outputBlocked() {
+        return getTransmitting().length > 0;
+    }
 
+    private boolean enoughDataInCache() {
+        return cache.size() >= minSendSize;
     }
 
     public boolean isReadable() {
@@ -192,13 +160,11 @@ public abstract class NTStream<T> {
         }
     }
 
-    T[] rawRead() {
-        return null;
-    }
+    abstract T[] getReceiving();
 
-    void clearReceiving() {}
+    abstract void clearReceiving();
 
-    void rawWrite() {}
+    abstract void setTransmitting(T[] data);
 
-    void getTransmitting() {}
+    abstract T[] getTransmitting();
 }
