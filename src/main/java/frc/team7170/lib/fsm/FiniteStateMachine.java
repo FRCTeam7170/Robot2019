@@ -11,16 +11,19 @@ public class FiniteStateMachine {
         private boolean permitMistrigger;
         private Consumer<Event>[] beforeStateChange, afterStateChange;
 
-        public void permitMistrigger() {
+        public Builder permitMistrigger() {
             permitMistrigger = true;
+            return this;
         }
 
-        public void beforeStateChange(Consumer<Event>... beforeStateChange) {
+        public Builder beforeStateChange(Consumer<Event>... beforeStateChange) {
             this.beforeStateChange = beforeStateChange;
+            return this;
         }
 
-        public void afterStateChange(Consumer<Event>... afterStateChange) {
+        public Builder afterStateChange(Consumer<Event>... afterStateChange) {
             this.afterStateChange = afterStateChange;
+            return this;
         }
 
         public FiniteStateMachine build() {

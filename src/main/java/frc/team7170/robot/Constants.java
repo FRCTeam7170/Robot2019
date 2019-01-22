@@ -5,15 +5,22 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class Constants {
 
+    public static class OI {
+        public static final int JOYSTICK_PORT = 0;
+        public static final int GAMEPAD_PORT = 1;
+    }
+
     public static class CAN {
         public static final int PDP = 0;
         public static final int PCM = 0;
 
-        // Climb talons
-        public static final int FRONT_CLIMB_TALON_LEFT = 0;
-        public static final int FRONT_CLIMB_TALON_RIGHT = 0;
-        public static final int BACK_CLIMB_TALON_LEFT = 0;
-        public static final int BACK_CLIMB_TALON_RIGHT = 0;
+        // Front arm talons
+        public static final int FRONT_ARM_TALON_MASTER = 0;  // Left
+        public static final int FRONT_ARM_TALON_FOLLOWER = 0;  // Right
+
+        // Back leg talons
+        public static final int BACK_LEG_TALON_MASTER = 0;  // Left
+        public static final int BACK_LEG_TALON_FOLLOWER = 0;  // Right
 
         // Drive talons
         public static final int DRIVE_TALON_LEFT_MASTER = 0;  // Front

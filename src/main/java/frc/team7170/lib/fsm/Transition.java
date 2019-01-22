@@ -28,20 +28,24 @@ public class Transition {
             this(new State[] {src}, dest);
         }
 
-        public void onStart(Consumer<Event>... onStart) {
+        public TransitionConfig onStart(Consumer<Event>... onStart) {
             this.onStart = onStart;
+            return this;
         }
 
-        public void onEnd(Consumer<Event>... onEnd) {
+        public TransitionConfig onEnd(Consumer<Event>... onEnd) {
             this.onEnd = onEnd;
+            return this;
         }
 
-        public void prepare(Consumer<Event>... prepare) {
+        public TransitionConfig prepare(Consumer<Event>... prepare) {
             this.prepare = prepare;
+            return this;
         }
 
-        public void conditions(Predicate<Event>... conditions) {
+        public TransitionConfig conditions(Predicate<Event>... conditions) {
             this.conditions = conditions;
+            return this;
         }
 
         public static TransitionConfig newReflexive(State... states) {

@@ -17,11 +17,11 @@ public class AveragePrinter {
         this(numIters, "");
     }
 
-    public boolean accept(double data) {
+    public boolean feed(double data) {
         sum += data;
         count++;
         if (count == numIters) {
-            System.out.println(printPrefix + String.valueOf(sum / (double) numIters));
+            System.out.println(printPrefix + sum / (double) numIters);
             sum = 0;
             count = 0;
             return true;

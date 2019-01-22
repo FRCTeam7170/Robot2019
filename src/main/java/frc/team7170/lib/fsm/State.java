@@ -15,16 +15,19 @@ public class State {
             this.name = name;
         }
 
-        public void onEnter(Consumer<Event>... onEnter) {
+        public StateConfig onEnter(Consumer<Event>... onEnter) {
             this.onEnter = onEnter;
+            return this;
         }
 
-        public void onExit(Consumer<Event>... onExit) {
+        public StateConfig onExit(Consumer<Event>... onExit) {
             this.onExit = onExit;
+            return this;
         }
 
-        public void permitNoChildSelection() {
+        public StateConfig permitNoChildSelection() {
             permitNoChildSelection = true;
+            return this;
         }
     }
 

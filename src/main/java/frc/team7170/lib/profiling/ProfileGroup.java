@@ -70,7 +70,7 @@ public class ProfileGroup implements Runnable {
         if (routines.containsKey(id)) {
             selected = id;
         } else {
-            throw new IllegalArgumentException("profile does not contain routine '" + String.valueOf(id) + "'");
+            throw new IllegalArgumentException("profile does not contain routine '" + id + "'");
         }
     }
 
