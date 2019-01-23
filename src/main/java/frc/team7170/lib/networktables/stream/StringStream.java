@@ -6,7 +6,7 @@ public class StringStream extends NTStream<String> {
 
     private static final String[] empty = new String[0];
 
-    public class Builder extends NTStream.Builder {
+    public static class Config extends NTStream.Config {
         @Override
         protected boolean isMatchingEntryType(NetworkTableEntry entry) {
             switch (entry.getType()) {
@@ -21,15 +21,10 @@ public class StringStream extends NTStream<String> {
         void setUnassignedEntry(NetworkTableEntry entry) {
             entry.setStringArray(empty);
         }
-
-        @Override
-        protected NTStream buildInstance() {
-            return new StringStream(this);
-        }
     }
 
-    private StringStream(Builder builder) {
-        super(builder);
+    public StringStream(NTStream.Config config) {
+        super(config);
     }
 
     @Override

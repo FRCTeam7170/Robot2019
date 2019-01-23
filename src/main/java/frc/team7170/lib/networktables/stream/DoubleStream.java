@@ -6,7 +6,7 @@ public class DoubleStream extends NTStream<Double> {
 
     private static final Double[] empty = new Double[0];
 
-    public class Builder extends NTStream.Builder {
+    public static class Config extends NTStream.Config {
         @Override
         protected boolean isMatchingEntryType(NetworkTableEntry entry) {
             switch (entry.getType()) {
@@ -21,15 +21,10 @@ public class DoubleStream extends NTStream<Double> {
         void setUnassignedEntry(NetworkTableEntry entry) {
             entry.setNumberArray(empty);
         }
-
-        @Override
-        protected NTStream buildInstance() {
-            return new DoubleStream(this);
-        }
     }
 
-    private DoubleStream(Builder builder) {
-        super(builder);
+    public DoubleStream(NTStream.Config config) {
+        super(config);
     }
 
     @Override

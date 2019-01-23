@@ -6,7 +6,7 @@ public class BooleanStream extends NTStream<Boolean> {
 
     private static final Boolean[] empty = new Boolean[0];
 
-    public class Builder extends NTStream.Builder {
+    public static class Config extends NTStream.Config {
         @Override
         protected boolean isMatchingEntryType(NetworkTableEntry entry) {
             switch (entry.getType()) {
@@ -21,15 +21,10 @@ public class BooleanStream extends NTStream<Boolean> {
         void setUnassignedEntry(NetworkTableEntry entry) {
             entry.setBooleanArray(empty);
         }
-
-        @Override
-        protected NTStream buildInstance() {
-            return new BooleanStream(this);
-        }
     }
 
-    private BooleanStream(Builder builder) {
-        super(builder);
+    public BooleanStream(NTStream.Config config) {
+        super(config);
     }
 
     @Override
