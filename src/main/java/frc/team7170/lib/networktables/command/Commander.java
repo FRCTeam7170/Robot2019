@@ -1,4 +1,4 @@
-package frc.team7170.lib.networktables;
+package frc.team7170.lib.networktables.command;
 
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;

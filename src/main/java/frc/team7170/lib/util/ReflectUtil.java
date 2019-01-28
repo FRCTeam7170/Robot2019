@@ -1,8 +1,7 @@
 package frc.team7170.lib.util;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -12,7 +11,6 @@ public final class ReflectUtil {
 
     private ReflectUtil() {}
 
-    @SuppressWarnings("unchecked")
     public static <T extends Annotation> Stream<Pair<Method, T>> getMethodAnnotationStream
             (Class<?> cls, Class<T> annotationCls) {
         return Arrays.stream(cls.getDeclaredMethods())
@@ -20,10 +18,14 @@ public final class ReflectUtil {
                 .filter(pair -> Objects.nonNull(pair.getRight()));
     }
 
+    public static <T extends Annotation> Stream<Pair<Field, T>> getFieldAnnotationStream
+            (Class<?> cls, Class<T> annotationCls) {
+        return Arrays.stream(cls.getDeclaredFields())
+                .map(field -> new Pair<>(field, field.getAnnotation(annotationCls)))
+                .filter(pair -> Objects.nonNull(pair.getRight()));
+    }
+
     public static void assertInvokable(Method method) {
-        if ((method.getModifiers() & Modifier.PUBLIC) == 0) {
-            throw new RuntimeException("method must be public");
-        }
         if ((method.getModifiers() & Modifier.ABSTRACT) != 0) {
             throw new RuntimeException("method must not be abstract");
         }
@@ -43,15 +45,15 @@ public final class ReflectUtil {
         }
     }
 
-    public static void assertParameterSpec(Method method, Class[] types) {
+    public static void assertParameterSpec(Method method, Class... types) {
         if (!Arrays.equals(method.getParameterTypes(), types)) {
             throw new RuntimeException(formatErrStr("invalid method parameter specification",
                     Arrays.toString(types), Arrays.toString(method.getParameterTypes())));
         }
     }
 
-    public static boolean isStatic(Method method) {
-        return (method.getModifiers() & Modifier.STATIC) > 0;
+    public static boolean isStatic(Member member) {
+        return (member.getModifiers() & Modifier.STATIC) > 0;
     }
 
     private static String formatErrStr(String base, String expected, String got) {

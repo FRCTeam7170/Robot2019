@@ -1,5 +1,8 @@
 package frc.team7170.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 import frc.team7170.actions.AxisActions;
@@ -8,6 +11,7 @@ import frc.team7170.lib.oi.KeyBindings;
 import frc.team7170.lib.oi.KeyMap;
 import frc.team7170.lib.oi.LE3DPJoystick;
 import frc.team7170.lib.oi.LF310Gamepad;
+import frc.team7170.lib.util.debug.AveragePrinter;
 
 public class Robot extends TimedRobot {
 
@@ -45,13 +49,19 @@ public class Robot extends TimedRobot {
 
     private KeyMap defaultKeyMap;
 
+    private TalonSRX linActuator = new TalonSRX(14);  // TODO: TEMP
+    private Encoder encoder = new Encoder(0, 1);  // TODO: TEMP
+    private AveragePrinter ap = new AveragePrinter(10, "ENCODER: ");
+
     @Override
     public void robotInit() {
         KeyBindings.registerAxisActions(AxisActions.values());
         KeyBindings.registerButtonActions(ButtonActions.values());
         KeyBindings.registerController(joystick);
         KeyBindings.registerController(gamepad);
-        defaultKeyMap = new KeyMap.Builder("default").build();  // TODO: add bindings here
+        defaultKeyMap = new KeyMap.Builder("default")
+                .addPair(AxisActions.LIN_ACTUATOR, gamepad, gamepad.A_RY)  // TODO: TEMP
+                .build();
         KeyBindings.registerKeyMap(defaultKeyMap, false);
         KeyBindings.setCurrKeyMap(defaultKeyMap);
     }
@@ -78,7 +88,11 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+        // TODO: TEMP
+        linActuator.set(ControlMode.PercentOutput, KeyBindings.actionToAxis(AxisActions.LIN_ACTUATOR).get());
+        ap.feed(encoder.get());
+    }
 
     @Override
     public void testPeriodic() {}

@@ -1,6 +1,7 @@
 package frc.team7170.lib.networktables;
 
 
+// TODO: REMOVE
 public final class RPCResponses {
 
     public static final byte[] EMPTY = {};
