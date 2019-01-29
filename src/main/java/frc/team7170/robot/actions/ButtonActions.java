@@ -1,4 +1,4 @@
-package frc.team7170.actions;
+package frc.team7170.robot.actions;
 
 import frc.team7170.lib.oi.ButtonAction;
 
