@@ -1,34 +1,38 @@
 package frc.team7170.lib.command;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class TimedRunnableCommand extends Command {
 
-    private Runnable runnable;
-    private int delayMs;
-    private long time;
+    private final Runnable runnable;
+    private final double delaySec;
+    private double time;
 
-    public TimedRunnableCommand(Runnable runnable, int delayMs, boolean startOnInit) {
+    public TimedRunnableCommand(Runnable runnable, int delayMs, boolean startOnInit, Subsystem... requirements) {
         this.runnable = runnable;
-        this.delayMs = delayMs;
+        delaySec = (double) delayMs / 1000;
+        for (Subsystem requirement : requirements) {
+            requires(requirement);
+        }
         if (startOnInit) start();
     }
 
-    public TimedRunnableCommand(Runnable runnable, int delayMs) {
-        this(runnable, delayMs, true);
+    public TimedRunnableCommand(Runnable runnable, int delayMs, Subsystem... requirements) {
+        this(runnable, delayMs, true, requirements);
     }
 
     @Override
     protected void initialize() {
-        time = System.currentTimeMillis();
+        time = Timer.getFPGATimestamp();
     }
 
     @Override
     protected void execute() {
-        if (System.currentTimeMillis() >= time + delayMs) {
+        if (Timer.getFPGATimestamp() >= time + delaySec) {
             runnable.run();
-            time = System.currentTimeMillis();
+            time = Timer.getFPGATimestamp();
         }
     }
 

@@ -3,24 +3,23 @@ package frc.team7170.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.team7170.lib.logging.DataLogger;
 import frc.team7170.lib.util.CalcUtil;
 import frc.team7170.robot.Constants;
+import org.msgpack.value.Value;
+import org.msgpack.value.ValueFactory;
 
-public class Drive {
+public class Drive extends Subsystem implements DataLogger {
 
     public static final Drive INSTANCE = new Drive();
 
-    private final TalonSRX leftMaster;
-    private final TalonSRX leftFollower;
-    private final TalonSRX rightMaster;
-    private final TalonSRX rightFollower;
+    private final TalonSRX leftMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_MASTER);
+    private final TalonSRX leftFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_FOLLOWER);
+    private final TalonSRX rightMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_MASTER);
+    private final TalonSRX rightFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_FOLLOWER);
 
     private Drive() {
-        leftMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_MASTER);
-        leftFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_FOLLOWER);
-        rightMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_MASTER);
-        rightFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_FOLLOWER);
-
         configTalon(leftMaster, true);
         configTalon(leftFollower, true);
         configTalon(rightMaster, false);
@@ -50,6 +49,9 @@ public class Drive {
         }
         talon.setSensorPhase(Constants.Drive.SENSOR_PHASE);
     }
+
+    @Override
+    protected void initDefaultCommand() {}
 
     // TODO: These are raw positions / velocities... put in more useful units?
     public int getLeftEncoder() {
@@ -115,5 +117,84 @@ public class Drive {
         // The 0.1 is to convert "per second" into "per 0.1 seconds".
         // The 4 is for the quadrature encoder.
         return revolutionsPerSec * 0.1 * Constants.Drive.ENCODER_CYCLES_PER_REVOLUTION * 4;
+    }
+
+    @Override
+    public String[] reportHeaders() {
+        return new String[] {
+                "leftEncoder",
+                "rightEncoder",
+
+                "leftVelocity",
+                "rightVelocity",
+
+                "leftClosedLoopError",
+                "rightClosedLoopError",
+
+                "leftClosedLoopTarget",
+                "rightClosedLoopTarget",
+
+                "leftFrontBusVoltage",
+                "leftBackBusVoltage",
+                "rightFrontBusVoltage",
+                "rightBackBusVoltage",
+
+                "leftFrontMotorVoltage",
+                "leftBackMotorVoltage",
+                "rightFrontMotorVoltage",
+                "rightBackMotorVoltage",
+
+                "leftFrontMotorPercentage",
+                "leftBackMotorPercentage",
+                "rightFrontMotorPercentage",
+                "rightBackMotorPercentage",
+
+                "leftFrontCurrent",
+                "leftBackCurrent",
+                "rightFrontCurrent",
+                "rightBackCurrent",
+        };
+    }
+
+    @Override
+    public Value[] reportData() {
+        return new Value[] {
+                ValueFactory.newInteger(getLeftEncoder()),
+                ValueFactory.newInteger(getRightEncoder()),
+
+                ValueFactory.newInteger(getLeftVelocity()),
+                ValueFactory.newInteger(getRightVelocity()),
+
+                ValueFactory.newInteger(leftMaster.getClosedLoopError()),
+                ValueFactory.newInteger(rightMaster.getClosedLoopError()),
+
+                ValueFactory.newFloat(leftMaster.getClosedLoopTarget()),
+                ValueFactory.newFloat(rightMaster.getClosedLoopTarget()),
+
+                ValueFactory.newFloat(leftMaster.getBusVoltage()),
+                ValueFactory.newFloat(leftFollower.getBusVoltage()),
+                ValueFactory.newFloat(rightMaster.getBusVoltage()),
+                ValueFactory.newFloat(rightFollower.getBusVoltage()),
+
+                ValueFactory.newFloat(leftMaster.getMotorOutputVoltage()),
+                ValueFactory.newFloat(leftFollower.getMotorOutputVoltage()),
+                ValueFactory.newFloat(rightMaster.getMotorOutputVoltage()),
+                ValueFactory.newFloat(rightFollower.getMotorOutputVoltage()),
+
+                ValueFactory.newFloat(leftMaster.getMotorOutputPercent()),
+                ValueFactory.newFloat(leftFollower.getMotorOutputPercent()),
+                ValueFactory.newFloat(rightMaster.getMotorOutputPercent()),
+                ValueFactory.newFloat(rightFollower.getMotorOutputPercent()),
+
+                ValueFactory.newFloat(leftMaster.getOutputCurrent()),
+                ValueFactory.newFloat(leftFollower.getOutputCurrent()),
+                ValueFactory.newFloat(rightMaster.getOutputCurrent()),
+                ValueFactory.newFloat(rightFollower.getOutputCurrent()),
+        };
+    }
+
+    @Override
+    public String reportName() {
+        return "drive";
     }
 }

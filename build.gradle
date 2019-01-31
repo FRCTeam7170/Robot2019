@@ -36,6 +36,7 @@ deploy {
 }
 
 repositories {
+    // TODO: Will this be available at competition without internet access?
     mavenCentral()
 }
 

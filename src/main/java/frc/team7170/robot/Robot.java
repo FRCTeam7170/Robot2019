@@ -13,6 +13,12 @@ import frc.team7170.lib.oi.KeyMap;
 import frc.team7170.lib.oi.LE3DPJoystick;
 import frc.team7170.lib.oi.LF310Gamepad;
 import frc.team7170.lib.util.debug.AveragePrinter;
+import frc.team7170.robot.commands.CmdDriveTeleop;
+import frc.team7170.robot.subsystems.Drive;
+
+import java.util.logging.ConsoleHandler;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 // TODO: Refactor package structure: move all 3rd level packages into frc.team7170.robot (and maybe rename that to robot2019?)
 
@@ -75,6 +81,7 @@ public class Robot extends TimedRobot {
             KeyBindings.registerController(gamepad);
         }
 
+        // Setup keybindings
         KeyBindings.registerAxisActions(AxisActions.values());
         KeyBindings.registerButtonActions(ButtonActions.values());
         defaultKeyMap = new KeyMap.Builder("default")
@@ -82,6 +89,9 @@ public class Robot extends TimedRobot {
                 .build();
         KeyBindings.registerKeyMap(defaultKeyMap, false);
         KeyBindings.setCurrKeyMap(defaultKeyMap);
+
+        // Setup subsystem default commands (for whatever reason, this cannot be done in singleton subsystem constructor)
+        Drive.INSTANCE.setDefaultCommand(new CmdDriveTeleop());
     }
 
     @Override

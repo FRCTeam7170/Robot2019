@@ -1,10 +1,16 @@
 package frc.team7170.lib.networktables.command;
 
+import frc.team7170.lib.logging.LoggerManager;
+
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.logging.Logger;
 
-public class ArgumentativeCommand implements Consumer<String[]> {
+public class ArgumentativeCommand implements Consumer<StringArguments> {
+
+    private static final Logger LOGGER = LoggerManager.INSTANCE.getLogger(ArgumentativeCommand.class.getName());
 
     private static final String LONG_ARG_PREFIX = "--";
     private static final String SHORT_ARG_PREFIX = "-";
@@ -53,33 +59,31 @@ public class ArgumentativeCommand implements Consumer<String[]> {
     }
 
     @Override
-    public void accept(String[] tokens) {
-        callback.accept(parseArgs(tokens));
+    public void accept(StringArguments args) {
+        callback.accept(parseArgs(args));
     }
 
     public static class ParsedArguments {
 
-        public final HashMap<String, String[]> argMap;
-        public final String[] rest;
+        public final HashMap<String, StringArguments> argMap;
+        public final StringArguments rest;
 
-        private ParsedArguments(HashMap<String, String[]> argMap, String[] rest) {
+        private ParsedArguments(HashMap<String, StringArguments> argMap, StringArguments rest) {
             this.argMap = argMap;
             this.rest = rest;
         }
     }
 
-    private ParsedArguments parseArgs(String[] tokens) {
-        HashMap<String, String[]> argMap = new HashMap<>();
-        String[] rest = new String[0];  // Default to empty array in case there is truly no "rest".
+    private ParsedArguments parseArgs(StringArguments args) {
+        HashMap<String, StringArguments> argMap = new HashMap<>();
         int currConsume = 0;
         String[] currArray = null;
         int skip = 0;
         int idx = 0;
-        for (String token : tokens) {
+        for (String token : args.args) {
             if (skip > 0) {
                 currArray[currConsume - skip] = token;
                 --skip;
-                break;
             }
             if (token.startsWith(SHORT_ARG_PREFIX)) {
                 String argName;
@@ -89,20 +93,23 @@ public class ArgumentativeCommand implements Consumer<String[]> {
                     argName = token.substring(SHORT_ARG_PREFIX.length());
                 }
                 try {
-                    currConsume = nameArgumentMap.get(argName).consume;
+                    Argument argument = nameArgumentMap.get(argName);
+                    currConsume = argument.consume;
                     currArray = new String[currConsume];
-                    argMap.put(argName, currArray);
+                    argMap.put(argument.longName, new StringArguments(currArray));
                     skip = currConsume;
                 } catch (NullPointerException e) {
                     // This occurs when an unrecognized argument was given.
-                    System.out.println("Uh-oh");  // TODO: do some useful logging here
+                    LOGGER.warning(String.format("an unrecognized argument '%s' was given; " +
+                            "stopping parsing and remaining arguments will be put in 'rest'", token));
+                    break;
                 }
             } else {
-                rest = Arrays.copyOfRange(tokens, idx, tokens.length);
                 break;
             }
             ++idx;
         }
-        return new ParsedArguments(argMap, rest);
+        String[] rest = Arrays.copyOfRange(args.args, idx, args.numArgs());
+        return new ParsedArguments(argMap, new StringArguments(rest));
     }
 }

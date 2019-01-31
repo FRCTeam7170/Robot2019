@@ -62,4 +62,12 @@ public class KeyMap {
     public Button actionToButton(ButtonAction action) {
         return buttonMap.get(action).getRight();
     }
+
+    public boolean hasBindingFor(AxisAction action) {
+        return axisMap.containsKey(action);
+    }
+
+    public boolean hasBindingFor(ButtonAction action) {
+        return buttonMap.containsKey(action);
+    }
 }

@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 public class TalonFactory {
 
     public static class Config {
+        // TODO: add more parameters in here
         public NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
         // This is factory default.
         public double NEUTRAL_DEADBAND = 0.04;
@@ -45,6 +46,8 @@ public class TalonFactory {
         public int PULSE_WIDTH_STATUS_FRAME_RATE_MS = 100;
         */
     }
+
+    // TODO: some default configs?
 
     public static TalonSRX newTalon(int id, Config config) {
         TalonSRX talon = new TalonSRX(id);

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-
 // TODO: Make non-static?
 public final class KeyBindings {
 
