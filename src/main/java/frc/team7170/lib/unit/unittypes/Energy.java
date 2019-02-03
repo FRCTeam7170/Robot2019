@@ -3,10 +3,9 @@ package frc.team7170.lib.unit.unittypes;
 public class Energy extends UnitType<FundamentalUnitType> {
 
     Energy() {
-        super(FundamentalUnitType.class, new Config<>(FundamentalUnitType.class)
+        super(new Config<>(FundamentalUnitType.class)
                 .power(FundamentalUnitType.TIME, -2)
                 .power(FundamentalUnitType.DISTANCE, 2)
-                .power(FundamentalUnitType.MASS, 1)
-                .powerMap);
+                .power(FundamentalUnitType.MASS, 1));
     }
 }

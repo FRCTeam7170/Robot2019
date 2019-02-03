@@ -1,10 +1,8 @@
 package frc.team7170.lib.unit.unittypes;
 
-public class ElectricalCurrent extends UnitType<FundamentalUnitType> {
+public class ElectricalCurrent extends BaseUnitType<FundamentalUnitType> {
 
     ElectricalCurrent() {
-        super(FundamentalUnitType.class, new Config<>(FundamentalUnitType.class)
-                .power(FundamentalUnitType.CURRENT, 1)
-                .powerMap);
+        super(FundamentalUnitType.class, FundamentalUnitType.CURRENT);
     }
 }

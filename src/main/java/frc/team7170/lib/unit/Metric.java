@@ -1,6 +1,6 @@
 package frc.team7170.lib.unit;
 
-public interface IMetric {
+public interface Metric {
 
     MetricPrefix getPrefix();
 }

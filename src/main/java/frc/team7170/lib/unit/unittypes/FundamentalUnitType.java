@@ -8,9 +8,9 @@ public enum FundamentalUnitType implements IFundamentalUnitType<FundamentalUnitT
     DISTANCE,
     MASS,
     CURRENT;
-    // TEMPERATURE,
-    // AMOUNT,
-    // LUMINOUS_INTENSITY,
+    // TEMPERATURE
+    // AMOUNT
+    // LUMINOUS_INTENSITY
 
     @Override
     public BaseUnit<FundamentalUnitType, ? extends UnitType<FundamentalUnitType>> getBaseUnit() {

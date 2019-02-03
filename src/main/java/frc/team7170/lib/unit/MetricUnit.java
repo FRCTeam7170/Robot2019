@@ -1,9 +1,10 @@
 package frc.team7170.lib.unit;
 
+import frc.team7170.lib.unit.unittypes.BaseUnitType;
 import frc.team7170.lib.unit.unittypes.IFundamentalUnitType;
-import frc.team7170.lib.unit.unittypes.UnitType;
 
-public class MetricUnit<R extends Enum<R> & IFundamentalUnitType<R>, T extends UnitType<R>> extends Unit<R, T> implements IMetric {
+public class MetricUnit<R extends Enum<R> & IFundamentalUnitType<R>, T extends BaseUnitType<R>>
+        extends ScaledUnit<R, T> implements Metric {
 
     private final MetricPrefix prefix;
 

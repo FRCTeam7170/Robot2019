@@ -4,15 +4,17 @@ import frc.team7170.lib.unit.unittypes.*;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.Iterator;
 
+// TODO: allow adding non basis unit types to facilitate more complex derived units
 public class UnitSet<R extends Enum<R> & IFundamentalUnitType<R>> {
 
-    public static class Entry<R extends Enum<R> & IFundamentalUnitType<R>> {
+    protected static class Entry<R extends Enum<R> & IFundamentalUnitType<R>> {
 
-        public final Unit<R, ? extends UnitType<R>> unit;
+        public final ScaledUnit<R, ? extends UnitType<R>> unit;
         public final int numTimes;
 
-        protected Entry(Unit<R, ? extends UnitType<R>> unit, int numTimes) {
+        protected Entry(ScaledUnit<R, ? extends UnitType<R>> unit, int numTimes) {
             this.unit = unit;
             this.numTimes = numTimes;
         }
@@ -33,8 +35,28 @@ public class UnitSet<R extends Enum<R> & IFundamentalUnitType<R>> {
             }
         }
 
-        public Builder map(R fut, Unit<R, ? extends UnitType<R>> unit, int times) {
+        public Builder(UnitSet<R> unitSet) {
+            this.futClass = unitSet.futClass;
+            this.unitMap = unitSet.unitMap;
+        }
+
+        public Builder<R> map(R fut, ScaledUnit<R, ? extends UnitType<R>> unit, int times) {
             unitMap.get(fut).add(0, new Entry<>(unit, times));
+            return this;
+        }
+
+        public Builder<R> map(R fut, ScaledUnit<R, ? extends UnitType<R>> unit) {
+            ArrayList<Entry<R>> arrayList = unitMap.get(fut);
+            arrayList.remove(unitMap.size() - 1);
+            arrayList.add(arrayList.size(), new Entry<>(unit, -1));
+            return this;
+        }
+
+        public Builder<R> clearMappings(R fut) {
+            ArrayList<Entry<R>> arrayList = unitMap.get(fut);
+            Entry<R> last = arrayList.get(arrayList.size() - 1);
+            arrayList.clear();
+            arrayList.add(last);
             return this;
         }
 
@@ -51,10 +73,25 @@ public class UnitSet<R extends Enum<R> & IFundamentalUnitType<R>> {
         this.unitMap = builder.unitMap;
     }
 
-    public <T extends UnitType<R>> double factorBetween(UnitSet<R> other, T type) {
+    protected <T extends UnitType<R>> double calcFactorFor(T type) {
+        double factor = 1.0;
         for (R fut : futClass.getEnumConstants()) {
-            // TODO: add a BaseUnitType class
+            int powersNeeded = type.powerOf(fut);
+            boolean isInverted = powersNeeded < 0;
+            powersNeeded = Math.abs(powersNeeded);
+            Iterator<Entry<R>> iterator = unitMap.get(fut).iterator();
+            while (powersNeeded > 0) {
+                Entry<R> entry = iterator.next();
+                int power;
+                if (entry.numTimes == -1) {
+                    power = powersNeeded;
+                } else {
+                    power = Math.min(powersNeeded, entry.numTimes);
+                }
+                factor *= Math.pow(entry.unit.getFactor(), isInverted ? -power : power);
+                powersNeeded -= power;
+            }
         }
-        return 0.0;
+        return factor;
     }
 }

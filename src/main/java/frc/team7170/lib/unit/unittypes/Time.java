@@ -1,10 +1,8 @@
 package frc.team7170.lib.unit.unittypes;
 
-public class Time extends UnitType<FundamentalUnitType> {
+public class Time extends BaseUnitType<FundamentalUnitType> {
 
     Time() {
-        super(FundamentalUnitType.class, new Config<>(FundamentalUnitType.class)
-                .power(FundamentalUnitType.TIME, 1)
-                .powerMap);
+        super(FundamentalUnitType.class, FundamentalUnitType.TIME);
     }
 }
