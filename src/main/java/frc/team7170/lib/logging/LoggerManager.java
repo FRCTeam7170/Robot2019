@@ -1,55 +1,40 @@
 package frc.team7170.lib.logging;
 
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.team7170.lib.Name;
 import frc.team7170.lib.networktables.command.ArgumentativeCommand;
 import frc.team7170.lib.networktables.command.CommandAbortException;
 import frc.team7170.lib.networktables.command.Commander;
-import org.msgpack.core.MessagePack;
-import org.msgpack.core.MessagePacker;
-import org.msgpack.core.MessageTypeException;
-import org.msgpack.core.MessageUnpacker;
 
-import java.io.*;
 import java.util.logging.*;
 
 public class LoggerManager {
 
     public static final Logger GLOBAL_LOGGER = Logger.getLogger("");
-    private static final Logger LOGGER = LoggerManager.INSTANCE.getLogger(LoggerManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LoggerManager.class.getName());
 
-    static final File LOG_DIR = new File("/home/lvuser/logs");
-    private static final String FILE_NAME_FMT = "%d.log";  // "N.log"
-    private static final File NUM_FILE = new File(LOG_DIR, "nextN.msgpack");
+    private static final Commander logCommander = new Commander(NetworkTableInstance.getDefault(), new Name("log"));
+    private static FileHandler fileHandler;
+    private static ConsoleHandler consoleHandler;
 
-    static final int LOG_NUM = loadLogFileNum();
     static {
-        LOGGER.info("logging with log num of " + LOG_NUM);
-        saveLogFileNum(LOG_NUM + 1);
-    }
+        LOGGER.info("Initializing LoggerManager...");
 
-    private final Commander logCommander = new Commander(NetworkTableInstance.getDefault(), "log");
-    private ConsoleHandler consoleHandler;
-    private FileHandler fileHandler;
-
-    public static final LoggerManager INSTANCE = new LoggerManager();
-
-    private LoggerManager() {
-        // Setup console handler
-        consoleHandler = new ConsoleHandler();
-        GLOBAL_LOGGER.addHandler(consoleHandler);
-
-        // (Try to) setup file handler
-        // TODO: Create way to try to enable file handler dynamically via dashboard?
-        String fileName = String.format(FILE_NAME_FMT, LOG_NUM);
-        File file = new File(LOG_DIR, fileName);
-        try {
-            fileHandler = new FileHandler(file.getAbsolutePath());
-            GLOBAL_LOGGER.addHandler(fileHandler);
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "failed to enable file handler", e);
+        for (Handler handler : GLOBAL_LOGGER.getHandlers()) {
+            if (handler instanceof FileHandler) {
+                fileHandler = (FileHandler) handler;
+            } else if (handler instanceof ConsoleHandler) {
+                consoleHandler = (ConsoleHandler) handler;
+            }
+        }
+        if (fileHandler == null) {
+            LOGGER.warning("FileHandler not detected.");
+        }
+        if (consoleHandler == null) {
+            LOGGER.warning("ConsoleHandler not detected.");
         }
 
-        logCommander.registerCommand("setLevel", new ArgumentativeCommand(parsedArguments -> {
+        logCommander.registerCommand(new Name("setLevel"), new ArgumentativeCommand(parsedArguments -> {
                     parsedArguments.rest.assertArgsLength(1);
                     String levelStr = parsedArguments.rest.asIterator().nextString().toLowerCase();
                     Level level = strToLevel(levelStr);
@@ -57,31 +42,33 @@ public class LoggerManager {
                         throw new CommandAbortException("invalid logger level");
                     }
                     if (parsedArguments.argMap.get("console") != null) {
+                        if (consoleHandler != null) {
+                            consoleHandler.setLevel(level);
+                        } else {
+                            LOGGER.warning("Cannot set level on console handler: console handler not detected.");
+                        }
                         consoleHandler.setLevel(level);
                     } else if (parsedArguments.argMap.get("file") != null) {
                         if (fileHandler != null) {
                             fileHandler.setLevel(level);
                         } else {
-                            LOGGER.warning("cannot set level on file handler: file handler setup failed");
+                            LOGGER.warning("Cannot set level on file handler: file handler not detected.");
                         }
                     } else {
-                        GLOBAL_LOGGER.setLevel(level);
+                        setLevel(level);
                     }
                 },
-                        new ArgumentativeCommand.Argument("console", "c", 0),
-                        new ArgumentativeCommand.Argument("file", "f", 0))
+                        new ArgumentativeCommand.Argument(new Name("console"), new Name("c"), 0),
+                        new ArgumentativeCommand.Argument(new Name("file"), new Name("f"), 0))
         );
+
+        LOGGER.info("Finished initializing LoggerManager.");
     }
 
-    public Logger getLogger(String name) {
-        Logger logger = Logger.getLogger(name);
-        logger.setParent(GLOBAL_LOGGER);
-        logger.setLevel(null);  // Inherit level from parent.
-        logger.setUseParentHandlers(true);  // Inherit handlers from parent.
-        return logger;
-    }
+    // Enforce non-instantiability.
+    private LoggerManager() {}
 
-    public void setLevel(Level level) {
+    public static void setLevel(Level level) {
         GLOBAL_LOGGER.setLevel(level);
     }
 
@@ -107,44 +94,6 @@ public class LoggerManager {
                 return Level.OFF;
             default:
                 return null;
-        }
-    }
-
-    private static int loadLogFileNum() {
-        if (!NUM_FILE.exists()) {
-            LOGGER.info("log num file does not exist; defaulting to zero");
-            return 0;
-        }
-        MessageUnpacker unpacker;
-        try {
-            unpacker = MessagePack.newDefaultUnpacker(new FileInputStream(NUM_FILE));
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "failed to read log num file; defaulting to zero", e);
-            return 0;
-        }
-        try {
-            int ret = unpacker.unpackInt();
-            unpacker.close();
-            return ret;
-        } catch (IOException | MessageTypeException e) {
-            LOGGER.log(Level.SEVERE, "error occurred while unpacking log num; defaulting to zero", e);
-            return 0;
-        }
-    }
-
-    private static void saveLogFileNum(int num) {
-        MessagePacker packer;
-        try {
-            packer = MessagePack.newDefaultPacker(new FileOutputStream(NUM_FILE));
-        } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "failed to save log num to file", e);
-            return;
-        }
-        try {
-            packer.packInt(num);
-            packer.close();
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "failed to pack log num to file", e);
         }
     }
 }

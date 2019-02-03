@@ -5,7 +5,6 @@ import java.util.function.Consumer;
 
 public class FiniteStateMachine {
 
-    // TODO: Builder methods should return the builder for chaining
     public static class Builder {
 
         private boolean permitMistrigger;

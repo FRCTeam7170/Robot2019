@@ -26,7 +26,7 @@ public final class ReflectUtil {
     }
 
     public static void assertInvokable(Method method) {
-        if ((method.getModifiers() & Modifier.ABSTRACT) != 0) {
+        if (Modifier.isAbstract(method.getModifiers())) {
             throw new RuntimeException("method must not be abstract");
         }
     }
@@ -52,8 +52,16 @@ public final class ReflectUtil {
         }
     }
 
-    public static boolean isStatic(Member member) {
-        return (member.getModifiers() & Modifier.STATIC) > 0;
+    public static void assertFinal(Member member) {
+        if (!Modifier.isFinal(member.getModifiers())) {
+            throw new RuntimeException("member is not final");
+        }
+    }
+
+    public static void assertNonFinal(Member member) {
+        if (Modifier.isFinal(member.getModifiers())) {
+            throw new RuntimeException("member is final");
+        }
     }
 
     private static String formatErrStr(String base, String expected, String got) {

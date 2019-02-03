@@ -4,8 +4,8 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 
 import java.lang.annotation.*;
 
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@Repeatable(Receives.class)
 public @interface Receive {
     String value() default "";
     int flags() default EntryListenerFlags.kUpdate;

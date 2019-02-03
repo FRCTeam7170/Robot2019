@@ -3,6 +3,7 @@ package frc.team7170.lib.networktables.command;
 import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.team7170.lib.Name;
 import frc.team7170.lib.logging.LoggerManager;
 import frc.team7170.lib.networktables.stream.StringStream;
 
@@ -16,7 +17,7 @@ public class Commander {
 
     // TODO: add help messages for commands (and arguments)?
 
-    private static final Logger LOGGER = LoggerManager.getLogger(Commander.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Commander.class.getName());
 
     // I.e. Dashboard -> robot
     private static final String UPLOAD_SUFFIX = "_UPLOAD";
@@ -26,8 +27,7 @@ public class Commander {
     private final HashMap<String, Consumer<StringArguments>> commandMap = new HashMap<>();
     private final StringStream commandStream;
 
-    public Commander(NetworkTableInstance inst, String namePrefix) {
-        // TODO: error check names in master Communication class.
+    public Commander(NetworkTableInstance inst, Name namePrefix) {
         NetworkTableEntry receivingEntry = inst.getEntry(namePrefix + UPLOAD_SUFFIX);
         NetworkTableEntry transmittingEntry = inst.getEntry(namePrefix + DOWNLOAD_SUFFIX);
         commandStream = new StringStream(new StringStream.Config()
@@ -37,14 +37,12 @@ public class Commander {
         commandStream.addListener(this::listenerCallback);
     }
 
-    public boolean registerCommand(String name, Consumer<StringArguments> callback) {
-        name = name.toUpperCase();
-        return commandMap.put(name, callback) == null;
+    public boolean registerCommand(Name name, Consumer<StringArguments> callback) {
+        return commandMap.put(name.getName().toUpperCase(), callback) == null;
     }
 
-    public boolean unregisterCommand(String name) {
-        name = name.toUpperCase();
-        return commandMap.remove(name) != null;
+    public boolean unregisterCommand(Name name) {
+        return commandMap.remove(name.getName().toUpperCase()) != null;
     }
 
     private void listenerCallback(EntryNotification notification) {

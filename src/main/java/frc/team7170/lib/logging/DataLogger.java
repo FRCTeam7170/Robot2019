@@ -4,7 +4,7 @@ import org.msgpack.value.Value;
 
 import java.util.Arrays;
 
-// TODO: in the future (post season), the data logging system should probably be merged with the communicator system--they have a lot of similarities.
+// TODO: in the future (post season?), the data logging system should probably be merged with the communicator system--they have a lot of similarities.
 // Most likely this could be achieved with an extra boolean flag on Transmitter annotations ("dataLog" or something).
 public interface DataLogger {
 

@@ -1,16 +1,15 @@
 package frc.team7170.lib.networktables.command;
 
-import frc.team7170.lib.logging.LoggerManager;
+import frc.team7170.lib.Name;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 public class ArgumentativeCommand implements Consumer<StringArguments> {
 
-    private static final Logger LOGGER = LoggerManager.INSTANCE.getLogger(ArgumentativeCommand.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ArgumentativeCommand.class.getName());
 
     private static final String LONG_ARG_PREFIX = "--";
     private static final String SHORT_ARG_PREFIX = "-";
@@ -21,24 +20,23 @@ public class ArgumentativeCommand implements Consumer<StringArguments> {
         public final String shortName;
         public final int consume;
 
-        public Argument(String longName, String shortName, int consume) {
+        public Argument(Name longName, Name shortName, int consume) {
             if (longName == null) {
                 throw new NullPointerException("argument long name must be non-null");
             }
             if (consume < 0) {
                 throw new IllegalArgumentException("argument cannot consume less that zero arguments");
             }
-            // TODO: error check on argument names (no spaces, etc.)
-            this.longName = longName;
-            this.shortName = shortName;
+            this.longName = longName.getName();
+            this.shortName = shortName.getName();
             this.consume = consume;
         }
 
-        public Argument(String longName, String shortName) {
+        public Argument(Name longName, Name shortName) {
             this(longName, shortName, 1);
         }
 
-        public Argument(String longName) {
+        public Argument(Name longName) {
             this(longName, null);
         }
     }
