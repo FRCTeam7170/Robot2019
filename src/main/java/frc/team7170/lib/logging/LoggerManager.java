@@ -8,12 +8,13 @@ import frc.team7170.lib.networktables.command.Commander;
 
 import java.util.logging.*;
 
-public class LoggerManager {
+public final class LoggerManager {
 
     public static final Logger GLOBAL_LOGGER = Logger.getLogger("");
     private static final Logger LOGGER = Logger.getLogger(LoggerManager.class.getName());
 
-    private static final Commander logCommander = new Commander(NetworkTableInstance.getDefault(), new Name("log"));
+    // TODO this commander should HAVE to be on...
+    private static final Commander commander = new Commander(NetworkTableInstance.getDefault(), new Name("log"));
     private static FileHandler fileHandler;
     private static ConsoleHandler consoleHandler;
 
@@ -34,7 +35,7 @@ public class LoggerManager {
             LOGGER.warning("ConsoleHandler not detected.");
         }
 
-        logCommander.registerCommand(new Name("setLevel"), new ArgumentativeCommand(parsedArguments -> {
+        commander.registerCommand(new Name("setLevel"), new ArgumentativeCommand(parsedArguments -> {
                     parsedArguments.rest.assertArgsLength(1);
                     String levelStr = parsedArguments.rest.asIterator().nextString().toLowerCase();
                     Level level = strToLevel(levelStr);

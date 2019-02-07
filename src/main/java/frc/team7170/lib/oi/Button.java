@@ -1,24 +1,12 @@
 package frc.team7170.lib.oi;
 
-import edu.wpi.first.wpilibj.buttons.Trigger;
+import frc.team7170.lib.Named;
 
+public interface Button extends Named {
 
-public abstract class Button extends Trigger {
+    boolean get();
 
-    private final String name;
+    boolean getPressed();
 
-    public Button(String name) {
-        KeyBindings.verifyName(name);
-        this.name = name;
-    }
-
-    public abstract boolean get();
-
-    public abstract boolean getPressed();
-
-    public abstract boolean getReleased();
-
-    public final String getButtonName() {
-        return name;
-    }
+    boolean getReleased();
 }

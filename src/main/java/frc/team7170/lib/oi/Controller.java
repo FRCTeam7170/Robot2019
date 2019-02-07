@@ -1,34 +1,12 @@
 package frc.team7170.lib.oi;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import frc.team7170.lib.Named;
 
 import java.util.Map;
 
+public interface Controller extends Named {
 
-public abstract class Controller {
+    Map<String, Axis> getAxesNamesMap();
 
-    private final GenericHID hid;
-    private final String name;
-
-    public Controller(GenericHID hid, String name) {
-        KeyBindings.verifyName(name);
-        this.hid = hid;
-        this.name = name;
-    }
-
-    public final GenericHID getHid() {
-        return hid;
-    }
-
-    public final int getPOV() {
-        return hid.getPOV();
-    }
-
-    public final String getName() {
-        return name;
-    }
-
-    abstract Map<String, Axis> getAxesNamesMap();
-
-    abstract Map<String, Button> getButtonsNamesMap();
+    Map<String, Button> getButtonsNamesMap();
 }

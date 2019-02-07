@@ -3,40 +3,52 @@ package frc.team7170.lib.networktables;
 import edu.wpi.first.networktables.*;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
-import frc.team7170.lib.command.TimedRunnableCommand;
+import frc.team7170.lib.networktables.command.Commander;
 import frc.team7170.lib.util.ReflectUtil;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
-public class Communication {
+// TODO: make stuff optionally sendable
+// TODO: allow passing functional interfaces for communicators in addition to annotated methods/fields
+// TODO: POST-SEASON: Deprecate the entire annotation and use interface-based communicator registration to maintain type safety
+public final class Communication implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(Communication.class.getName());
 
-    private static final NetworkTableInstance INST = NetworkTableInstance.getDefault();
     private static final String PATH_SEPARATOR = String.valueOf(NetworkTable.PATH_SEPARATOR);
     private static final String ENTRY_NAME_PREFIX_SEP = "_";
 
-    // Enforce non-instantiability.
+    private final Commander commander = new Commander(NetworkTableInstance.getDefault(), getCheckedName());
+    private final Map<String, Transmitter> transmitterMap = new HashMap<>();
+    private final Map<String, Receiver> receiverMap = new HashMap<>();
+
     private Communication() {}
 
-    public static void registerStaticCommunicator(Class<?> cls, Name name, NetworkTable table) {
-        registerCommunicator(null, cls, name, table);
+    private static final Communication INSTANCE = new Communication();
+
+    public static Communication getInstance() {
+        return INSTANCE;
     }
 
-    public static void registerStaticCommunicator(Class<?> cls, NetworkTable table) {
+    public void registerStaticCommunicator(Class<?> cls, Name name, NetworkTable table) {
+        findCommAnnotations(null, cls, name, table);
+    }
+
+    public void registerStaticCommunicator(Class<?> cls, NetworkTable table) {
         registerStaticCommunicator(cls, Name.UNNAMED, table);
     }
 
-    public static void registerCommunicator(Named obj, NetworkTable table) {
-        registerCommunicator(obj, obj.getClass(), obj.getCheckedName(), table);
+    public void registerCommunicator(Named obj, NetworkTable table) {
+        findCommAnnotations(obj, obj.getClass(), obj.getCheckedName(), table);
     }
 
-    private static void registerCommunicator(Object obj, Class<?> cls, Name prefix, NetworkTable table) {
+    private void findCommAnnotations(Object obj, Class<?> cls, Name prefix, NetworkTable table) {
         ReflectUtil.getMethodAnnotationStream(cls, Transmit.class).forEach(pair -> {
             Method method = pair.getLeft();
             Transmit transmit = pair.getRight();
@@ -51,11 +63,7 @@ public class Communication {
 
             NetworkTableEntry entry = resolveEntry(table, prefix, transmit.value(), method);
             Runnable runnable = () -> invokeWithHandling(entry::setValue, method, obj);
-            if (transmit.pollRateMs() != TransmitFrequency.STATIC) {
-                // The scheduler stores an internal reference to this, so it shouldn't be garbage collected.
-                new TimedRunnableCommand(runnable, transmit.pollRateMs(), true);
-            }
-            runnable.run();
+            newTransmitter(runnable, transmit.pollRateMs(), entry);
         });
 
         ReflectUtil.getMethodAnnotationStream(cls, Receive.class).forEach(pair -> {
@@ -81,7 +89,7 @@ public class Communication {
                         "'EntryNotification', 'NetworkTableValue', or any valid networktables type");
             }
             NetworkTableEntry entry = resolveEntry(table, prefix, receive.value(), method);
-            entry.addListener(consumer, receive.flags());
+            newReceiver(consumer, receive.flags(), entry);
         });
 
         ReflectUtil.getFieldAnnotationStream(cls, CommField.class).forEach(pair -> {
@@ -101,11 +109,7 @@ public class Communication {
                         LOGGER.log(Level.SEVERE, "Failed to access field.", e);
                     }
                 };
-                if (commField.pollRateMs() != TransmitFrequency.STATIC) {
-                    // The scheduler stores an internal reference to this, so it shouldn't be garbage collected.
-                    new TimedRunnableCommand(runnable, commField.pollRateMs(), true);
-                }
-                runnable.run();
+                newTransmitter(runnable, commField.pollRateMs(), entry);
             }
             if (commField.receive()) {
                 ReflectUtil.assertNonFinal(field);
@@ -117,9 +121,31 @@ public class Communication {
                         LOGGER.log(Level.SEVERE, "Failed to access field.", e);
                     }
                 };
-                entry.addListener(consumer, commField.flags());
+                newReceiver(consumer, commField.flags(), entry);
             }
         });
+    }
+
+    private void newTransmitter(Runnable runnable, int pollRateMs, NetworkTableEntry entry) {
+        Transmitter transmitter = new Transmitter(runnable, pollRateMs, entry);
+        if (!transmitter.start()) {
+            transmitter.invoke();
+        }
+        Transmitter old = transmitterMap.put(transmitter.getName(), transmitter);
+        if (old != null) {
+            LOGGER.warning(String.format("More than one transmitter with name '%s' registered; removing oldest one.", old.getName()));
+            old.cancel();
+        }
+    }
+
+    private void newReceiver(Consumer<EntryNotification> consumer, int flags, NetworkTableEntry entry) {
+        Receiver receiver = new Receiver(consumer, flags, entry);
+        receiver.start();
+        Receiver old = receiverMap.put(receiver.getName(), receiver);
+        if (old != null) {
+            LOGGER.warning(String.format("More than one receiver with name '%s' registered; removing oldest one.", old.getName()));
+            old.cancel();
+        }
     }
 
     private static void doMethodAssertions(Object obj, Method method) {
@@ -166,6 +192,8 @@ public class Communication {
         } else if (Number.class.isAssignableFrom(cls) || PRIMITIVE_NUMBER_TYPES.contains(cls)) {
             return true;
         } else if (cls == String.class) {
+            return true;
+        } else if (cls == NetworkTableValue.class) {
             return true;
         }
 
@@ -218,5 +246,10 @@ public class Communication {
             key = key.substring(0, key.length() - 1);
         }
         return key.split(PATH_SEPARATOR);
+    }
+
+    @Override
+    public String getName() {
+        return "communication";
     }
 }

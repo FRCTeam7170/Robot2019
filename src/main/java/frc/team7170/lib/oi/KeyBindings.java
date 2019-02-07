@@ -1,6 +1,8 @@
 package frc.team7170.lib.oi;
 
 import edu.wpi.first.wpilibj.Preferences;
+import frc.team7170.lib.Name;
+import frc.team7170.lib.Named;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,35 +10,32 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-// TODO: Make non-static?
-public final class KeyBindings {
+public final class KeyBindings implements Named {
 
     private static final String PREF_KEY_PREFIX = "KM_";
-    private static final String ENTRY_SEP = ";";
-    private static final String TRIPLET_SEP = ":";
 
-    private static final Map<String, Controller> controllerMap = new HashMap<>();
-    private static final Map<String, AxisAction> axisActionMap = new HashMap<>();
-    private static final Map<String, ButtonAction> buttonActionMap = new HashMap<>();
-    private static final Map<String, KeyMap> keyMapMap = new HashMap<>();
-    private static KeyMap currKeyMap = new KeyMap.Builder("dummy").build();
+    private final Map<String, Controller> controllerMap = new HashMap<>();
+    private final Map<String, AxisAction> axisActionMap = new HashMap<>();
+    private final Map<String, ButtonAction> buttonActionMap = new HashMap<>();
+    private final Map<String, KeyMap> keyMapMap = new HashMap<>();
+    private KeyMap currKeyMap = new SerializableKeyMap.Builder(new Name("dummy")).build();
 
     private KeyBindings() {}
 
-    static void verifyName(String name) {
-        if (name.contains(":") || name.contains(".")) {
-            throw new RuntimeException("axis/button/controller name may not contain ':' or '.'");
-        }
+    private static final KeyBindings INSTANCE = new KeyBindings();
+
+    public static KeyBindings getInstance() {
+        return INSTANCE;
     }
 
-    public static void setCurrKeyMap(KeyMap keyMap) {
+    public void setCurrKeyMap(KeyMap keyMap) {
         if (keyMap == null) {
             throw new NullPointerException();
         }
         currKeyMap = keyMap;
     }
 
-    public static void setCurrKeyMap(String keyMapName) {
+    public void setCurrKeyMap(String keyMapName) {
         KeyMap keyMap = keyMapMap.get(keyMapName);
         if (keyMap == null) {
             throw new IllegalArgumentException("no keymap with the name '" + keyMapName + "' exists");
@@ -44,69 +43,64 @@ public final class KeyBindings {
         setCurrKeyMap(keyMap);
     }
 
-    public static void loadFromPrefs() {
+    public void loadFromPrefs() {
         getKMKeyStream().forEach(key -> {
             String value = Preferences.getInstance().getString(key, null);
-            String name = key.substring(PREF_KEY_PREFIX.length());
-            KeyMap keyMap = parseToKeymap(value, name);
+            Name name = new Name(key.substring(PREF_KEY_PREFIX.length()));
+            SerializableKeyMap keyMap = parseToKeymap(value, name);
             keyMapMap.put(keyMap.getName(), keyMap);
         });
     }
 
-    public static void clearPrefs() {
+    public void clearPrefs() {
         getKMKeyStream().forEach(key -> Preferences.getInstance().remove(key));
     }
 
-    public static void registerController(Controller controller) {
+    public void registerController(Controller controller) {
         controllerMap.put(controller.getName(), controller);
     }
 
-    public static void registerAxisActions(AxisAction... actions) {
+    public void registerAxisActions(AxisAction... actions) {
         for (AxisAction action : actions) {
             axisActionMap.put(action.name(), action);
         }
     }
 
-    public static void registerButtonActions(ButtonAction... actions) {
+    public void registerButtonActions(ButtonAction... actions) {
         for (ButtonAction action : actions) {
             buttonActionMap.put(action.name(), action);
         }
     }
 
-    public static void registerKeyMap(KeyMap keyMap, boolean saveToPrefs) {
-        if (keyMap == null) {
-            throw new NullPointerException();
-        }
-        if (saveToPrefs) {
-            Preferences.getInstance().putString(PREF_KEY_PREFIX + keyMap.getName(), serializeKeyMap(keyMap));
-        }
+    public void registerSerializableKeyMap(SerializableKeyMap keyMap) {
+        Preferences.getInstance().putString(PREF_KEY_PREFIX + keyMap.getName(), keyMap.serialize());
+        registerKeyMap(keyMap);
+    }
+
+    public void registerKeyMap(KeyMap keyMap) {
         keyMapMap.put(keyMap.getName(), keyMap);
     }
 
-    public static void registerKeyMap(KeyMap keyMap) {
-        registerKeyMap(keyMap, true);
-    }
-
-    public static Axis actionToAxis(AxisAction action) {
+    public Axis actionToAxis(AxisAction action) {
         return currKeyMap.actionToAxis(action);
     }
 
-    public static Button actionToButton(ButtonAction action) {
+    public Button actionToButton(ButtonAction action) {
         return currKeyMap.actionToButton(action);
     }
 
-    public static KeyMap getCurrKeyMap() {
+    public KeyMap getCurrKeyMap() {
         return currKeyMap;
     }
 
-    public static Collection<KeyMap> getKeyMaps() {
+    public Collection<KeyMap> getKeyMaps() {
         return keyMapMap.values();
     }
 
-    private static KeyMap parseToKeymap(String value, String name) {
-        KeyMap.Builder kmBuilder = new KeyMap.Builder(name);
-        Arrays.stream(value.split(ENTRY_SEP))
-                .map(triplet -> triplet.split(TRIPLET_SEP))
+    private SerializableKeyMap parseToKeymap(String value, Name name) {
+        SerializableKeyMap.Builder kmBuilder = new SerializableKeyMap.Builder(name);
+        Arrays.stream(value.split(SerializableKeyMap.ENTRY_SEP))
+                .map(triplet -> triplet.split(SerializableKeyMap.TRIPLET_SEP))
                 .forEach(triplet -> {
                     if (triplet.length != 3) {
                         throw new RuntimeException("preference keymap format invalid; try clearing keymaps");
@@ -127,7 +121,7 @@ public final class KeyBindings {
         return kmBuilder.build();
     }
 
-    private static Controller resolveControllerName(String controllerName) {
+    private Controller resolveControllerName(String controllerName) {
         Controller controller = controllerMap.get(controllerName);
         if (controller == null) {
             throw new RuntimeException("unregistered controller name ('" + controllerName + "') found in preference keymaps");
@@ -155,24 +149,8 @@ public final class KeyBindings {
         return Preferences.getInstance().getKeys().stream().filter(key -> key.startsWith(PREF_KEY_PREFIX));
     }
 
-    private static String serializeKeyMap(KeyMap keyMap) {
-        StringBuilder builder = new StringBuilder();
-        keyMap.buttonMap.entrySet().iterator().forEachRemaining(entry ->
-            builder.append(entry.getKey().name())
-                    .append(TRIPLET_SEP)
-                    .append(entry.getValue().getLeft().getName())
-                    .append(TRIPLET_SEP)
-                    .append(entry.getValue().getRight().getButtonName())
-                    .append(ENTRY_SEP)
-        );
-        keyMap.axisMap.entrySet().iterator().forEachRemaining(entry ->
-            builder.append(entry.getKey().name())
-                    .append(TRIPLET_SEP)
-                    .append(entry.getValue().getLeft().getName())
-                    .append(TRIPLET_SEP)
-                    .append(entry.getValue().getRight().getAxisName())
-                    .append(ENTRY_SEP)
-        );
-        return builder.toString();
+    @Override
+    public String getName() {
+        return "keyBindings";
     }
 }

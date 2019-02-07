@@ -58,6 +58,8 @@ public final class Units {
             new MetricUnit<>(MetricPrefix.MICRO, SECOND);
     public static final MetricUnit<FundamentalUnitType, Time> MILLISECOND =
             new MetricUnit<>(MetricPrefix.MILLI, SECOND);
+    public static final MetricUnit<FundamentalUnitType, Time> DECISECOND =
+            new MetricUnit<>(MetricPrefix.DECI, SECOND);
 
     // Distance:
     public static final MetricUnit<FundamentalUnitType, Distance> NANOMETRE =

@@ -4,13 +4,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
-public class TimedRunnableCommand extends Command {
+public class CmdTimedRunnable extends Command {
 
     private final Runnable runnable;
     private final double delaySec;
     private double time;
 
-    public TimedRunnableCommand(Runnable runnable, int delayMs, boolean startOnInit, Subsystem... requirements) {
+    public CmdTimedRunnable(Runnable runnable, int delayMs, boolean startOnInit, Subsystem... requirements) {
         this.runnable = runnable;
         delaySec = (double) delayMs / 1000;
         for (Subsystem requirement : requirements) {
@@ -19,7 +19,7 @@ public class TimedRunnableCommand extends Command {
         if (startOnInit) start();
     }
 
-    public TimedRunnableCommand(Runnable runnable, int delayMs, Subsystem... requirements) {
+    public CmdTimedRunnable(Runnable runnable, int delayMs, Subsystem... requirements) {
         this(runnable, delayMs, true, requirements);
     }
 

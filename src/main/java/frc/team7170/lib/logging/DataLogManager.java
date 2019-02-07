@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DataLogManager {
+public final class DataLogManager {
 
     private static final Logger LOGGER = Logger.getLogger(DataLogManager.class.getName());
 
@@ -38,8 +38,6 @@ public class DataLogManager {
     private final DataCollectorThread thread = new DataCollectorThread();
     private volatile HashMap<DataLogger, Pair<String[], String>> dataLoggers = new HashMap<>();
     private volatile int periodMs = 20;
-
-    public static final DataLogManager INSTANCE = new DataLogManager();
 
     private DataLogManager() {
         LOGGER.info("Data logging with log num of " + LOG_NUM);
@@ -65,6 +63,12 @@ public class DataLogManager {
                     "blocking data collector thread startup.", e);
         }
         packer = p;
+    }
+
+    private static final DataLogManager INSTANCE = new DataLogManager();
+
+    public static DataLogManager getInstance() {
+        return INSTANCE;
     }
 
     public boolean isCollectingData() {

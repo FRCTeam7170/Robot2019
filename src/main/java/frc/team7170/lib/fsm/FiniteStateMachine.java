@@ -36,10 +36,16 @@ public class FiniteStateMachine {
     private final Consumer<Event>[] beforeStateChange, afterStateChange;
     private State currentState;
 
+    protected FiniteStateMachine(boolean permitMistrigger,
+                                 Consumer<Event>[] beforeStateChange,
+                                 Consumer<Event>[] afterStateChange) {
+        this.permitMistrigger = permitMistrigger;
+        this.beforeStateChange = beforeStateChange;
+        this.afterStateChange = afterStateChange;
+    }
+
     private FiniteStateMachine(Builder builder) {
-        this.permitMistrigger = builder.permitMistrigger;
-        this.beforeStateChange = builder.beforeStateChange;
-        this.afterStateChange = builder.afterStateChange;
+        this(builder.permitMistrigger, builder.beforeStateChange, builder.afterStateChange);
     }
 
     public State newState(State.StateConfig config) {

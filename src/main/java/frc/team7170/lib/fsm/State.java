@@ -1,8 +1,10 @@
 package frc.team7170.lib.fsm;
 
+import frc.team7170.lib.Named;
+
 import java.util.function.Consumer;
 
-public class State {
+public class State implements Named {
 
     public static class StateConfig {
 
@@ -51,6 +53,7 @@ public class State {
         this(config, machine, null);
     }
 
+    @Override
     public String getName() {
         return name;
     }

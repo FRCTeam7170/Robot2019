@@ -1,9 +1,8 @@
 package frc.team7170.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.team7170.lib.logging.LoggerManager;
 import frc.team7170.lib.oi.KeyBindings;
-import frc.team7170.lib.oi.KeyMap;
+import frc.team7170.lib.oi.SerializableKeyMap;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.subsystems.Drive;
 
@@ -12,7 +11,7 @@ import java.util.logging.Logger;
 
 public class CmdDriveTeleop extends Command {
 
-    private static final Logger LOGGER = LoggerManager.INSTANCE.getLogger(CmdDriveTeleop.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CmdDriveTeleop.class.getName());
 
     private static final Drive drive = Drive.INSTANCE;
     private boolean isTankDrive = true;
@@ -24,7 +23,7 @@ public class CmdDriveTeleop extends Command {
 
     @Override
     protected void initialize() {
-        KeyMap km = KeyBindings.getCurrKeyMap();
+        SerializableKeyMap km = KeyBindings.getCurrKeyMap();
         if (!km.hasBindingFor(AxisActions.DRIVE_L) && !km.hasBindingFor(AxisActions.DRIVE_R) &&
                 km.hasBindingFor(AxisActions.DRIVE_Y) && km.hasBindingFor(AxisActions.DRIVE_Z)) {
             isTankDrive = true;
@@ -48,7 +47,7 @@ public class CmdDriveTeleop extends Command {
         } catch (NullPointerException e) {
             if (!warned) {
                 String mode = isTankDrive ? "tank" : "arcade";
-                LOGGER.log(Level.WARNING, "unbound axis for driving requested in " + mode + " drive mode", e);
+                LOGGER.log(Level.WARNING, "Unbound axis for driving requested in " + mode + " drive mode.", e);
                 warned = true;
             }
         }

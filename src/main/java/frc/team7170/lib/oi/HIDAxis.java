@@ -1,14 +1,15 @@
 package frc.team7170.lib.oi;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import frc.team7170.lib.Name;
 
 
-public class SimpleAxis extends Axis {
+public class HIDAxis extends ScaledAxis {
 
-    private final int port;
     private final GenericHID hid;
+    private final int port;
 
-    public SimpleAxis(GenericHID hid, int port, String name) {
+    public HIDAxis(GenericHID hid, int port, Name name) {
         super(name);
         if (port >= hid.getAxisCount()) {
             throw new IllegalArgumentException("axis port number exceeds the number of axes on given HID");
@@ -17,8 +18,8 @@ public class SimpleAxis extends Axis {
         this.port = port;
     }
 
-    public SimpleAxis(GenericHID hid, int port) {
-        this(hid, port, String.valueOf(port));
+    public HIDAxis(GenericHID hid, int port) {
+        this(hid, port, new Name(String.valueOf(port)));
     }
 
     @Override

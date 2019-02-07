@@ -7,24 +7,22 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilderImpl;
-import frc.team7170.lib.command.TimedRunnableCommand;
-import frc.team7170.lib.networktables.CommField;
+import frc.team7170.lib.Named;
+import frc.team7170.lib.command.CmdTimedRunnable;
 import frc.team7170.lib.networktables.Communication;
 import frc.team7170.lib.networktables.Receive;
-import frc.team7170.lib.networktables.Transmit;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.actions.ButtonActions;
 import frc.team7170.lib.oi.KeyBindings;
-import frc.team7170.lib.oi.KeyMap;
+import frc.team7170.lib.oi.SerializableKeyMap;
 import frc.team7170.lib.oi.LF310Gamepad;
 import frc.team7170.lib.util.debug.AveragePrinter;
 
 // TODO: Make NT Simulator like in spooky-console
 // TODO: spooky-console: NTBrowser needs ability to make new entry
+// TODO: make everything a singleton instead of static
 
-public class Robot extends TimedRobot {
+public class Robot extends TimedRobot implements Named {
 
     private class CmdFullExtendLA extends Command {
 
@@ -86,7 +84,7 @@ public class Robot extends TimedRobot {
     // private LE3DPJoystick joystick;
     private LF310Gamepad gamepad;
 
-    private KeyMap defaultKeyMap;
+    private SerializableKeyMap defaultKeyMap;
 
     // TODO: TEMP
     private TalonSRX linActuator = new TalonSRX(14);
@@ -96,7 +94,7 @@ public class Robot extends TimedRobot {
     private AveragePrinter ap = new AveragePrinter(10, "ENCODER: ");
 
     private double laSpeed = 0.00;
-    private TimedRunnableCommand decSpeedCmd;
+    private CmdTimedRunnable decSpeedCmd;
     private static final int encoderUpper = 0;
     private static final int encoderLower = 6180;
     private boolean zeroed = false;
@@ -145,7 +143,7 @@ public class Robot extends TimedRobot {
         KeyBindings.registerAxisActions(AxisActions.values());
         KeyBindings.registerButtonActions(ButtonActions.values());
         // TODO: TEMP
-        defaultKeyMap = new KeyMap.Builder("default")
+        defaultKeyMap = new SerializableKeyMap.Builder("default")
                 .addPair(AxisActions.LIN_ACTUATOR, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.INC_LA_SPEED, gamepad, gamepad.B_A)
                 .addPair(ButtonActions.DEC_LA_SPEED, gamepad, gamepad.B_B)
@@ -157,7 +155,7 @@ public class Robot extends TimedRobot {
         KeyBindings.registerKeyMap(defaultKeyMap, false);
         KeyBindings.setCurrKeyMap(defaultKeyMap);
 
-        Communication.registerCommunicator(this, null);
+        Communication.INSTANCE.registerCommunicator(this, null);
         NetworkTable table = NetworkTableInstance.getDefault().getTable("/Receive");
         table.getEntry("P").setDouble(0.0);
         table.getEntry("I").setDouble(0.0);
@@ -177,7 +175,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void autonomousInit() {
-        decSpeedCmd = new TimedRunnableCommand(() -> laSpeed -= 0.01, 500, true);
+        decSpeedCmd = new CmdTimedRunnable(() -> laSpeed -= 0.01, 500, true);
     }
 
     @Override
@@ -258,6 +256,11 @@ public class Robot extends TimedRobot {
             System.out.println(String.format("P: %.4f, I: %.4f, D: %.4f", pidController.getP(), pidController.getI(), pidController.getD()));
         }
         linActuator.set(ControlMode.PercentOutput, laSpeed);
+    }
+
+    @Override
+    public String getName() {
+        return "robot";
     }
 
     private boolean checkUpperLS() {

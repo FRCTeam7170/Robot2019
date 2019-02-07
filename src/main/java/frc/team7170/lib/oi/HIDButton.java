@@ -1,14 +1,15 @@
 package frc.team7170.lib.oi;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import frc.team7170.lib.Name;
 
 
-public class SimpleButton extends Button {
+public class HIDButton extends TriggerButton {
 
     private final int port;
     private final GenericHID hid;
 
-    public SimpleButton(GenericHID hid, int port, String name) {
+    public HIDButton(GenericHID hid, int port, Name name) {
         super(name);
         if (port > hid.getButtonCount()) {
             throw new IllegalArgumentException("button port number exceeds the number of buttons on given HID");
@@ -17,8 +18,8 @@ public class SimpleButton extends Button {
         this.port = port;
     }
 
-    public SimpleButton(GenericHID hid, int port) {
-        this(hid, port, String.valueOf(port));
+    public HIDButton(GenericHID hid, int port) {
+        this(hid, port, new Name(String.valueOf(port)));
     }
 
     @Override
@@ -43,5 +44,4 @@ public class SimpleButton extends Button {
     public GenericHID getHid() {
         return hid;
     }
-
 }
