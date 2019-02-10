@@ -7,10 +7,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.command.CmdTimedRunnable;
 import frc.team7170.lib.networktables.Communication;
 import frc.team7170.lib.networktables.Receive;
+import frc.team7170.lib.oi.KeyMap;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.actions.ButtonActions;
 import frc.team7170.lib.oi.KeyBindings;
@@ -84,7 +86,7 @@ public class Robot extends TimedRobot implements Named {
     // private LE3DPJoystick joystick;
     private LF310Gamepad gamepad;
 
-    private SerializableKeyMap defaultKeyMap;
+    private KeyMap defaultKeyMap;
 
     // TODO: TEMP
     private TalonSRX linActuator = new TalonSRX(14);
@@ -139,11 +141,11 @@ public class Robot extends TimedRobot implements Named {
 
         // Setup keybindings system
         // KeyBindings.registerController(joystick);
-        KeyBindings.registerController(gamepad);
-        KeyBindings.registerAxisActions(AxisActions.values());
-        KeyBindings.registerButtonActions(ButtonActions.values());
+        KeyBindings.getInstance().registerController(gamepad);
+        KeyBindings.getInstance().registerAxisActions(AxisActions.values());
+        KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         // TODO: TEMP
-        defaultKeyMap = new SerializableKeyMap.Builder("default")
+        defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
                 .addPair(AxisActions.LIN_ACTUATOR, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.INC_LA_SPEED, gamepad, gamepad.B_A)
                 .addPair(ButtonActions.DEC_LA_SPEED, gamepad, gamepad.B_B)
@@ -152,10 +154,11 @@ public class Robot extends TimedRobot implements Named {
                 .addPair(ButtonActions.FULL_RETRACT_LA, gamepad, gamepad.B_LBUMPER)
                 .addPair(ButtonActions.PRINT_PID, gamepad, gamepad.B_Y)
                 .build();
-        KeyBindings.registerKeyMap(defaultKeyMap, false);
-        KeyBindings.setCurrKeyMap(defaultKeyMap);
+        KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
+        KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
 
-        Communication.INSTANCE.registerCommunicator(this, null);
+        // TODO: TEMP TABLE
+        Communication.getInstance().registerCommunicator(this, NetworkTableInstance.getDefault().getTable("whattheheck"));
         NetworkTable table = NetworkTableInstance.getDefault().getTable("/Receive");
         table.getEntry("P").setDouble(0.0);
         table.getEntry("I").setDouble(0.0);
@@ -186,9 +189,9 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void robotPeriodic() {
-        Scheduler.getInstance().run();
+        // Scheduler.getInstance().run();
         // TODO: TEMP
-        // ap.feed(encoder.get());
+        ap.feed(encoder.get());
     }
 
     @Override
@@ -209,21 +212,21 @@ public class Robot extends TimedRobot implements Named {
                 System.out.println("Successfully zeroed encoder.");
             }
         } else {
-            if (KeyBindings.actionToButton(ButtonActions.FULL_EXTEND_LA).getPressed()) {
+            if (KeyBindings.getInstance().actionToButton(ButtonActions.FULL_EXTEND_LA).getPressed()) {
                 System.out.println("STARTING EXTEND");
                 if (currCommand != null) {
                     currCommand.cancel();
                 }
                 currCommand = new CmdFullExtendLA();
                 currCommand.start();
-            } else if (KeyBindings.actionToButton(ButtonActions.FULL_RETRACT_LA).getPressed()) {
+            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.FULL_RETRACT_LA).getPressed()) {
                 System.out.println("STARTING RETRACT");
                 if (currCommand != null) {
                     currCommand.cancel();
                 }
                 currCommand = new CmdFullRetractLA();
                 currCommand.start();
-            } else if (currCommand == null || KeyBindings.actionToButton(ButtonActions.STOP_LA).get()) {
+            } else if (currCommand == null || KeyBindings.getInstance().actionToButton(ButtonActions.STOP_LA).get()) {
                 linActuator.set(ControlMode.PercentOutput, 0.0);
             }
         }
@@ -231,7 +234,7 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void teleopPeriodic() {
-        double reading = KeyBindings.actionToAxis(AxisActions.LIN_ACTUATOR).get();
+        double reading = KeyBindings.getInstance().actionToAxis(AxisActions.LIN_ACTUATOR).get();
         if (reading > 0.0) {
             if (!checkUpperLS()) {
                 linActuator.set(ControlMode.PercentOutput, reading);
@@ -246,13 +249,13 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void testPeriodic() {
-        if (KeyBindings.actionToButton(ButtonActions.INC_LA_SPEED).getPressed()) {
+        if (KeyBindings.getInstance().actionToButton(ButtonActions.INC_LA_SPEED).getPressed()) {
             laSpeed += 0.01;
-        } else if (KeyBindings.actionToButton(ButtonActions.DEC_LA_SPEED).getPressed()) {
+        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.DEC_LA_SPEED).getPressed()) {
             laSpeed -= 0.01;
-        } else if (KeyBindings.actionToButton(ButtonActions.STOP_LA).get()) {
+        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.STOP_LA).get()) {
             laSpeed = 0.00;
-        } else if (KeyBindings.actionToButton(ButtonActions.PRINT_PID).getPressed()) {
+        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PRINT_PID).getPressed()) {
             System.out.println(String.format("P: %.4f, I: %.4f, D: %.4f", pidController.getP(), pidController.getI(), pidController.getD()));
         }
         linActuator.set(ControlMode.PercentOutput, laSpeed);

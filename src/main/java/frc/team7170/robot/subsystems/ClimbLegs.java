@@ -7,6 +7,9 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.team7170.lib.Named;
+import frc.team7170.lib.unit.Unit;
+import frc.team7170.lib.unit.Units;
+import frc.team7170.lib.unit.UniversalUnitType;
 import frc.team7170.lib.util.CalcUtil;
 import frc.team7170.robot.Constants;
 
@@ -15,6 +18,11 @@ import java.util.logging.Logger;
 public class ClimbLegs extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbLegs.class.getName());
+
+    private static final Unit<UniversalUnitType> ROTATION_UNIT =
+            Constants.TALON_CIMCODER_ROTATION_UNIT.divide(Constants.ClimbLegs.TOTAL_REDUCTION);
+    private static final Unit<UniversalUnitType> DISTANCE_UNIT =
+            ROTATION_UNIT.multiply(Units.METRE).multiply(Constants.ClimbLegs.DISTANCE_FACTOR);
 
     public static class LinearActuator extends Subsystem implements Named {
 
@@ -51,11 +59,11 @@ public class ClimbLegs extends Subsystem implements Named {
             talon.set(ControlMode.PercentOutput, percent);
         }
 
-        public void setSetpoint(double setpoint) {
-            talon.set(ControlMode.Position, setpoint);
+        public void setPosition(double ticks) {
+            talon.set(ControlMode.Position, ticks);
         }
 
-        public boolean isErrorPermittable() {
+        public boolean isErrorTolerable() {
             return CalcUtil.inThreshold(talon.getClosedLoopError(), 0,
                     Constants.ClimbLegs.ALLOWABLE_CLOSED_LOOP_ERROR);
         }
@@ -70,6 +78,10 @@ public class ClimbLegs extends Subsystem implements Named {
 
         public void zeroEncoder() {
             talon.setSelectedSensorPosition(0);
+        }
+
+        public void killMotor() {
+            setPercent(0.0);
         }
 
         @Override
@@ -120,4 +132,6 @@ public class ClimbLegs extends Subsystem implements Named {
     public LinearActuator getRightLinearActuator() {
         return rightLinearActuator;
     }
+
+    // Merged operations on both LAs?
 }

@@ -1,160 +1,110 @@
 package frc.team7170.lib.unit;
 
-import frc.team7170.lib.unit.unittypes.*;
-
-import java.util.HashMap;
-
 public final class Units {
 
     // Enforce non-instantiability.
     private Units() {}
 
-    public static <R extends Enum<R> & IFundamentalUnitType<R>, T extends UnitType<R>>
-    double convert(double value, Unit<R, T> from, Unit<R, T> to) {
-        return value * to.getFactor() / from.getFactor();
+    public static <F extends Enum<F> & FundamentalUnitType> double
+    convertAndCheck(double value, Unit<F> from, Unit<F> to) {
+        if (!from.isCommensurateWith(to)) {
+            throw new UnsupportedOperationException("cannot convert between units of differing type");
+        }
+        return convert(value, from, to);
     }
 
-    public static BaseUnit<FundamentalUnitType, ? extends UnitType<FundamentalUnitType>>
-    futToBaseUnit(FundamentalUnitType fut) {
-        return futBaseUnitMap.get(fut);
+    public static <F extends Enum<F> & FundamentalUnitType> double
+    convert(double value, Unit<F> from, Unit<F> to) {
+        return value * to.getScale() / from.getScale();
+    }
+
+    public static Unit<UniversalUnitType> newTalonQuadratureEncoderRotationUnit(int encoderCyclesPerRotation) {
+        return REVOLUTION.divide(encoderCyclesPerRotation * 4);
+    }
+
+    public static Unit<UniversalUnitType> newTalonQuadratureEncoderDistanceUnit(
+            Unit<UniversalUnitType> talonQuadratureEncoderUnit, double wheelDiameterInches) {
+        return talonQuadratureEncoderUnit.multiply(INCH).multiply(wheelDiameterInches * Math.PI);
+    }
+
+    public static Unit<UniversalUnitType> newTalonQuadratureEncoderVelocityUnit(
+            Unit<UniversalUnitType> talonQuadratureEncoderDistanceUnit) {
+        return talonQuadratureEncoderDistanceUnit.divide(DECISECOND);
     }
 
     /* Base units */
 
-    public static final BaseMetricUnit<FundamentalUnitType, Time> SECOND =
-            new BaseMetricUnit<>(UnitTypes.TIME);
-    public static final BaseMetricUnit<FundamentalUnitType, Distance> METRE =
-            new BaseMetricUnit<>(UnitTypes.DISTANCE);
-    public static final BaseMetricUnit<FundamentalUnitType, ElectricalCurrent> AMPERE =
-            new BaseMetricUnit<>(UnitTypes.ELECTRICAL_CURRENT);
-    public static final BaseMetricUnit<FundamentalUnitType, Mass> GRAM =
-            new BaseMetricUnit<>(UnitTypes.MASS);
+    public static final MetricUnit<UniversalUnitType> SECOND =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.TIME);
+    public static final MetricUnit<UniversalUnitType> METRE =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.DISTANCE);
+    public static final MetricUnit<UniversalUnitType> AMPERE =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.ELECTRICAL_CURRENT);
+    public static final MetricUnit<UniversalUnitType> GRAM =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.MASS);
 
-    private static final HashMap<FundamentalUnitType, BaseUnit<FundamentalUnitType, ? extends UnitType<FundamentalUnitType>>>
-            futBaseUnitMap = new HashMap<>(4);
+    /* Angles and identity (these are kind of a special case) */
 
-    static {
-        futBaseUnitMap.put(FundamentalUnitType.TIME, SECOND);
-        futBaseUnitMap.put(FundamentalUnitType.DISTANCE, METRE);
-        futBaseUnitMap.put(FundamentalUnitType.CURRENT, AMPERE);
-        futBaseUnitMap.put(FundamentalUnitType.MASS, GRAM);
-    }
-
-    /* Angles (these are kind of a special case) */
-
-    public static final BaseUnit<FundamentalUnitType, Angle> RADIAN =
-            new BaseUnit<>(UnitTypes.ANGLE);
-    public static final ScaledUnit<FundamentalUnitType, Angle> DEGREES =
-            new ScaledUnit<>(90/Math.PI, RADIAN);
-    public static final ScaledUnit<FundamentalUnitType, Angle> REVOLUTION =
-            new ScaledUnit<>(2*Math.PI, RADIAN);
+    public static final Unit<UniversalUnitType> RADIAN = UnitImpl.newBaseUnit(UnitTypes.ANGLE);
+    public static final Unit<UniversalUnitType> IDENTITY = RADIAN;
+    public static final Unit<UniversalUnitType> DEGREES = RADIAN.multiply(90/Math.PI);
+    public static final Unit<UniversalUnitType> REVOLUTION = RADIAN.multiply(2*Math.PI);
 
     /* Extra metric units */
 
     // Time:
-    public static final MetricUnit<FundamentalUnitType, Time> NANOSECOND =
-            new MetricUnit<>(MetricPrefix.NANO, SECOND);
-    public static final MetricUnit<FundamentalUnitType, Time> MICROSECOND =
-            new MetricUnit<>(MetricPrefix.MICRO, SECOND);
-    public static final MetricUnit<FundamentalUnitType, Time> MILLISECOND =
-            new MetricUnit<>(MetricPrefix.MILLI, SECOND);
-    public static final MetricUnit<FundamentalUnitType, Time> DECISECOND =
-            new MetricUnit<>(MetricPrefix.DECI, SECOND);
+    public static final MetricUnit<UniversalUnitType> NANOSECOND = new MetricUnit<>(MetricPrefix.NANO, UnitTypes.TIME);
+    public static final MetricUnit<UniversalUnitType> MICROSECOND = new MetricUnit<>(MetricPrefix.MICRO, UnitTypes.TIME);
+    public static final MetricUnit<UniversalUnitType> MILLISECOND = new MetricUnit<>(MetricPrefix.MILLI, UnitTypes.TIME);
+    public static final MetricUnit<UniversalUnitType> DECISECOND = new MetricUnit<>(MetricPrefix.DECI, UnitTypes.TIME);
 
     // Distance:
-    public static final MetricUnit<FundamentalUnitType, Distance> NANOMETRE =
-            new MetricUnit<>(MetricPrefix.NANO, METRE);
-    public static final MetricUnit<FundamentalUnitType, Distance> MICROMETRE =
-            new MetricUnit<>(MetricPrefix.MICRO, METRE);
-    public static final MetricUnit<FundamentalUnitType, Distance> MILLIMETRE =
-            new MetricUnit<>(MetricPrefix.MILLI, METRE);
-    public static final MetricUnit<FundamentalUnitType, Distance> CENTIMETRE =
-            new MetricUnit<>(MetricPrefix.CENTI, METRE);
-    public static final MetricUnit<FundamentalUnitType, Distance> KILOMETRE =
-            new MetricUnit<>(MetricPrefix.KILO, METRE);
+    public static final MetricUnit<UniversalUnitType> NANOMETRE = new MetricUnit<>(MetricPrefix.NANO, UnitTypes.DISTANCE);
+    public static final MetricUnit<UniversalUnitType> MICROMETRE = new MetricUnit<>(MetricPrefix.MICRO, UnitTypes.DISTANCE);
+    public static final MetricUnit<UniversalUnitType> MILLIMETRE = new MetricUnit<>(MetricPrefix.MILLI, UnitTypes.DISTANCE);
+    public static final MetricUnit<UniversalUnitType> CENTIMETRE = new MetricUnit<>(MetricPrefix.CENTI, UnitTypes.DISTANCE);
+    public static final MetricUnit<UniversalUnitType> KILOMETRE = new MetricUnit<>(MetricPrefix.KILO, UnitTypes.DISTANCE);
 
     // Mass:
-    public static final MetricUnit<FundamentalUnitType, Mass> MICROGRAM =
-            new MetricUnit<>(MetricPrefix.MICRO, GRAM);
-    public static final MetricUnit<FundamentalUnitType, Mass> MILLIGRAM =
-            new MetricUnit<>(MetricPrefix.MILLI, GRAM);
-    public static final MetricUnit<FundamentalUnitType, Mass> KILOGRAM =
-            new MetricUnit<>(MetricPrefix.KILO, GRAM);
+    public static final MetricUnit<UniversalUnitType> MICROGRAM = new MetricUnit<>(MetricPrefix.MICRO, UnitTypes.MASS);
+    public static final MetricUnit<UniversalUnitType> MILLIGRAM = new MetricUnit<>(MetricPrefix.MILLI, UnitTypes.MASS);
+    public static final MetricUnit<UniversalUnitType> KILOGRAM = new MetricUnit<>(MetricPrefix.KILO, UnitTypes.MASS);
 
-    /* Imperial scaled units */
+    /* Scaled units (mainly imperial) */
 
     // Time:
-    public static final ScaledUnit<FundamentalUnitType, Time> MINUTES =
-            new ScaledUnit<>(60, SECOND);
-    public static final ScaledUnit<FundamentalUnitType, Time> HOUR =
-            new ScaledUnit<>(60, MINUTES);
-    public static final ScaledUnit<FundamentalUnitType, Time> DAY =
-            new ScaledUnit<>(24, HOUR);
-    public static final ScaledUnit<FundamentalUnitType, Time> WEEK =
-            new ScaledUnit<>(7, DAY);
-    public static final ScaledUnit<FundamentalUnitType, Time> YEAR =
-            new ScaledUnit<>(365.2422, DAY);
+    public static final Unit<UniversalUnitType> MINUTE = SECOND.multiply(60);
+    public static final Unit<UniversalUnitType> HOUR = MINUTE.multiply(60);
+    public static final Unit<UniversalUnitType> DAY = HOUR.multiply(24);
+    public static final Unit<UniversalUnitType> WEEK = DAY.multiply(7);
+    public static final Unit<UniversalUnitType> YEAR = DAY.multiply(365.2422);
 
     // Distance:
-    public static final ScaledUnit<FundamentalUnitType, Distance> FOOT =
-            new ScaledUnit<>(0.3048, METRE);
-    public static final ScaledUnit<FundamentalUnitType, Distance> THOU =
-            new ScaledUnit<>(1.0/12000.0, FOOT);
-    public static final ScaledUnit<FundamentalUnitType, Distance> INCH =
-            new ScaledUnit<>(1.0/12.0, FOOT);
-    public static final ScaledUnit<FundamentalUnitType, Distance> YARD =
-            new ScaledUnit<>(3, FOOT);
-//    public static final ScaledUnit<FundamentalUnitType, Distance> CHAIN =
-//            new ScaledUnit<>(66, FOOT);
-//    public static final ScaledUnit<FundamentalUnitType, Distance> FURLONG =
-//            new ScaledUnit<>(660, FOOT);
-    public static final ScaledUnit<FundamentalUnitType, Distance> MILE =
-            new ScaledUnit<>(5280, FOOT);
-//    public static final ScaledUnit<FundamentalUnitType, Distance> LEAGUE =
-//            new ScaledUnit<>(15840, FOOT);
+    public static final Unit<UniversalUnitType> FOOT = METRE.multiply(0.3048);
+    public static final Unit<UniversalUnitType> THOU = FOOT.multiply(1.0/12000.0);
+    public static final Unit<UniversalUnitType> INCH = FOOT.multiply(1.0/12.0);
+    public static final Unit<UniversalUnitType> YARD = FOOT.multiply(3);
+    public static final Unit<UniversalUnitType> CHAIN = FOOT.multiply(66);
+    public static final Unit<UniversalUnitType> FURLONG = FOOT.multiply(660);
+    public static final Unit<UniversalUnitType> MILE = FOOT.multiply(5280);
+    public static final Unit<UniversalUnitType> LEAGUE = FOOT.multiply(15840);
 
     // Mass:
-    public static final ScaledUnit<FundamentalUnitType, Mass> POUND =
-            new ScaledUnit<>(453.59237, GRAM);
-//    public static final ScaledUnit<FundamentalUnitType, Mass> GRAIN =
-//            new ScaledUnit<>(1.0/7000.0, POUND);
-//    public static final ScaledUnit<FundamentalUnitType, Mass> DRACHM =
-//            new ScaledUnit<>(1.0/256.0, POUND);
-    public static final ScaledUnit<FundamentalUnitType, Mass> OUNCE =
-            new ScaledUnit<>(1.0/16.0, POUND);
-//    public static final ScaledUnit<FundamentalUnitType, Mass> STONE =
-//            new ScaledUnit<>(14, POUND);
-//    public static final ScaledUnit<FundamentalUnitType, Mass> QUARTER =
-//            new ScaledUnit<>(28, POUND);
-//    public static final ScaledUnit<FundamentalUnitType, Mass> HUNDREDWEIGHT =
-//            new ScaledUnit<>(112, POUND);
-    public static final ScaledUnit<FundamentalUnitType, Mass> TON =
-            new ScaledUnit<>(2240, POUND);
-    public static final ScaledUnit<FundamentalUnitType, Mass> SLUG =
-            new ScaledUnit<>(32.17404856, POUND);
-
-    /* Unit sets */
-
-    // Seconds, metres, amperes, kilograms
-    public static final UnitSet<FundamentalUnitType> METRIC =
-            new UnitSet.Builder<>(FundamentalUnitType.class)
-                    .map(FundamentalUnitType.MASS, KILOGRAM)
-                    .build();
-
-    // Seconds, feet, amperes, pounds
-    public static final UnitSet<FundamentalUnitType> IMPERIAL =
-            new UnitSet.Builder<>(FundamentalUnitType.class)
-                    .map(FundamentalUnitType.DISTANCE, FOOT)
-                    .map(FundamentalUnitType.MASS, POUND)
-                    .build();
+    public static final Unit<UniversalUnitType> POUND = GRAM.multiply(453.59237);
+    public static final Unit<UniversalUnitType> GRAIN = POUND.multiply(1.0/7000.0);
+    public static final Unit<UniversalUnitType> DRACHM = POUND.multiply(1.0/256.0);
+    public static final Unit<UniversalUnitType> OUNCE = POUND.multiply(1.0/16.0);
+    public static final Unit<UniversalUnitType> STONE = POUND.multiply(14);
+    public static final Unit<UniversalUnitType> QUARTER = POUND.multiply(28);
+    public static final Unit<UniversalUnitType> HUNDREDWEIGHT = POUND.multiply(112);
+    public static final Unit<UniversalUnitType> TON = POUND.multiply(2240);
+    public static final Unit<UniversalUnitType> SLUG = POUND.multiply(32.17404856);
 
     /* Derived units */
 
     // Acceleration
-    public static final DerivedUnit<FundamentalUnitType, Acceleration> METRES_PER_SECOND2 =
-            new DerivedUnit<>(UnitTypes.ACCELERATION, METRIC);
-    public static final DerivedUnit<FundamentalUnitType, Acceleration> FEET_PER_SECOND2 =
-            new DerivedUnit<>(UnitTypes.ACCELERATION, IMPERIAL);
+    public static final Unit<UniversalUnitType> METRES_PER_SECOND2 = METRE.divide(SECOND).divide(SECOND);
+    public static final Unit<UniversalUnitType> FEET_PER_SECOND2 = FOOT.divide(SECOND).divide(SECOND);
 
     // Area - TODO
 
@@ -165,10 +115,10 @@ public final class Units {
     // Electrical Inductance - TODO
 
     // Electrical Potential
-    public static final MetricDerivedUnit<FundamentalUnitType, ElectricalPotential> VOLT =
-            MetricDerivedUnit.newBaseMetricDerivedUnit(UnitTypes.ELECTRICAL_POTENTIAL, METRIC);
-    public static final MetricDerivedUnit<FundamentalUnitType, ElectricalPotential> MILLIVOLT =
-            new MetricDerivedUnit<>(MetricPrefix.MILLI, VOLT);
+    public static final MetricUnit<UniversalUnitType> VOLT =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.ELECTRICAL_POTENTIAL);
+    public static final MetricUnit<UniversalUnitType> MILLIVOLT =
+            new MetricUnit<>(MetricPrefix.MILLI, UnitTypes.ELECTRICAL_POTENTIAL);
 
     // Electrical Resistance - TODO
 
@@ -177,15 +127,14 @@ public final class Units {
     // Force - TODO
 
     // Frequency
-    public static final MetricDerivedUnit<FundamentalUnitType, Frequency> HERTZ =
-            MetricDerivedUnit.newBaseMetricDerivedUnit(UnitTypes.FREQUENCY, METRIC);
-    public static final MetricDerivedUnit<FundamentalUnitType, Frequency> KILOHERTZ =
-            new MetricDerivedUnit<>(MetricPrefix.KILO, HERTZ);
-    public static final MetricDerivedUnit<FundamentalUnitType, Frequency> MEGAHERTZ =
-            new MetricDerivedUnit<>(MetricPrefix.MEGA, HERTZ);
-    public static final DerivedUnit<FundamentalUnitType, Frequency> RADIANS_PER_SECOND = HERTZ;
-    public static final ScaledUnit<FundamentalUnitType, Frequency> RPM =
-            new ScaledUnit<>(2*Math.PI/60, RADIANS_PER_SECOND);
+    public static final MetricUnit<UniversalUnitType> HERTZ =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.FREQUENCY);
+    public static final MetricUnit<UniversalUnitType> KILOHERTZ =
+            new MetricUnit<>(MetricPrefix.KILO, UnitTypes.FREQUENCY);
+    public static final MetricUnit<UniversalUnitType> MEGAHERTZ =
+            new MetricUnit<>(MetricPrefix.MEGA, UnitTypes.FREQUENCY);
+    public static final Unit<UniversalUnitType> RADIANS_PER_SECOND = RADIAN.divide(SECOND);
+    public static final Unit<UniversalUnitType> RPM = REVOLUTION.divide(MINUTE);
 
     // Magnetic Flux - TODO
 
@@ -196,18 +145,15 @@ public final class Units {
     // Power - TODO
 
     // Pressure - TODO
-    public static final MetricDerivedUnit<FundamentalUnitType, Pressure> PASCAL =
-            MetricDerivedUnit.newBaseMetricDerivedUnit(UnitTypes.PRESSURE, METRIC);
-    public static final MetricDerivedUnit<FundamentalUnitType, Pressure> KILOPASCAL =
-            new MetricDerivedUnit<>(MetricPrefix.KILO, PASCAL);
-    public static final ScaledUnit<FundamentalUnitType, Pressure> PSI =
-            new ScaledUnit<>(6.894757, KILOPASCAL);
+    public static final MetricUnit<UniversalUnitType> PASCAL =
+            new MetricUnit<>(MetricPrefix.BASE, UnitTypes.PRESSURE);
+    public static final MetricUnit<UniversalUnitType> KILOPASCAL =
+            new MetricUnit<>(MetricPrefix.KILO, UnitTypes.PRESSURE);
+    public static final Unit<UniversalUnitType> PSI = KILOPASCAL.multiply(6.894757);
 
     // Velocity
-    public static final DerivedUnit<FundamentalUnitType, Velocity> METRES_PER_SECOND =
-            new DerivedUnit<>(UnitTypes.VELOCITY, METRIC);
-    public static final DerivedUnit<FundamentalUnitType, Velocity> FEET_PER_SECOND =
-            new DerivedUnit<>(UnitTypes.VELOCITY, IMPERIAL);
+    public static final Unit<UniversalUnitType> METRES_PER_SECOND = METRE.divide(SECOND);
+    public static final Unit<UniversalUnitType> FEET_PER_SECOND = FOOT.divide(SECOND);
 
     // Volume - TODO
 }

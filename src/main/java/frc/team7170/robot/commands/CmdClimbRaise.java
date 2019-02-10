@@ -1,32 +1,51 @@
 package frc.team7170.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.team7170.lib.unit.Units;
+import frc.team7170.robot.Constants;
 import frc.team7170.robot.subsystems.ClimbLegs;
-import frc.team7170.robot.subsystems.FrontArms;
 
 public class CmdClimbRaise extends Command {
 
-    private final double targetHeightInches;
+    private static final double r = Units.convert(Constants.Dimensions.FRONT_ARM_WHEEL_DIAMETER_INCHES,
+            Units.INCH, Units.METRE);
+    private static final ClimbLegs.LinearActuator leftLA = ClimbLegs.getInstance().getLeftLinearActuator();
+    private static final ClimbLegs.LinearActuator rightLA = ClimbLegs.getInstance().getRightLinearActuator();
+    private static final double laOffsetMetres = Constants.Climb.LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES;
+
+    private final double platformHeightMetres;
+    private final double targetHeightMetres;
     private final double contactAngleDegrees;
 
-    public CmdClimbRaise(double targetHeightInches, double contactAngleDegrees) {
-        this.targetHeightInches = targetHeightInches;
-        this.contactAngleDegrees = contactAngleDegrees;
+    private double currHeightMetres = 0.0;
+    private Command currFrontArmsCommand;
+    private Command currLeftLinearActuatorCommand;
+    private Command currRightLinearActuatorCommand;
 
-        requires(ClimbLegs.getInstance());  // TODO: is this necessary?
-        requires(ClimbLegs.getInstance().getLeftLinearActuator());
-        requires(ClimbLegs.getInstance().getRightLinearActuator());
-        requires(FrontArms.getInstance());
+    public CmdClimbRaise(double targetHeightMetres, double contactAngleDegrees) {
+        this.platformHeightMetres = targetHeightMetres;
+        this.targetHeightMetres = targetHeightMetres + Constants.Climb.FINAL_HEIGHT_EXTRA_METRES;
+        this.contactAngleDegrees = contactAngleDegrees;
     }
 
     @Override
     protected void initialize() {
-        super.initialize();
+        currFrontArmsCommand = new CmdRotateFrontArms(contactAngleDegrees);
+        currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, laOffsetMetres);
+        currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, laOffsetMetres);
+        startAllCommands();
     }
 
     @Override
     protected void execute() {
-        super.execute();
+        if (allCommandsFinished()) {
+            currHeightMetres += Constants.Climb.DELTA_HEIGHT_METRES;
+            currFrontArmsCommand = new CmdRotateFrontArms(calcNextTheta(currHeightMetres));
+            double nextLAHeight = currHeightMetres + laOffsetMetres;
+            currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, nextLAHeight);
+            currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, nextLAHeight);
+            startAllCommands();
+        }
     }
 
     @Override
@@ -36,6 +55,35 @@ public class CmdClimbRaise extends Command {
 
     @Override
     protected boolean isFinished() {
-        return false;
+        return currHeightMetres >= targetHeightMetres;
+    }
+
+    private void startAllCommands() {
+        currFrontArmsCommand.start();
+        currLeftLinearActuatorCommand.start();
+        currRightLinearActuatorCommand.start();
+    }
+
+    private boolean allCommandsFinished() {
+        return currFrontArmsCommand.isCompleted() &&
+                currLeftLinearActuatorCommand.isCompleted() &&
+                currRightLinearActuatorCommand.isCompleted();
+    }
+
+    /*
+     * theta = arccos(([L1 to L3] + [arm wheel radius] - [pivot height] - [target height]) /
+     *     [pivot to wheel centre distance]) + [acute angle from arm resting/home position to the vertical]
+     *
+     * Or, in terms of the variables used below:
+     *
+     * theta(h) = arccos((H + r - y - h) / x) + psi
+     */
+    private double calcNextTheta(double h) {
+        double H = platformHeightMetres;
+        double y = Constants.Dimensions.FRONT_ARM_PIVOT_HEIGHT_METRES;
+        double x = Constants.Dimensions.FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES;
+        double psi = Constants.FrontArms.VERTICAL_ANGLE;
+
+        return Math.acos((H + r - y - h) / x) + psi;
     }
 }

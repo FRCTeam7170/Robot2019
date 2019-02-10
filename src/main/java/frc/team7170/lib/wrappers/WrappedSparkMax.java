@@ -1,103 +1,133 @@
 package frc.team7170.lib.wrappers;
 
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.ControlType;
-import edu.wpi.first.wpilibj.PIDSourceType;
+import frc.team7170.lib.unit.Unit;
+import frc.team7170.lib.unit.Units;
+import frc.team7170.lib.unit.UniversalUnitType;
 
-public class WrappedSparkMax implements PIDMotor {
+import java.util.Optional;
+
+class WrappedSparkMax extends AbstractPIDMotor {
+
+    private static final Unit<UniversalUnitType> ELECTRICAL_POTENTIAL_UNIT = Units.VOLT;
+    private static final Unit<UniversalUnitType> CURRENT_UNIT = Units.AMPERE;
 
     private final CANSparkMax sparkMax;
+    private final CANPIDController pidController;
+    private double setpoint = 0.0;
 
-    WrappedSparkMax(CANSparkMax sparkMax) {
+    WrappedSparkMax(CANSparkMax sparkMax, Unit<UniversalUnitType> positionUnit, Unit<UniversalUnitType> velocityUnit) {
+        super(ELECTRICAL_POTENTIAL_UNIT, CURRENT_UNIT, positionUnit, velocityUnit);
         this.sparkMax = sparkMax;
+        this.pidController = sparkMax.getPIDController();
     }
 
     @Override
-    public void setSetpoint(PIDSourceType sourceType, double setpoint) {
+    void setSetpointRaw(MotorMode motorMode, double setpoint) {
+        this.setpoint = setpoint;
+        pidController.setReference(setpoint, motorMode.toSparkMaxControlType());
     }
 
     @Override
-    public double getSetpoint() {
-        return 0;
+    double getSetpointRaw() {
+        return setpoint;
     }
 
     @Override
-    public PIDSourceType getSetpointType() {
-        return null;
+    double getErrorRaw() {
+        // TODO: this is pretty awful
+        switch (getSetpointMode()) {
+            case PERCENT:
+                return setpoint - sparkMax.getAppliedOutput();
+            case VOLTAGE:
+                return setpoint - sparkMax.getAppliedOutput() * sparkMax.getBusVoltage();
+            case POSITION:
+                return setpoint - sparkMax.getEncoder().getPosition();
+            case VELOCITY:
+                return setpoint - sparkMax.getEncoder().getVelocity();
+            default:
+                throw new AssertionError();
+        }
     }
 
     @Override
-    public double getError() {
-        return 0;
-    }
+    void setToleranceRaw(double tolerance) {}
 
     @Override
-    public void setTolerance(double tolerance) {
-
-    }
-
-    @Override
-    public double getTolerance() {
-        return 0;
-    }
-
-    @Override
-    public void setMotor(double percent) {
-
+    public MotorMode getSetpointMode() {
+        Optional<Integer> ctrlType = sparkMax.getParameterInt(CANSparkMaxLowLevel.ConfigParameter.kCtrlType);
+        if (ctrlType.isPresent()) {
+            switch (ctrlType.get()) {
+                case 0:
+                    return MotorMode.PERCENT;
+                case 1:
+                    return MotorMode.VELOCITY;
+                case 2:
+                    return MotorMode.VOLTAGE;
+                case 3:
+                    return MotorMode.POSITION;
+                default:
+                    throw new AssertionError();
+            }
+        }
+        throw new RuntimeException("Spark Max ControlType not available");
     }
 
     @Override
     public double getMotor() {
-        return 0;
+        return sparkMax.get();
     }
 
     @Override
     public void setMotorInverted(boolean inverted) {
-
+        sparkMax.setInverted(inverted);
     }
 
     @Override
     public boolean isMotorInverted() {
-        return false;
+        return sparkMax.getInverted();
     }
 
     @Override
     public void setP(double P) {
-
+        pidController.setP(P);
     }
 
     @Override
     public double getP() {
-        return 0;
+        return pidController.getP();
     }
 
     @Override
     public void setI(double I) {
-
+        pidController.setI(I);
     }
 
     @Override
     public double getI() {
-        return 0;
+        return pidController.getI();
     }
 
     @Override
     public void setD(double D) {
-
+        pidController.setD(D);
     }
 
     @Override
     public double getD() {
-        return 0;
+        return pidController.getD();
     }
 
     @Override
     public void setF(double F) {
-
+        pidController.setFF(F);
     }
 
     @Override
     public double getF() {
-        return 0;
+        return pidController.getFF();
     }
 }

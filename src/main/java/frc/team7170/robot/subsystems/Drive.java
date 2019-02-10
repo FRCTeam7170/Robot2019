@@ -14,9 +14,14 @@ import org.msgpack.value.ValueFactory;
 
 import java.util.logging.Logger;
 
-public class Drive extends Subsystem implements DataLogger, Named {
+public class Drive extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(Drive.class.getName());
+
+    private static final Unit<UniversalUnitType> DISTANCE_UNIT = Units.newTalonQuadratureEncoderDistanceUnit(
+            Constants.TALON_MAG_ENCODER_ROTATION_UNIT, Constants.Dimensions.WHEEL_DIAMETER_INCHES);
+    private static final Unit<UniversalUnitType> VELOCITY_UNIT = Units.newTalonQuadratureEncoderVelocityUnit(
+            DISTANCE_UNIT);
 
     private final TalonSRX leftMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_MASTER);
     private final TalonSRX leftFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_LEFT_FOLLOWER);
@@ -36,8 +41,8 @@ public class Drive extends Subsystem implements DataLogger, Named {
         leftFollower.follow(leftMaster);
         rightFollower.follow(rightMaster);
 
-        leftMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
+        leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
+        rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
         leftMaster.config_kP(Constants.Drive.PARAMETER_SLOT_VELOCITY, Constants.Drive.P_LEFT_VELOCITY);
         leftMaster.config_kI(Constants.Drive.PARAMETER_SLOT_VELOCITY, Constants.Drive.I_LEFT_VELOCITY);
@@ -149,8 +154,6 @@ public class Drive extends Subsystem implements DataLogger, Named {
         return revolutionsPerSec * 0.1 * Constants.Drive.ENCODER_CYCLES_PER_REVOLUTION * 4;
     }
 
-    // TODO: make interfaces for all these motor control methods (e.g. IPercentControl, IPositionControl, etc.)
-
     public void zeroEncoders() {
         leftMaster.setSelectedSensorPosition(0);
         rightMaster.setSelectedSensorPosition(0);
@@ -158,6 +161,31 @@ public class Drive extends Subsystem implements DataLogger, Named {
 
     public void killMotors() {
         setPercent(0.0);
+    }
+
+    public boolean isLeftErrorTolerable() {
+        return isErrorTolerable(leftMaster);
+    }
+
+    public boolean isRightErrorTolerable() {
+        return isErrorTolerable(rightMaster);
+    }
+
+    public boolean isErrorTolerable() {
+        return isLeftErrorTolerable() && isRightErrorTolerable();
+    }
+
+    private boolean isErrorTolerable(TalonSRX talonSRX) {
+        switch (talonSRX.getControlMode()) {
+            case Position:
+                return CalcUtil.inThreshold(talonSRX.getClosedLoopError(), 0,
+                        Constants.Drive.ALLOWABLE_CLOSED_LOOP_POSITION_ERROR);
+            case Velocity:
+                return CalcUtil.inThreshold(talonSRX.getClosedLoopError(), 0,
+                        Constants.Drive.ALLOWABLE_CLOSED_LOOP_VELOCITY_ERROR);
+            default:
+                return true;
+        }
     }
 
     public void setPercent(double percent) {
@@ -173,64 +201,81 @@ public class Drive extends Subsystem implements DataLogger, Named {
         rightMaster.set(ControlMode.PercentOutput, percent);
     }
 
-    public void setPosition(double position) {
-        setLeftPosition(position);
-        setRightPosition(position);
+    public void setPosition(double distanceMetres) {
+        setLeftPosition(distanceMetres);
+        setRightPosition(distanceMetres);
     }
 
-    public void setLeftPosition(double position) {
-        leftMaster.set(ControlMode.Position, position);
+    public void setLeftPosition(double distanceMetres) {
+        leftMaster.set(ControlMode.Position, metresToTalonUnits(distanceMetres));
     }
 
-    public void setRightPosition(double position) {
-        rightMaster.set(ControlMode.Position, position);
+    public void setRightPosition(double distanceMetres) {
+        rightMaster.set(ControlMode.Position, metresToTalonUnits(distanceMetres));
     }
 
-    public void setVelocity(double velocity) {
-        setLeftVelocity(velocity);
-        setRightVelocity(velocity);
+    public void setVelocity(double metresPerSecond) {
+        setLeftVelocity(metresPerSecond);
+        setRightVelocity(metresPerSecond);
     }
 
-    public void setLeftVelocity(double velocity) {
-        leftMaster.set(ControlMode.Velocity, velocity);
+    public void setLeftVelocity(double metresPerSecond) {
+        leftMaster.set(ControlMode.Velocity, metresPerSecondToTalonUnits(metresPerSecond));
     }
 
-    public void setRightVelocity(double velocity) {
-        rightMaster.set(ControlMode.Velocity, velocity);
+    public void setRightVelocity(double metresPerSecond) {
+        rightMaster.set(ControlMode.Velocity, metresPerSecondToTalonUnits(metresPerSecond));
     }
 
-    public int getLeftErrorRaw() {
-        return leftMaster.getClosedLoopError();
+    public double getLeftEncoder() {
+        return talonUnitsToRotations(leftMaster.getSelectedSensorPosition());
     }
 
-    public int getRightErrorRaw() {
-        return rightMaster.getClosedLoopError();
+    public double getRightEncoder() {
+        return talonUnitsToRotations(rightMaster.getSelectedSensorPosition());
     }
 
-    public int getLeftEncoderRaw() {
-        return leftMaster.getSelectedSensorPosition();
+    public double getLeftDistance() {
+        return talonUnitsToMetres(leftMaster.getSelectedSensorPosition());
     }
 
-    public int getRightEncoderRaw() {
-        return rightMaster.getSelectedSensorPosition();
+    public double getRightDistance() {
+        return talonUnitsToMetres(rightMaster.getSelectedSensorPosition());
     }
 
-    public int getLeftVelocityRaw() {
-        return leftMaster.getSelectedSensorVelocity();
+    public double getLeftVelocity() {
+        return talonUnitsToMetresPerSecond(leftMaster.getSelectedSensorVelocity());
     }
 
-    public int getRightVelocityRaw() {
-        return rightMaster.getSelectedSensorVelocity();
+    public double getRightVelocity() {
+        return talonUnitsToMetresPerSecond(rightMaster.getSelectedSensorVelocity());
     }
 
-    public static double talonUnitsToFeet(double value) {
-        return Units.convert(value, Constants.TALON_QUADRATURE_ENCODER_DISTANCE_UNIT, Units.FOOT);
+    private static double talonUnitsToRotations(double value) {
+        return Units.convertAndCheck(value, Constants.TALON_MAG_ENCODER_ROTATION_UNIT, Units.REVOLUTION);
     }
 
-    public static double talonUnitsToFeetPerSecond(double value) {
-        return Units.convert(value, Constants.TALON_QUADRATURE_ENCODER_VELOCITY_UNIT, Units.FEET_PER_SECOND);
+    private static double talonUnitsToMetres(double value) {
+         return Units.convertAndCheck(value, DISTANCE_UNIT, Units.METRE);
     }
 
+    private static double talonUnitsToMetresPerSecond(double value) {
+        return Units.convertAndCheck(value, VELOCITY_UNIT, Units.METRES_PER_SECOND);
+    }
+
+    private static double rotationsToTalonUnits(double value) {
+        return Units.convertAndCheck(value, Units.REVOLUTION, Constants.TALON_MAG_ENCODER_ROTATION_UNIT);
+    }
+
+    private static double metresToTalonUnits(double value) {
+         return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
+    }
+
+    private static double metresPerSecondToTalonUnits(double value) {
+        return Units.convertAndCheck(value, Units.METRES_PER_SECOND, VELOCITY_UNIT);
+    }
+
+    /*
     @Override
     public String[] reportHeaders() {
         return new String[] {
@@ -309,4 +354,5 @@ public class Drive extends Subsystem implements DataLogger, Named {
     public String reportName() {
         return "drive";
     }
+    */
 }

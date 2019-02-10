@@ -24,7 +24,8 @@ public final class Communication implements Named {
     private static final String PATH_SEPARATOR = String.valueOf(NetworkTable.PATH_SEPARATOR);
     private static final String ENTRY_NAME_PREFIX_SEP = "_";
 
-    private final Commander commander = new Commander(NetworkTableInstance.getDefault(), getCheckedName());
+    // TODO: TEMP
+    // private final Commander commander = new Commander(NetworkTableInstance.getDefault(), getCheckedName());
     private final Map<String, Transmitter> transmitterMap = new HashMap<>();
     private final Map<String, Receiver> receiverMap = new HashMap<>();
 

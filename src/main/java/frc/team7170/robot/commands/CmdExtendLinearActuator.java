@@ -1,31 +1,30 @@
 package frc.team7170.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.team7170.robot.Constants;
 import frc.team7170.robot.subsystems.ClimbLegs;
 
-public class CmdZeroLinearActuator extends Command {
+public class CmdExtendLinearActuator extends Command {
 
     private final ClimbLegs.LinearActuator linearActuator;
+    private final double distanceMetres;
 
-    public CmdZeroLinearActuator(ClimbLegs.LinearActuator linearActuator) {
+    public CmdExtendLinearActuator(ClimbLegs.LinearActuator linearActuator, double distanceMetres) {
         this.linearActuator = linearActuator;
-        requires(linearActuator);
+        this.distanceMetres = distanceMetres;
     }
 
     @Override
     protected void initialize() {
-        linearActuator.setPercent(-Constants.ClimbLegs.ZEROING_THROTTLE_PERCENT);
+        linearActuator.setPosition(distanceMetres);
     }
 
     @Override
     protected void end() {
         linearActuator.killMotor();
-        linearActuator.zeroEncoder();
     }
 
     @Override
     protected boolean isFinished() {
-        return linearActuator.isUpperLimitSwitchTriggered();
+        return linearActuator.isErrorTolerable();
     }
 }

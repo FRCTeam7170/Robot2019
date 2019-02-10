@@ -1,12 +1,22 @@
 package frc.team7170.lib.unit;
 
-import frc.team7170.lib.unit.unittypes.IFundamentalUnitType;
-import frc.team7170.lib.unit.unittypes.UnitType;
+public interface Unit<F extends Enum<F> & FundamentalUnitType> {
 
-// TODO: make this an abstract class instead
-public interface Unit<R extends Enum<R> & IFundamentalUnitType<R>, T extends UnitType<R>> {
+    double getScale();
 
-    double getFactor();
+    UnitType<F> getUnitType();
 
-    T getUnitType();
+    Unit<F> multiply(double multiplier);
+
+    Unit<F> multiply(Unit<F> other);
+
+    default Unit<F> divide(double divisor) {
+        return multiply(1 / divisor);
+    }
+
+    Unit<F> divide(Unit<F> other);
+
+    default boolean isCommensurateWith(Unit<F> other) {
+        return getUnitType().isEquivalentUnitType(other.getUnitType());
+    }
 }

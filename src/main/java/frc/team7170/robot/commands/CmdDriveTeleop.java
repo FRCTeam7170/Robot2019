@@ -2,7 +2,7 @@ package frc.team7170.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.lib.oi.KeyBindings;
-import frc.team7170.lib.oi.SerializableKeyMap;
+import frc.team7170.lib.oi.KeyMap;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.subsystems.Drive;
 
@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 public class CmdDriveTeleop extends Command {
 
     private static final Logger LOGGER = Logger.getLogger(CmdDriveTeleop.class.getName());
+    private static final Drive drive = Drive.getInstance();
 
-    private static final Drive drive = Drive.INSTANCE;
     private boolean isTankDrive = true;
     private boolean warned = false;
 
@@ -23,7 +23,7 @@ public class CmdDriveTeleop extends Command {
 
     @Override
     protected void initialize() {
-        SerializableKeyMap km = KeyBindings.getCurrKeyMap();
+        KeyMap km = KeyBindings.getInstance().getCurrKeyMap();
         if (!km.hasBindingFor(AxisActions.DRIVE_L) && !km.hasBindingFor(AxisActions.DRIVE_R) &&
                 km.hasBindingFor(AxisActions.DRIVE_Y) && km.hasBindingFor(AxisActions.DRIVE_Z)) {
             isTankDrive = true;
@@ -35,13 +35,13 @@ public class CmdDriveTeleop extends Command {
         try {
             if (isTankDrive) {
                 drive.tankDrive(
-                        KeyBindings.actionToAxis(AxisActions.DRIVE_L).get(),
-                        KeyBindings.actionToAxis(AxisActions.DRIVE_R).get()
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_L).get(),
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_R).get()
                 );
             } else {
                 drive.arcadeDrive(
-                        KeyBindings.actionToAxis(AxisActions.DRIVE_Y).get(),
-                        KeyBindings.actionToAxis(AxisActions.DRIVE_Z).get()
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_Y).get(),
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_Z).get()
                 );
             }
         } catch (NullPointerException e) {

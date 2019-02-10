@@ -1,6 +1,8 @@
 package frc.team7170.lib.wrappers;
 
-public interface Motor {
+import edu.wpi.first.wpilibj.PIDOutput;
+
+public interface Motor extends PIDOutput {
 
     void setMotor(double percent);
 
@@ -13,4 +15,9 @@ public interface Motor {
     void setMotorInverted(boolean inverted);
 
     boolean isMotorInverted();
+
+    @Override
+    default void pidWrite(double output) {
+        setMotor(output);
+    }
 }
