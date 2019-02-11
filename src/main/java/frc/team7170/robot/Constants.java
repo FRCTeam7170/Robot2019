@@ -75,6 +75,7 @@ public final class Constants {
         public static final double FRONT_ARM_WHEEL_DIAMETER_INCHES = 2.0;
         public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.0;
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.0;
+        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
     }
 
     public static final class Drive {
@@ -269,10 +270,19 @@ public final class Constants {
         public static final double L3_BUMPER_DISTANCE_METRES = 0.0;
         public static final double L2_CONTACT_ANGLE_DEGREES = 0.0;
         public static final double L3_CONTACT_ANGLE_DEGREES = 0.0;
-        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
         public static final double DELTA_HEIGHT_METRES = 0.0;
         public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
         public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.0;
         public static final double POST_RETRACT_DRIVE_FORWARD_METRES = 0.0;
+    }
+
+    public static final class Descent {
+        public static final double PRE_FRONT_ARM_DEPLOY_DRIVE_FORWARD_METRES = 0.0;
+        public static final double ARM_ANGLE_DEGREES = 0.0;
+        public static final double PRE_EXTEND_DRIVE_FORWARD_METRES = 0.0;
+        public static final double POST_EXTEND_DRIVE_FORWARD_METRES = 0.0;
+        public static final double LINEAR_ACTUATOR_EXTENSION_METRES = 0.0;
+        public static final boolean HARD_DROP = false;
+        public static final double DELTA_HEIGHT_METRES = 0.0;
     }
 }

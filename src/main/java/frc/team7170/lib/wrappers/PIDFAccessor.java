@@ -1,6 +1,6 @@
 package frc.team7170.lib.wrappers;
 
-// TODO: merge with ProfileAccessor?
+// TODO: merge with ProfileAccessor? (not currently used anywhere else)
 public interface PIDFAccessor {
 
     void setP(double P);

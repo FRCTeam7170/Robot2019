@@ -37,7 +37,7 @@ class WrappedWPIPIDBase extends AbstractPIDFController {
 
     @Override
     void setSetpointRaw(MotorMode motorMode, double setpoint) {
-        // PIDBase.setPIDSourceType and PIDBase.getPIDSourceType are package-private for some reason...
+        // PIDBase.setPIDSourceType and PIDBase.getPIDSourceType are package-private by mistake (issue submitted on GH).
         if (motorMode != MotorMode.POSITION) {
             throw new UnsupportedOperationException("PIDBase is bugged :/");
         }
