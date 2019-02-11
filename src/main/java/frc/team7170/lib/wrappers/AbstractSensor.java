@@ -1,16 +1,23 @@
 package frc.team7170.lib.wrappers;
 
+import edu.wpi.first.wpilibj.PIDSourceType;
+
 abstract class AbstractSensor implements Sensor {
 
-    private MotorMode motorMode = MotorMode.POSITION;
+    private PIDSourceType pidSourceType = PIDSourceType.kDisplacement;
 
     @Override
-    public void setPIDMotorMode(MotorMode motorMode) {
-        this.motorMode = motorMode;
+    public void setPIDSourceType(PIDSourceType pidSource) {
+        if (!isLegalPIDSourceType(pidSource)) {
+            throw new IllegalArgumentException("illegal PIDSourceType '" + pidSource.name() + "'");
+        }
+        pidSourceType = pidSource;
     }
 
     @Override
-    public MotorMode getPIDMotorMode() {
-        return motorMode;
+    public PIDSourceType getPIDSourceType() {
+        return pidSourceType;
     }
+
+    protected abstract boolean isLegalPIDSourceType(PIDSourceType pidSourceType);
 }

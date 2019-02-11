@@ -7,10 +7,12 @@ public class CmdExtendLinearActuator extends Command {
 
     private final ClimbLegs.LinearActuator linearActuator;
     private final double distanceMetres;
+    private final boolean hold;
 
-    public CmdExtendLinearActuator(ClimbLegs.LinearActuator linearActuator, double distanceMetres) {
+    public CmdExtendLinearActuator(ClimbLegs.LinearActuator linearActuator, double distanceMetres, boolean hold) {
         this.linearActuator = linearActuator;
         this.distanceMetres = distanceMetres;
+        this.hold = hold;
     }
 
     @Override
@@ -20,7 +22,9 @@ public class CmdExtendLinearActuator extends Command {
 
     @Override
     protected void end() {
-        linearActuator.killMotor();
+        if (!hold) {
+            linearActuator.killMotor();
+        }
     }
 
     @Override

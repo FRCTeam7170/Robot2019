@@ -5,20 +5,15 @@ import edu.wpi.first.wpilibj.PIDSourceType;
 
 public interface Sensor extends PIDSource {
 
-    void setPIDMotorMode(MotorMode motorMode);
-
-    @Override
-    default void setPIDSourceType(PIDSourceType pidSource) {
-        setPIDMotorMode(MotorMode.fromPIDSourceType(pidSource));
+    default MotorMode getSensorMotorMode() {
+        return MotorMode.fromPIDSourceType(getPIDSourceType());
     }
 
-    // This should only ever return MotorMode.POSITION or MotorMode.VELOCITY!
-    MotorMode getPIDMotorMode();
-
-    @Override
-    default PIDSourceType getPIDSourceType() {
-        return getPIDMotorMode().toPIDSourceType();
+    default void setSensorMotorMode(MotorMode motorMode) {
+        PIDSourceType pidSourceType = motorMode.toPIDSourceType();
+        if (pidSourceType == null) {
+            throw new IllegalArgumentException("Sensor MotorMode must be position or velocity");
+        }
+        setPIDSourceType(pidSourceType);
     }
-
-    // TODO: asType method(s)?
 }

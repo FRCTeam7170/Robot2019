@@ -1,5 +1,4 @@
-package frc.team7170.lib.util;
-
+package frc.team7170.lib;
 
 public class Pair<L, R> {
 

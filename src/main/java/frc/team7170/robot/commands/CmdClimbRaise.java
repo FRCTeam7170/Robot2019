@@ -30,32 +30,29 @@ public class CmdClimbRaise extends Command {
 
     @Override
     protected void initialize() {
-        currFrontArmsCommand = new CmdRotateFrontArms(contactAngleDegrees);
-        currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, laOffsetMetres);
-        currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, laOffsetMetres);
+        currFrontArmsCommand = new CmdRotateFrontArms(contactAngleDegrees, false);
+        currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, laOffsetMetres, false);
+        currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, laOffsetMetres, false);
         startAllCommands();
     }
 
     @Override
     protected void execute() {
         if (allCommandsFinished()) {
-            currHeightMetres += Constants.Climb.DELTA_HEIGHT_METRES;
-            currFrontArmsCommand = new CmdRotateFrontArms(calcNextTheta(currHeightMetres));
-            double nextLAHeight = currHeightMetres + laOffsetMetres;
-            currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, nextLAHeight);
-            currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, nextLAHeight);
-            startAllCommands();
+            if (!targetHeightReached()) {
+                currHeightMetres += Constants.Climb.DELTA_HEIGHT_METRES;
+                currFrontArmsCommand = new CmdRotateFrontArms(calcNextTheta(currHeightMetres), true);
+                double nextLAHeight = currHeightMetres + laOffsetMetres;
+                currLeftLinearActuatorCommand = new CmdExtendLinearActuator(leftLA, nextLAHeight, true);
+                currRightLinearActuatorCommand = new CmdExtendLinearActuator(rightLA, nextLAHeight, true);
+                startAllCommands();
+            }
         }
     }
 
     @Override
-    protected void end() {
-        super.end();
-    }
-
-    @Override
     protected boolean isFinished() {
-        return currHeightMetres >= targetHeightMetres;
+        return targetHeightReached() && allCommandsFinished();
     }
 
     private void startAllCommands() {
@@ -68,6 +65,10 @@ public class CmdClimbRaise extends Command {
         return currFrontArmsCommand.isCompleted() &&
                 currLeftLinearActuatorCommand.isCompleted() &&
                 currRightLinearActuatorCommand.isCompleted();
+    }
+
+    private boolean targetHeightReached() {
+        return currHeightMetres >= targetHeightMetres;
     }
 
     /*

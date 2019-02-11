@@ -174,7 +174,7 @@ public final class Constants {
 
     public static final class ClimbLegs {
         public static final double TOTAL_REDUCTION = 64.0;  // gearbox reduction
-        public static final double DISTANCE_FACTOR = 0.0;
+        public static final double DISTANCE_FACTOR = 0.0;  // metres/rotation
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
@@ -267,12 +267,12 @@ public final class Constants {
     public static final class Climb {
         public static final double L2_BUMPER_DISTANCE_METRES = 0.0;
         public static final double L3_BUMPER_DISTANCE_METRES = 0.0;
-
         public static final double L2_CONTACT_ANGLE_DEGREES = 0.0;
         public static final double L3_CONTACT_ANGLE_DEGREES = 0.0;
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
-
         public static final double DELTA_HEIGHT_METRES = 0.0;
         public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
+        public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.0;
+        public static final double POST_RETRACT_DRIVE_FORWARD_METRES = 0.0;
     }
 }

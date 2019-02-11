@@ -1,9 +1,11 @@
 package frc.team7170.lib.wrappers;
 
+import edu.wpi.first.wpilibj.PIDSourceType;
+
 abstract class AbstractEncoder extends AbstractSensor implements Encoder {
 
     private int ticksPerRotation = 0;
-    private double metresPerRotation = 0.0;
+    private double distancePerRotation = 0.0;
     private double maxRotationRate = 0.001;
 
     // ticks
@@ -24,12 +26,12 @@ abstract class AbstractEncoder extends AbstractSensor implements Encoder {
 
     @Override
     public double getEncoderDistance() {
-        return getEncoder() * metresPerRotation;
+        return getEncoder() * distancePerRotation;
     }
 
     @Override
     public double getEncoderDistanceRate() {
-        return getEncoderRotationRate() * metresPerRotation;
+        return getEncoderRotationRate() * distancePerRotation;
     }
 
     @Override
@@ -53,13 +55,13 @@ abstract class AbstractEncoder extends AbstractSensor implements Encoder {
     }
 
     @Override
-    public void setDistancePerRotation(double metresPerRotation) {
-        this.metresPerRotation = metresPerRotation;
+    public void setDistancePerRotation(double distancePerRotation) {
+        this.distancePerRotation = distancePerRotation;
     }
 
     @Override
     public double getDistancePerRotation() {
-        return metresPerRotation;
+        return distancePerRotation;
     }
 
     @Override
@@ -70,5 +72,10 @@ abstract class AbstractEncoder extends AbstractSensor implements Encoder {
     @Override
     public double getMaxRotationRate() {
         return maxRotationRate;
+    }
+
+    @Override
+    protected boolean isLegalPIDSourceType(PIDSourceType pidSourceType) {
+        return true;  // Both position and velocity allowed.
     }
 }

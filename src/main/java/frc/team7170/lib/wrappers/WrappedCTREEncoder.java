@@ -7,11 +7,11 @@ class WrappedCTREEncoder extends AbstractEncoder {
     private final BaseMotorController ctreMotorController;
     private boolean phaseSensor;
 
-    WrappedCTREEncoder(BaseMotorController ctreMotorController, int cyclesPerRevolution, double distancePerRotation) {
+    WrappedCTREEncoder(BaseMotorController ctreMotorController, int cyclesPerRotation) {
         this.ctreMotorController = ctreMotorController;
 
-        setTicksPerRotation(cyclesPerRevolution * 4);
-        setDistancePerRotation(distancePerRotation);
+        setTicksPerRotation(cyclesPerRotation * 4);
+        setDistancePerRotation(1.0);
         setEncoderInverted(false);
     }
 

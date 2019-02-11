@@ -10,7 +10,7 @@ import frc.team7170.lib.Named;
 import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.Units;
 import frc.team7170.lib.unit.UniversalUnitType;
-import frc.team7170.lib.util.CalcUtil;
+import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot.Constants;
 
 import java.util.logging.Logger;
@@ -59,8 +59,8 @@ public class ClimbLegs extends Subsystem implements Named {
             talon.set(ControlMode.PercentOutput, percent);
         }
 
-        public void setPosition(double ticks) {
-            talon.set(ControlMode.Position, ticks);
+        public void setPosition(double metres) {
+            talon.set(ControlMode.Position, metresToTalonUnits(metres));
         }
 
         public boolean isErrorTolerable() {
@@ -134,4 +134,12 @@ public class ClimbLegs extends Subsystem implements Named {
     }
 
     // Merged operations on both LAs?
+
+    private static double talonUnitsToMetres(double value) {
+        return Units.convertAndCheck(value, DISTANCE_UNIT, Units.METRE);
+    }
+
+    private static double metresToTalonUnits(double value) {
+        return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
+    }
 }

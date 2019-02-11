@@ -1,7 +1,7 @@
 package frc.team7170.lib.oi;
 
 import frc.team7170.lib.Name;
-import frc.team7170.lib.util.Pair;
+import frc.team7170.lib.Pair;
 
 import java.util.HashMap;
 import java.util.Map;

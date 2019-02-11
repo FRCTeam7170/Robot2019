@@ -1,11 +1,10 @@
-package frc.team7170.lib.util;
+package frc.team7170.lib;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Stream;
-
 
 public final class ReflectUtil {
 

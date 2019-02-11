@@ -1,4 +1,4 @@
-package frc.team7170.lib.util.debug;
+package frc.team7170.lib;
 
 
 public class AveragePrinter {

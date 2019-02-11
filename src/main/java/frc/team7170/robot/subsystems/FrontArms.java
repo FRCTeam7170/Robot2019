@@ -7,7 +7,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.team7170.lib.unit.Units;
-import frc.team7170.lib.util.CalcUtil;
+import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot.Constants;
 
 import java.util.logging.Logger;

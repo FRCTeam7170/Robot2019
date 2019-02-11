@@ -1,11 +1,13 @@
-package frc.team7170.lib.util;
+package frc.team7170.lib;
 
 
 /**
- * A collection of various calculations that might be done frequently enough throughout the robot code as to warrant the
- * need for a unified location for all of them.
+ * A collection of various calculations that might be done frequently enough throughout the robot code as to warrant a
+ * unified location for all of them.
  */
 public final class CalcUtil {
+
+    private static final double EPSILON = 1e-6;
 
     private CalcUtil() {}
 
@@ -18,6 +20,16 @@ public final class CalcUtil {
      */
     public static boolean inThreshold(double val, double median, double thresh) {
         return (median - thresh <= val) && (val <= median + thresh);
+    }
+
+    /**
+     * Check if two numbers are within some small epsilon of each other.
+     * @param val1 The first number.
+     * @param val2 The second number.
+     * @return Whether or not the numbers are within epsilon of each other.
+     */
+    public static boolean epsilonEquals(double val1, double val2) {
+        return inThreshold(val1 - val2, 0, EPSILON);
     }
 
     /**

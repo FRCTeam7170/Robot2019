@@ -6,7 +6,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.command.CmdTimedRunnable;
@@ -18,7 +17,7 @@ import frc.team7170.robot.actions.ButtonActions;
 import frc.team7170.lib.oi.KeyBindings;
 import frc.team7170.lib.oi.SerializableKeyMap;
 import frc.team7170.lib.oi.LF310Gamepad;
-import frc.team7170.lib.util.debug.AveragePrinter;
+import frc.team7170.lib.AveragePrinter;
 
 // TODO: Make NT Simulator like in spooky-console
 // TODO: spooky-console: NTBrowser needs ability to make new entry

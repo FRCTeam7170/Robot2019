@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj.PIDOutput;
 
 public interface Motor extends PIDOutput {
 
-    void setMotor(double percent);
+    void setPercent(double percent);
 
-    double getMotor();
+    double getPercent();
 
     default void killMotor() {
-        setMotor(0.0);
+        setPercent(0.0);
     }
 
     void setMotorInverted(boolean inverted);
@@ -18,6 +18,6 @@ public interface Motor extends PIDOutput {
 
     @Override
     default void pidWrite(double output) {
-        setMotor(output);
+        setPercent(output);
     }
 }

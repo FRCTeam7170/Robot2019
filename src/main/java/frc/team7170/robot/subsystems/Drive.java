@@ -5,12 +5,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import frc.team7170.lib.Named;
-import frc.team7170.lib.logging.DataLogger;
 import frc.team7170.lib.unit.*;
-import frc.team7170.lib.util.CalcUtil;
+import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot.Constants;
-import org.msgpack.value.Value;
-import org.msgpack.value.ValueFactory;
 
 import java.util.logging.Logger;
 

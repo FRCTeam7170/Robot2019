@@ -3,8 +3,7 @@ package frc.team7170.lib.networktables;
 import edu.wpi.first.networktables.*;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
-import frc.team7170.lib.networktables.command.Commander;
-import frc.team7170.lib.util.ReflectUtil;
+import frc.team7170.lib.ReflectUtil;
 
 import java.lang.reflect.*;
 import java.util.ArrayList;

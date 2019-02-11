@@ -8,10 +8,10 @@ public interface Encoder extends Sensor {
     // rotations/s
     double getEncoderRotationRate();
 
-    // m
+    // distance
     double getEncoderDistance();
 
-    // m/s
+    // distance/s
     double getEncoderDistanceRate();
 
     boolean isEncoderStopped();
@@ -24,7 +24,7 @@ public interface Encoder extends Sensor {
     // ticks/rotation
     int getTicksPerRotation();
 
-    void setDistancePerRotation(double metresPerRotation);
+    void setDistancePerRotation(double distancePerRotation);
 
     // m/rotation
     double getDistancePerRotation();
@@ -53,13 +53,13 @@ public interface Encoder extends Sensor {
 
     @Override
     default double pidGet() {
-        switch (getPIDMotorMode()) {
-            case POSITION:
+        switch (getPIDSourceType()) {
+            case kDisplacement:
                 return getEncoderDistance();
-            case VELOCITY:
+            case kRate:
                 return getEncoderDistanceRate();
             default:
-                throw new IllegalStateException("encoders only support position and velocity PID control");
+                throw new IllegalStateException("invalid PIDSourceType");
         }
     }
 }

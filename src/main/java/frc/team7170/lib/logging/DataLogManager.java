@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Timer;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.networktables.command.CommandAbortException;
 import frc.team7170.lib.networktables.command.Commander;
-import frc.team7170.lib.util.Pair;
+import frc.team7170.lib.Pair;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
 import org.msgpack.core.MessageTypeException;

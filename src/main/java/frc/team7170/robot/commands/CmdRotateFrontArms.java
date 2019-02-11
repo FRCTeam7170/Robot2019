@@ -8,9 +8,11 @@ public class CmdRotateFrontArms extends Command {
     private static final FrontArms frontArms = FrontArms.getInstance();
 
     private final double angleDegrees;
+    private final boolean hold;
 
-    public CmdRotateFrontArms(double angleDegrees) {
+    public CmdRotateFrontArms(double angleDegrees, boolean hold) {
         this.angleDegrees = angleDegrees;
+        this.hold = hold;
         requires(frontArms);
     }
 
@@ -21,7 +23,9 @@ public class CmdRotateFrontArms extends Command {
 
     @Override
     protected void end() {
-        frontArms.killMotors();
+        if (!hold) {
+            frontArms.killMotors();
+        }
     }
 
     @Override

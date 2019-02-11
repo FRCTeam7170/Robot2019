@@ -1,18 +1,15 @@
 package frc.team7170.lib.command;
 
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.team7170.lib.TimedRunnable;
 
 public class CmdTimedRunnable extends Command {
 
-    private final Runnable runnable;
-    private final double delaySec;
-    private double time;
+    private final TimedRunnable timedRunnable;
 
     public CmdTimedRunnable(Runnable runnable, int delayMs, boolean startOnInit, Subsystem... requirements) {
-        this.runnable = runnable;
-        delaySec = (double) delayMs / 1000;
+        timedRunnable = new TimedRunnable(runnable, delayMs);
         for (Subsystem requirement : requirements) {
             requires(requirement);
         }
@@ -24,16 +21,8 @@ public class CmdTimedRunnable extends Command {
     }
 
     @Override
-    protected void initialize() {
-        time = Timer.getFPGATimestamp();
-    }
-
-    @Override
     protected void execute() {
-        if (Timer.getFPGATimestamp() >= time + delaySec) {
-            runnable.run();
-            time = Timer.getFPGATimestamp();
-        }
+        timedRunnable.run();
     }
 
     @Override

@@ -54,42 +54,8 @@ public enum MotorMode {
         return Units.convertAndCheck(value, fromUnit, unit);
     }
 
-    public double toStandardUnits(double value,
-                                  Unit<UniversalUnitType> voltage,
-                                  Unit<UniversalUnitType> current,
-                                  Unit<UniversalUnitType> position,
-                                  Unit<UniversalUnitType> velocity) {
-        return toStandardUnits(value, getCorrectUnit(voltage, current, position, velocity));
-    }
-
     public double fromStandardUnits(double value, Unit<UniversalUnitType> toUnit) {
         return Units.convertAndCheck(value, unit, toUnit);
-    }
-
-    public double fromStandardUnits(double value,
-                                    Unit<UniversalUnitType> voltage,
-                                    Unit<UniversalUnitType> current,
-                                    Unit<UniversalUnitType> position,
-                                    Unit<UniversalUnitType> velocity) {
-        return fromStandardUnits(value, getCorrectUnit(voltage, current, position, velocity));
-    }
-
-    private Unit<UniversalUnitType> getCorrectUnit(Unit<UniversalUnitType> voltage,
-                                                   Unit<UniversalUnitType> current,
-                                                   Unit<UniversalUnitType> position,
-                                                   Unit<UniversalUnitType> velocity) {
-        switch (this) {
-            case VOLTAGE:
-                return voltage;
-            case CURRENT:
-                return current;
-            case POSITION:
-                return position;
-            case VELOCITY:
-                return velocity;
-            default:
-                return Units.IDENTITY;
-        }
     }
 
     public static MotorMode fromTalonSRXControlMode(ControlMode controlMode) {

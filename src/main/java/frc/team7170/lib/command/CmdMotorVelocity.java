@@ -2,14 +2,14 @@ package frc.team7170.lib.command;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.team7170.lib.wrappers.PIDMotor;
+import frc.team7170.lib.wrappers.PIDFMotor;
 
 public class CmdMotorVelocity extends Command {
 
-    private final PIDMotor motor;
+    private final PIDFMotor motor;
     private final double velocity;
 
-    public CmdMotorVelocity(PIDMotor motor, double velocity, Subsystem... requirements) {
+    public CmdMotorVelocity(PIDFMotor motor, double velocity, Subsystem... requirements) {
         this.motor = motor;
         this.velocity = velocity;
         for (Subsystem requirement : requirements) {

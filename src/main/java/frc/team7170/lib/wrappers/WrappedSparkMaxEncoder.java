@@ -11,9 +11,12 @@ class WrappedSparkMaxEncoder extends AbstractEncoder {
     private boolean inverted = false;
     private double offset = 0.0;
 
-    WrappedSparkMaxEncoder(CANSparkMax sparkMax) {
+    WrappedSparkMaxEncoder(CANSparkMax sparkMax, int cyclesPerRotation) {
         this.sparkMax = sparkMax;
         this.encoder = sparkMax.getEncoder();
+
+        setTicksPerRotation(cyclesPerRotation);
+        setDistancePerRotation(1.0);
     }
 
     @Override

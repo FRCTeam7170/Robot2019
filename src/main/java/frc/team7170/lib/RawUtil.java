@@ -1,9 +1,8 @@
-package frc.team7170.lib.util;
+package frc.team7170.lib;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
 
 public final class RawUtil {
 
