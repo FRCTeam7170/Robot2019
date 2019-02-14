@@ -19,10 +19,8 @@ public class ClimbLegs extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbLegs.class.getName());
 
-    private static final Unit<UniversalUnitType> ROTATION_UNIT =
-            Constants.TALON_CIMCODER_ROTATION_UNIT.divide(Constants.ClimbLegs.TOTAL_REDUCTION);
-    private static final Unit<UniversalUnitType> DISTANCE_UNIT =
-            ROTATION_UNIT.multiply(Units.METRE).multiply(Constants.ClimbLegs.DISTANCE_FACTOR);
+    private static final Unit<UniversalUnitType> DISTANCE_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
+            .multiply(Units.METRE).multiply(Constants.ClimbLegs.DISTANCE_FACTOR / Constants.ClimbLegs.TOTAL_REDUCTION);
 
     public static class LinearActuator extends Subsystem implements Named {
 
@@ -134,10 +132,6 @@ public class ClimbLegs extends Subsystem implements Named {
     }
 
     // Merged operations on both LAs?
-
-    private static double talonUnitsToMetres(double value) {
-        return Units.convertAndCheck(value, DISTANCE_UNIT, Units.METRE);
-    }
 
     private static double metresToTalonUnits(double value) {
         return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);

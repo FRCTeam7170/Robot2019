@@ -26,7 +26,8 @@ public class CmdClimb extends CommandGroup {
         addSequential(new CmdClimbDrive(Constants.Climb.PRE_RETRACT_DRIVE_FORWARD_METRES));
 
         // Reset the position of the front arms and climb legs.
-        addSequential(new CmdDeployAppendages(0.0, 0.0, false));
+        addSequential(new CmdDeployAppendages(Constants.FrontArms.HOME_ANGLE_DEGREES,
+                Constants.ClimbLegs.HOME_METRES, false));
 
         // Drive forward using base wheels.
         addSequential(new CmdDriveStraight(Constants.Climb.POST_RETRACT_DRIVE_FORWARD_METRES));

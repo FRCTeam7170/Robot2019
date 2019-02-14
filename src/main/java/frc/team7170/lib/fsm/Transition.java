@@ -1,13 +1,14 @@
 package frc.team7170.lib.fsm;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class Transition {
 
-    private enum TransitionModes {
+    public static final State[] ALL_STATES = new State[0];
+
+    private enum TransitionMode {
         NORMAL, REFLEXIVE, INTERNAL
     }
 
@@ -15,17 +16,20 @@ public class Transition {
 
         private final State[] srcs;
         private final State dest;
+        private final Trigger trigger;
         private Consumer<Event>[] prepare, onStart, onEnd;
         private Predicate<Event>[] conditions;
-        private TransitionModes mode = TransitionModes.NORMAL;
+        private boolean permitMistrigger;
+        private TransitionMode mode = TransitionMode.NORMAL;
 
-        public TransitionConfig(State[] srcs, State dest) {
+        public TransitionConfig(State[] srcs, State dest, Trigger trigger) {
             this.srcs = srcs;
             this.dest = dest;
+            this.trigger = trigger;
         }
 
-        public TransitionConfig(State src, State dest) {
-            this(new State[] {src}, dest);
+        public TransitionConfig(State src, State dest, Trigger trigger) {
+            this(new State[] {src}, dest, trigger);
         }
 
         public TransitionConfig onStart(Consumer<Event>... onStart) {
@@ -48,43 +52,63 @@ public class Transition {
             return this;
         }
 
-        public static TransitionConfig newReflexive(State... states) {
-            TransitionConfig ret = new TransitionConfig(states, null);
-            ret.mode = TransitionModes.REFLEXIVE;
+        public TransitionConfig permitMistrigger() {
+            permitMistrigger = true;
+            return this;
+        }
+
+        public static TransitionConfig newReflexive(State[] states, Trigger trigger) {
+            TransitionConfig ret = new TransitionConfig(states, null, trigger);
+            ret.mode = TransitionMode.REFLEXIVE;
             return ret;
         }
 
-        public static TransitionConfig newInternal(State... states) {
-            TransitionConfig ret = new TransitionConfig(states, null);
-            ret.mode = TransitionModes.INTERNAL;
+        public static TransitionConfig newInternal(State[] states, Trigger trigger) {
+            TransitionConfig ret = new TransitionConfig(states, null, trigger);
+            ret.mode = TransitionMode.INTERNAL;
             return ret;
         }
     }
 
     private final List<State> srcs;
     private final State dest;
+    private final Trigger trigger;
     private final Consumer<Event>[] prepare, onStart, onEnd;
     private final Predicate<Event>[] conditions;
-    private final TransitionModes mode;
+    private final boolean permitMistrigger;
+    private final TransitionMode mode;
     private final FiniteStateMachine machine;
 
     Transition(TransitionConfig config, FiniteStateMachine machine) {
+        if (config.trigger.getMachine() != machine) {
+            throw new IllegalArgumentException("trigger machine and given machine do not match");
+        }
         this.srcs = Arrays.asList(config.srcs);
         this.dest = config.dest;
+        this.trigger = config.trigger;
         this.onStart = config.onStart;
         this.onEnd = config.onEnd;
         this.prepare = config.prepare;
         this.conditions = config.conditions;
+        this.permitMistrigger = config.permitMistrigger;
         this.mode = config.mode;
         this.machine = machine;
     }
 
     public List<State> getSrcs() {
-        return srcs;
+        return new ArrayList<>(srcs);
+    }
+
+    public boolean isWildcard() {
+        return srcs.isEmpty();
     }
 
     public State getDest() {
         return dest;
+    }
+
+    public Trigger getTrigger() {
+        return trigger;
     }
 
     public Consumer<Event>[] getOnStart() {
@@ -103,20 +127,35 @@ public class Transition {
         return conditions;
     }
 
+    public boolean getPermitMistrigger() {
+        return permitMistrigger;
+    }
+
     public FiniteStateMachine getMachine() {
         return machine;
     }
 
     public boolean isReflexive() {
-        return mode == TransitionModes.REFLEXIVE;
+        return mode == TransitionMode.REFLEXIVE;
     }
 
     public boolean isInternal() {
-        return mode == TransitionModes.INTERNAL;
+        return mode == TransitionMode.INTERNAL;
     }
 
     public State mapsTo(State state) {
-        if (!srcs.contains(state)) {
+        if (state == null) {
+            throw new NullPointerException();
+        }
+        if (!isWildcard()) {
+            while (state != null) {
+                if (srcs.contains(state)) {
+                    break;
+                }
+                state = state.getParent();
+            }
+        }
+        if (state == null) {
             return null;
         }
         if (dest != null) {
@@ -125,7 +164,11 @@ public class Transition {
         return state;
     }
 
-    public boolean trigger(Object... arguments) {
+    public boolean hasMappingFor(State state) {
+        return mapsTo(state) != null;
+    }
+
+    public boolean execute(Object... arguments) {
         return machine.executeTransition(this, arguments);
     }
 
@@ -154,5 +197,10 @@ public class Transition {
             }
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s -> %s", srcs.isEmpty() ? "ALL" : srcs, dest);
     }
 }

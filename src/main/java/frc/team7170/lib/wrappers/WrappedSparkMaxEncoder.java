@@ -59,6 +59,7 @@ class WrappedSparkMaxEncoder extends AbstractEncoder {
         return inverted;
     }
 
+    // TODO: changes from this not reflected in actual motor... where else is this true?
     @Override
     public void resetEncoder() {
         offset = getEncoderRaw();

@@ -17,10 +17,11 @@ public class ClimbDrive extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbDrive.class.getName());
 
-    private static final Unit<UniversalUnitType> ROTATION_UNIT =
-            Units.REVOLUTION.divide(Constants.ClimbDrive.SEAT_MOTOR_GEAR_RATIO);
-    private static final Unit<UniversalUnitType> DISTANCE_UNIT =
-            ROTATION_UNIT.multiply(Units.INCH).multiply(Constants.Dimensions.FRONT_ARM_WHEEL_DIAMETER_INCHES * Math.PI);
+    // TODO: why can't this just be Units.INCH.multiply(...)
+    private static final Unit<UniversalUnitType> DISTANCE_UNIT = Units.REVOLUTION
+            .multiply(Units.INCH)
+            .multiply(Constants.Dimensions.LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES * Math.PI /
+                    Constants.ClimbDrive.SEAT_MOTOR_GEAR_RATIO);
 
     public static class SeatMotor extends PIDSubsystem implements Named {
 
@@ -50,9 +51,6 @@ public class ClimbDrive extends Subsystem implements Named {
             victorSPX.set(ControlMode.PercentOutput, output);
         }
 
-        @Override
-        protected void initDefaultCommand() {}
-
         public void setPercent(double percent) {
             victorSPX.set(ControlMode.PercentOutput, percent);
         }
@@ -72,6 +70,9 @@ public class ClimbDrive extends Subsystem implements Named {
         public void killMotor() {
             setPercent(0.0);
         }
+
+        @Override
+        protected void initDefaultCommand() {}
     }
 
     private final SeatMotor leftSeatMotor = new SeatMotor(
@@ -141,10 +142,6 @@ public class ClimbDrive extends Subsystem implements Named {
     public void killMotors() {
         leftSeatMotor.killMotor();
         rightSeatMotor.killMotor();
-    }
-
-    public static double dioUnitsToMetres(double value) {
-        return Units.convertAndCheck(value, DISTANCE_UNIT, Units.METRE);
     }
 
     public static double metresToDioUnits(double value) {

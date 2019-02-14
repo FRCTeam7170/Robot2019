@@ -6,12 +6,14 @@ public class Event {
     public final State dest;
     public final Transition transition;
     public final FiniteStateMachine machine;
+    private final Trigger trigger;
     public Object[] arguments;
 
-    Event(State src, State dest, Transition transition, FiniteStateMachine machine) {
+    Event(State src, State dest, Transition transition, FiniteStateMachine machine, Trigger trigger) {
         this.src = src;
         this.dest = dest;
         this.transition = transition;
         this.machine = machine;
+        this.trigger = trigger;
     }
 }

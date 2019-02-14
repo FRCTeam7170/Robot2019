@@ -1,6 +1,8 @@
 package frc.team7170.lib.fsm;
 
-import java.util.ArrayList;
+import frc.team7170.lib.Name;
+
+import java.util.*;
 import java.util.function.Consumer;
 
 public class FiniteStateMachine {
@@ -30,8 +32,9 @@ public class FiniteStateMachine {
         }
     }
 
-    private final ArrayList<State> states = new ArrayList<>();
-    private final ArrayList<Transition> transitions = new ArrayList<>();
+    private final List<State> states = new ArrayList<>();
+    private final List<Transition> transitions = new ArrayList<>();
+    private final Map<Trigger, List<Transition>> triggerToTransitions = new HashMap<>();
     private final boolean permitMistrigger;
     private final Consumer<Event>[] beforeStateChange, afterStateChange;
     private State currentState;
@@ -49,29 +52,58 @@ public class FiniteStateMachine {
     }
 
     public State newState(State.StateConfig config) {
+        if (!isStateNameUnique(config.name.getName())) {
+            throw new IllegalArgumentException("a state with name '" + config.name + "' already exists on this machine");
+        }
         State state = new State(config, this);
         states.add(state);
         // Make first state the initial state.
-        if (currentState == null) {
+        if (currentState == null && state.getPermitNoChildSelection()) {
             currentState = state;
         }
         return state;
     }
 
-    public State newState(String name) {
+    private boolean isStateNameUnique(String name) {
+        for (State s : states) {
+            if (s.getName().equals(name)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public State newState(Name name) {
         return newState(new State.StateConfig(name));
     }
 
     public Transition newTransition(Transition.TransitionConfig config) {
-        return new Transition(config, this);
+        Transition transition = new Transition(config, this);
+        transitions.add(transition);
+        triggerToTransitions.computeIfAbsent(transition.getTrigger(), trigger -> new ArrayList<>());
+        triggerToTransitions.get(transition.getTrigger()).add(transition);
+        return transition;
     }
 
-    public ArrayList<State> getStates() {
-        return states;
+    public Trigger newTrigger(Name name, boolean permitMistrigger) {
+        // TODO: add to some list?
+        return new Trigger(name, permitMistrigger, this);
     }
 
-    public ArrayList<Transition> getTransitions() {
-        return transitions;
+    public Trigger newTrigger(Name name) {
+        return newTrigger(name, false);
+    }
+
+    public List<State> getStates() {
+        return new ArrayList<>(states);
+    }
+
+    public List<Transition> getTransitions() {
+        return new ArrayList<>(transitions);
+    }
+
+    public Set<Trigger> getTriggers() {
+        return triggerToTransitions.keySet();
     }
 
     public State getState() {
@@ -82,22 +114,15 @@ public class FiniteStateMachine {
         return permitMistrigger;
     }
 
-    public ArrayList<State> getStateChain() {
-        ArrayList<State> stateChain = new ArrayList<>();
-        State state = currentState;
-        while (state != null) {
-            stateChain.add(state);
-            state = state.getParent();
-        }
-        return stateChain;
-    }
-
     public boolean inState(State state) {
-        return getStateChain().contains(state);
+        assertInitialized();
+        return currentState.getLineage().contains(state);
     }
 
     public void forceTo(State state, Object... arguments) {
-        Event event = prepareEvent(currentState, state, null, arguments);
+        assertInitialized();
+        state = state.assureValidNesting();
+        Event event = prepareEvent(currentState, state, null, null, arguments);
         beforeStateChange(event);
         currentState.exited(event);
         currentState = state;
@@ -105,28 +130,50 @@ public class FiniteStateMachine {
         afterStateChange(event);
     }
 
-    protected void beforeStateChange(Event event) {
+    private void beforeStateChange(Event event) {
         for (Consumer<Event> bsc : beforeStateChange) {
             bsc.accept(event);
         }
     }
 
-    protected void afterStateChange(Event event) {
+    private void afterStateChange(Event event) {
         for (Consumer<Event> asc : afterStateChange) {
             asc.accept(event);
         }
     }
 
-    protected boolean executeTransition(Transition transition, Object[] arguments) {
-        if (!canExecuteTransition(transition)) {
-            if (permitMistrigger) {
-                return false;
-            } else {
-                throw new RuntimeException("cannot execute given transition in current state");  // TODO: custom error?
+    boolean executeTrigger(Trigger trigger, Object[] arguments) {
+        assertInitialized();
+        for (Transition transition : triggerToTransitions.get(trigger)) {
+            State dest = transition.mapsTo(currentState);
+            if (dest != null) {
+                return executeTransition(transition, dest, trigger, arguments);
             }
         }
+        if (permitMistrigger || trigger.getPermitMistrigger() || currentState.getPermitMistrigger()) {
+            return false;
+        }
+        throw new IllegalStateException(String.format("cannot execute trigger '%s' in state '%s'",
+                trigger, currentState));
+    }
+
+    boolean executeTransition(Transition transition, Object[] arguments) {
+        assertInitialized();
         State dest = transition.mapsTo(currentState);
-        Event event = prepareEvent(currentState, dest, transition, arguments);
+        if (dest == null) {
+            if (permitMistrigger || transition.getPermitMistrigger() || currentState.getPermitMistrigger()) {
+                return false;
+            } else {
+                throw new IllegalStateException(String.format("cannot execute transition '%s' in state '%s'",
+                        transition, currentState));
+            }
+        }
+        return executeTransition(transition, dest, null, arguments);
+    }
+
+    private boolean executeTransition(Transition transition, State dest, Trigger trigger, Object[] arguments) {
+        dest = dest.assureValidNesting();
+        Event event = prepareEvent(currentState, dest, transition, trigger, arguments);
 
         transition.prepare(event);
         if (!transition.checkConditions(event)) {
@@ -134,31 +181,32 @@ public class FiniteStateMachine {
         }
         beforeStateChange(event);
         transition.started(event);
-        currentState.exited(event);
-        currentState = dest;
-        dest.entered(event);
+        if (!transition.isInternal()) {
+            currentState.exited(event);
+            currentState = dest;
+            dest.entered(event);
+        }
         transition.ended(event);
         afterStateChange(event);
         return true;
     }
 
-    protected Event prepareEvent(State src, State dest, Transition transition, Object[] arguments) {
-        Event event = new Event(src, dest, transition, this);
+    private Event prepareEvent(State src, State dest, Transition transition, Trigger trigger, Object[] arguments) {
+        Event event = new Event(src, dest, transition, this, trigger);
         event.arguments = arguments;
         return event;
     }
 
-    protected boolean canExecuteTransition(Transition transition) {
-        return transition.getSrcs().contains(currentState);
+    public void initialize(State state) {
+        if (currentState != null) {
+            throw new IllegalStateException("state machine is already initialized");
+        }
+        currentState = state;
     }
 
-    private State assureValidNesting(State state) {
-        while (state.hasParent() && !state.getPermitNoChildSelection()) {
-            state = state.getPreferredChild();
-            if (state == null) {
-                throw new RuntimeException("invalid machine state: state requiring child selection must have children");
-            }
+    private void assertInitialized() {
+        if (currentState == null) {
+            throw new IllegalStateException("state machine not initialized");
         }
-        return state;
     }
 }

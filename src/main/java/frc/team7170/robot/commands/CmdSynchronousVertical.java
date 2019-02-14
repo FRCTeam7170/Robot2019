@@ -3,7 +3,6 @@ package frc.team7170.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.lib.unit.Units;
 import frc.team7170.robot.Constants;
-import frc.team7170.robot.subsystems.ClimbLegs;
 
 public class CmdSynchronousVertical extends Command {
 
@@ -64,7 +63,7 @@ public class CmdSynchronousVertical extends Command {
         double H = platformHeightMetres;
         double y = Constants.Dimensions.FRONT_ARM_PIVOT_HEIGHT_METRES;
         double x = Constants.Dimensions.FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES;
-        double psi = Constants.FrontArms.VERTICAL_ANGLE;
+        double psi = Constants.FrontArms.VERTICAL_ANGLE_DEGREES;
 
         return Math.acos((H + r - y - h) / x) + psi;
     }

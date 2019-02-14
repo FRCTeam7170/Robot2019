@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.Notifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,11 +38,15 @@ public class DIOMultiplexer {
     }
 
     private final Map<Byte, Boolean> inputStates = new HashMap<>(8);
-    private final Notifier notifier = new Notifier(this::loop);
-    private final DigitalOutput select0;
-    private final DigitalOutput select1;
-    private final DigitalOutput select2;
+    {
+        for (byte i = 0; i < 8; ++i) {
+            inputStates.put(i, false);
+        }
+    }
+    private final Notifier notifier;
+    private final DigitalOutput select0, select1, select2;
     private final DigitalInput input;
+    private ArrayList<DIOMultiplexer> children;
     private byte currSelected = 0;
 
     public DIOMultiplexer(int select0Pin, int select1Pin, int select2Pin, int inputPin) {
@@ -50,12 +55,23 @@ public class DIOMultiplexer {
         select2 = new DigitalOutput(select2Pin);
         input = new DigitalInput(inputPin);
 
-        for (byte i = 0; i < 8; ++i) {
-            inputStates.put(i, false);
-        }
-
         select((byte) 0b000);
+        notifier = new Notifier(this::loop);
         notifier.startPeriodic((double) UPDATE_PERIOD_MS / 1000.0);
+    }
+
+    public DIOMultiplexer(DIOMultiplexer dioMultiplexer, int inputPin) {
+        select0 = select1 = select2 = null;
+        notifier = null;
+        input = new DigitalInput(inputPin);
+        dioMultiplexer.registerChild(this);
+    }
+
+    private void registerChild(DIOMultiplexer dioMultiplexer) {
+        if (children == null) {
+            children = new ArrayList<>();
+        }
+        children.add(dioMultiplexer);
     }
 
     public boolean get(Input input) {
@@ -68,8 +84,17 @@ public class DIOMultiplexer {
         select2.set((n & SELECT2_MASK) > 0);
     }
 
-    private void loop() {
+    private void updateState(byte n) {
         inputStates.replace(currSelected, input.get());
+        if (children != null) {
+            for (DIOMultiplexer child : children) {
+                child.updateState(n);
+            }
+        }
+    }
+
+    private void loop() {
+        updateState(currSelected);
         if (currSelected == 7) {
             currSelected = 0;
         } else {

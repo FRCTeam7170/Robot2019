@@ -6,8 +6,10 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.Units;
 import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.unit.UniversalUnitType;
 import frc.team7170.robot.Constants;
 
 import java.util.logging.Logger;
@@ -15,6 +17,9 @@ import java.util.logging.Logger;
 public class FrontArms extends Subsystem {
 
     private static final Logger LOGGER = Logger.getLogger(FrontArms.class.getName());
+
+    private static final Unit<UniversalUnitType> ROTATION_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
+            .divide(Constants.FrontArms.TOTAL_REDUCTION);
 
     private final TalonSRX master = new TalonSRX(Constants.CAN.FRONT_ARM_TALON_MASTER);
     private final TalonSRX follower = new TalonSRX(Constants.CAN.FRONT_ARM_TALON_FOLLOWER);
@@ -54,9 +59,6 @@ public class FrontArms extends Subsystem {
         return INSTANCE;
     }
 
-    @Override
-    protected void initDefaultCommand() {}
-
     public void setPercent(double percent) {
         master.set(ControlMode.PercentOutput, percent);
     }
@@ -86,11 +88,10 @@ public class FrontArms extends Subsystem {
                 Constants.FrontArms.ALLOWABLE_CLOSED_LOOP_ERROR);
     }
 
-    private static double talonUnitsToDegrees(double value) {
-        return Units.convertAndCheck(value, Constants.TALON_CIMCODER_ROTATION_UNIT, Units.DEGREES);
-    }
+    @Override
+    protected void initDefaultCommand() {}
 
     private static double degreesToTalonUnits(double value) {
-        return Units.convertAndCheck(value, Units.DEGREES, Constants.TALON_CIMCODER_ROTATION_UNIT);
+        return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);
     }
 }

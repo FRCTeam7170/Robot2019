@@ -26,6 +26,15 @@ public final class LF310Gamepad extends RumbleController {
     public final HIDButton B_LJOY;
     public final HIDButton B_RJOY;
 
+    public final POVButton POV0;
+    public final POVButton POV45;
+    public final POVButton POV90;
+    public final POVButton POV135;
+    public final POVButton POV180;
+    public final POVButton POV225;
+    public final POVButton POV270;
+    public final POVButton POV315;
+
     private final Map<String, Axis> axes = new HashMap<>();
     private final Map<String, Button> buttons = new HashMap<>();
 
@@ -50,10 +59,20 @@ public final class LF310Gamepad extends RumbleController {
         B_LJOY = new HIDButton(hid, 9);
         B_RJOY = new HIDButton(hid, 10);
 
+        POV0 = new POVButton(hid, POVButton.POVAngle.A0);
+        POV45 = new POVButton(hid, POVButton.POVAngle.A45);
+        POV90 = new POVButton(hid, POVButton.POVAngle.A90);
+        POV135 = new POVButton(hid, POVButton.POVAngle.A135);
+        POV180 = new POVButton(hid, POVButton.POVAngle.A180);
+        POV225 = new POVButton(hid, POVButton.POVAngle.A225);
+        POV270 = new POVButton(hid, POVButton.POVAngle.A270);
+        POV315 = new POVButton(hid, POVButton.POVAngle.A315);
+
         for (Axis a : new Axis[] {A_LX, A_LY, A_RX, A_RY, A_LTRIGGER, A_RTRIGGER}) {
             axes.put(a.getName(), a);
         }
-        for (Button b : new Button[] {B_A, B_B, B_X, B_Y, B_LBUMPER, B_RBUMPER, B_BACK, B_START, B_LJOY, B_RJOY}) {
+        for (Button b : new Button[] {B_A, B_B, B_X, B_Y, B_LBUMPER, B_RBUMPER, B_BACK, B_START, B_LJOY, B_RJOY,
+                POV0, POV45, POV90, POV135, POV180, POV225, POV270, POV315}) {
             buttons.put(b.getName(), b);
         }
     }

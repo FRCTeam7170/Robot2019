@@ -9,4 +9,8 @@ public enum ButtonActions implements ButtonAction {
     FULL_EXTEND_LA,
     FULL_RETRACT_LA,
     PRINT_PID,
+
+    ELEVATOR_LEVEL1,
+    ELEVATOR_LEVEL2,
+    ELEVATOR_LEVEL3,
 }

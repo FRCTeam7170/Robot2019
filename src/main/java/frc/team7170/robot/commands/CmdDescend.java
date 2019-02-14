@@ -37,6 +37,7 @@ public class CmdDescend extends CommandGroup {
         }
 
         // Reset the position of the front arms and climb legs.
-        addSequential(new CmdDeployAppendages(0.0, 0.0, false));
+        addSequential(new CmdDeployAppendages(Constants.FrontArms.HOME_ANGLE_DEGREES,
+                Constants.ClimbLegs.HOME_METRES, false));
     }
 }

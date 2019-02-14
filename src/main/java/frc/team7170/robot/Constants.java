@@ -47,16 +47,9 @@ public final class Constants {
     }
 
     public static final class DIO {
-        // Note the drive, front arms, and black legs have encoders plugged directly into the talon data ports.
-        // Additionally, the back legs have limit switches plugged directly into the talon data ports.
-
         // Elevator encoder
         public static final int ELEVATOR_ENCODER_A = 0;
         public static final int ELEVATOR_ENCODER_B = 0;
-
-        // Elevator limit switches
-        public static final int ELEVATOR_LIMIT_SWITCH_LOW = 0;
-        public static final int ELEVATOR_LIMIT_SWITCH_HIGH = 0;
 
         // Seat motor DIOs
         public static final int SEAT_MOTOR_DIO_LEFT = 0;
@@ -64,6 +57,11 @@ public final class Constants {
     }
 
     public static final class PWM {}
+
+    public static final class PCM {
+        public static final int PIN_SOLENOID = 0;
+        public static final int EJECT_SOLENOID = 1;
+    }
 
     public static final class Field {
         public static final double HAB_LEVEL_1_TO_3_INCHES = 19.0;
@@ -76,10 +74,10 @@ public final class Constants {
         public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.0;
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
+        public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
     }
 
     public static final class Drive {
-        public static final int ENCODER_CYCLES_PER_REVOLUTION = 360;
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
 
@@ -147,8 +145,11 @@ public final class Constants {
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
 
-        // Preset positions (degrees)
-        public static final double VERTICAL_ANGLE = 0.0;
+        // Preset positions
+        public static final double HOME_ANGLE_DEGREES = 0.0;
+        public static final double VERTICAL_ANGLE_DEGREES = 0.0;
+        public static final double HORIZONTAL_ANGLE_DEGREES = VERTICAL_ANGLE_DEGREES + 90.0;
+        public static final double PICKUP_ANGLE_DEGREES = 0.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -175,15 +176,14 @@ public final class Constants {
 
     public static final class ClimbLegs {
         public static final double TOTAL_REDUCTION = 64.0;  // gearbox reduction
-        public static final double DISTANCE_FACTOR = 0.0;  // metres/rotation
+        public static final double DISTANCE_FACTOR = 0.0;  // metres/armature rotation
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
 
-        // Preset positions (raw ticks)
-        public static final int CLIMB_L2_TICKS = 0;
-        public static final int CLIMB_L3_TICKS = 0;
+        // Preset positions
+        public static final double HOME_METRES = 0.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -247,10 +247,17 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double TOTAL_REDUCTION = 0.0;  // TODO: consider: gearbox, chain/sprocket, drum diameter
+        public static final double DISTANCE_FACTOR = 0.0;  // metres/pulse
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final CANSparkMax.IdleMode IDLE_MODE = CANSparkMax.IdleMode.kBrake;
         public static final int CURRENT_LIMIT_AMPS = 40;  // per motor
+
+        // Preset positions
+        public static final double HOME_METRES = 0.0;
+        public static final double RECEIVE_HATCH_PANEL_METRES = 0.0;
+        public static final double LEVEL1_METRES = 0.0;
+        public static final double LEVEL2_METRES = 0.0;
+        public static final double LEVEL3_METRES = 0.0;
 
         // Inversion
         public static final boolean INVERT_LEFT = false;
@@ -262,7 +269,11 @@ public final class Constants {
         public static final double I = 0.0;
         public static final double D = 0.0;
         public static final double F = 0.0;
-        // public static final double IZONE = 0;
+        public static final double IZONE = 0;
+    }
+
+    public static final class EndEffector {
+        public static final double EJECT_PULSE_DURATION_SECONDS = 0.5;
     }
 
     public static final class Climb {

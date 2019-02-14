@@ -29,6 +29,15 @@ public final class LE3DPJoystick extends HIDController {
     public final HIDButton B_TRIGGER;
     public final HIDButton B_THUMB;
 
+    public final POVButton POV0;
+    public final POVButton POV45;
+    public final POVButton POV90;
+    public final POVButton POV135;
+    public final POVButton POV180;
+    public final POVButton POV225;
+    public final POVButton POV270;
+    public final POVButton POV315;
+
     private final Map<String, Axis> axes = new HashMap<>();
     private final Map<String, Button> buttons = new HashMap<>();
 
@@ -53,10 +62,20 @@ public final class LE3DPJoystick extends HIDController {
         B_11 = new HIDButton(hid, 11);
         B_12 = new HIDButton(hid, 12);
 
+        POV0 = new POVButton(hid, POVButton.POVAngle.A0);
+        POV45 = new POVButton(hid, POVButton.POVAngle.A45);
+        POV90 = new POVButton(hid, POVButton.POVAngle.A90);
+        POV135 = new POVButton(hid, POVButton.POVAngle.A135);
+        POV180 = new POVButton(hid, POVButton.POVAngle.A180);
+        POV225 = new POVButton(hid, POVButton.POVAngle.A225);
+        POV270 = new POVButton(hid, POVButton.POVAngle.A270);
+        POV315 = new POVButton(hid, POVButton.POVAngle.A315);
+
         for (Axis a : new Axis[] {A_X, A_Y, A_Z, A_THROTTLE}) {
             axes.put(a.getName(), a);
         }
-        for (Button b : new Button[] {B_1, B_2, B_3, B_4, B_5, B_6, B_7, B_8, B_9, B_10, B_11, B_12}) {
+        for (Button b : new Button[] {B_1, B_2, B_3, B_4, B_5, B_6, B_7, B_8, B_9, B_10, B_11, B_12,
+                POV0, POV45, POV90, POV135, POV180, POV225, POV270, POV315}) {
             buttons.put(b.getName(), b);
         }
     }

@@ -99,15 +99,12 @@ public class Drive extends Subsystem implements Named {
         talon.setSensorPhase(Constants.Drive.SENSOR_PHASE);
     }
 
-    @Override
-    protected void initDefaultCommand() {}
-
     public void tankDrive(double left, double right) {
         left = CalcUtil.applyBounds(left, -1.0, 1.0);
         right = CalcUtil.applyBounds(right, -1.0, 1.0);
 
-        setLeftVelocity(percentToVelocity(left));
-        setRightVelocity(percentToVelocity(right));
+        setLeftVelocity(metresPerSecondToTalonUnits(left * Constants.Drive.MAX_VELOCITY));
+        setRightVelocity(metresPerSecondToTalonUnits(right * Constants.Drive.MAX_VELOCITY));
     }
 
     public void arcadeDrive(double y, double z) {
@@ -141,14 +138,6 @@ public class Drive extends Subsystem implements Named {
         }
 
         tankDrive(l, -r);
-    }
-
-    private double percentToVelocity(double pct) {
-        double revolutionsPerSec = pct * Constants.Drive.MAX_VELOCITY /
-                (Math.PI * Constants.Dimensions.WHEEL_DIAMETER_INCHES);
-        // The 0.1 is to convert "per second" into "per 0.1 seconds".
-        // The 4 is for the quadrature encoder.
-        return revolutionsPerSec * 0.1 * Constants.Drive.ENCODER_CYCLES_PER_REVOLUTION * 4;
     }
 
     public void zeroEncoders() {
@@ -224,6 +213,7 @@ public class Drive extends Subsystem implements Named {
         rightMaster.set(ControlMode.Velocity, metresPerSecondToTalonUnits(metresPerSecond));
     }
 
+    /*
     public double getLeftEncoder() {
         return talonUnitsToRotations(leftMaster.getSelectedSensorPosition());
     }
@@ -247,6 +237,10 @@ public class Drive extends Subsystem implements Named {
     public double getRightVelocity() {
         return talonUnitsToMetresPerSecond(rightMaster.getSelectedSensorVelocity());
     }
+    */
+
+    @Override
+    protected void initDefaultCommand() {}
 
     private static double talonUnitsToRotations(double value) {
         return Units.convertAndCheck(value, Constants.TALON_MAG_ENCODER_ROTATION_UNIT, Units.REVOLUTION);

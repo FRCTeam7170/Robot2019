@@ -1,19 +1,26 @@
 package frc.team7170.lib.fsm;
 
+import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 public class State implements Named {
 
+    private static final String PARENT_CHILD_STR_SEP = ".";
+
     public static class StateConfig {
 
-        private final String name;
+        final Name name;
         private Consumer<Event>[] onEnter, onExit;
         private boolean permitNoChildSelection = false;
-        // TODO: permitAllOutgoing & permitAllIncoming
+        private boolean permitMistrigger = false;
 
-        public StateConfig(String name) {
+        public StateConfig(Name name) {
             this.name = name;
         }
 
@@ -31,20 +38,28 @@ public class State implements Named {
             permitNoChildSelection = true;
             return this;
         }
+
+        public StateConfig permitMistrigger() {
+            permitMistrigger = true;
+            return this;
+        }
     }
 
-    private final String name;
+    private final Name name;
     private final Consumer<Event>[] onEnter, onExit;
-    private final boolean permitNoChildSelection;  // TODO
+    private final boolean permitNoChildSelection;
+    private final boolean permitMistrigger;
     private final FiniteStateMachine machine;
     private final State parent;
     private State preferredChild;
+    private Set<String> subStateNames;
 
     private State(StateConfig config, FiniteStateMachine machine, State parent) {
         this.name = config.name;
         this.onEnter = config.onEnter;
         this.onExit = config.onExit;
         this.permitNoChildSelection = config.permitNoChildSelection;
+        this.permitMistrigger = config.permitMistrigger;
         this.machine = machine;
         this.parent = parent;
     }
@@ -55,7 +70,26 @@ public class State implements Named {
 
     @Override
     public String getName() {
+        return name.getName();
+    }
+
+    @Override
+    public Name getCheckedName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return lineageToString(new StringBuilder());
+    }
+
+    private String lineageToString(StringBuilder builder) {
+        builder.insert(0, getName());
+        if (hasParent()) {
+            builder.insert(0, PARENT_CHILD_STR_SEP);
+            parent.lineageToString(builder);
+        }
+        return builder.toString();
     }
 
     public State getParent() {
@@ -64,6 +98,17 @@ public class State implements Named {
 
     public boolean hasParent() {
         return parent != null;
+    }
+
+    public List<State> getLineage() {
+        // TODO: cache this?
+        List<State> lineage = new ArrayList<>();
+        State state = this;
+        while (state != null) {
+            lineage.add(state);
+            state = state.parent;
+        }
+        return lineage;
     }
 
     public Consumer<Event>[] getOnEnter() {
@@ -76,6 +121,10 @@ public class State implements Named {
 
     public boolean getPermitNoChildSelection() {
         return permitNoChildSelection;
+    }
+
+    public boolean getPermitMistrigger() {
+        return permitMistrigger;
     }
 
     public FiniteStateMachine getMachine() {
@@ -94,6 +143,14 @@ public class State implements Named {
     }
 
     public State addSubState(StateConfig config) {
+        if (subStateNames == null) {
+            subStateNames = new HashSet<>();
+        }
+        String name = config.name.getName();
+        if (!isSubStateNameUnique(name)) {
+            throw new IllegalArgumentException("a sub-state with name '" + name + "' already exists on this state");
+        }
+        subStateNames.add(name);
         State subState = new State(config, this.machine, this);
         if (preferredChild == null) {
             preferredChild = subState;
@@ -101,7 +158,11 @@ public class State implements Named {
         return subState;
     }
 
-    public State addSubState(String name) {
+    private boolean isSubStateNameUnique(String name) {
+        return !subStateNames.contains(name);
+    }
+
+    public State addSubState(Name name) {
         return addSubState(new StateConfig(name));
     }
 
@@ -115,5 +176,16 @@ public class State implements Named {
         for (Consumer<Event> oe : onExit) {
             oe.accept(event);
         }
+    }
+
+    State assureValidNesting() {
+        State state = this;
+        while (!state.permitNoChildSelection) {
+            state = state.getPreferredChild();
+            if (state == null) {
+                throw new IllegalStateException("state requiring child selection must have children");
+            }
+        }
+        return state;
     }
 }
