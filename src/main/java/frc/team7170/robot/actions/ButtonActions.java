@@ -7,7 +7,7 @@ public enum ButtonActions implements ButtonAction {
     ELEVATOR_LEVEL2,
     ELEVATOR_LEVEL3,
 
-    PICKUP_PREPARE,
+    // PICKUP_PREPARE,
     PICKUP,
     PICKUP_CANCEL,
 }

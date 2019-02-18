@@ -35,7 +35,7 @@ public class TeleopStateMachine {
     public final Trigger elevateTrigger = fsm.newTrigger(new Name("elevate"));
     // public final Trigger ejectTrigger = fsm.newTrigger(new Name("eject"));
     // public final Trigger lateralSlideTrigger = fsm.newTrigger(new Name("lateralSlide"));
-    public final Trigger pickupPrepareTrigger = fsm.newTrigger(new Name("pickupPrepare"));
+    // public final Trigger pickupPrepareTrigger = fsm.newTrigger(new Name("pickupPrepare"));
     public final Trigger pickupTrigger = fsm.newTrigger(new Name("pickup"));
     public final Trigger pickupCancelTrigger = fsm.newTrigger(new Name("pickupCancel"));
     public final Trigger pickupFinishedTrigger = fsm.newTrigger(new Name("pickupFinished"));
@@ -55,7 +55,7 @@ public class TeleopStateMachine {
     // );  TODO: will need finishedEject trigger/transition too
     @SuppressWarnings("unchecked")
     private final Transition pickupPrepareTransition = fsm.newTransition(
-            new Transition.TransitionConfig(normalState, pickupPrepareState, pickupPrepareTrigger)
+            new Transition.TransitionConfig(normalState, pickupPrepareState, pickupTrigger)
                     .onStart(this::pickupPrepare)
     );
     @SuppressWarnings("unchecked")

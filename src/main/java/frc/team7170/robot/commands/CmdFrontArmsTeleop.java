@@ -23,10 +23,7 @@ public class CmdFrontArmsTeleop extends Command {
     @Override
     protected void execute() {
         try {
-            // TODO: Make pickup prepare and pickup the same button
-            if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_PREPARE).getPressed()) {
-                tsm.pickupPrepareTrigger.execute();
-            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP).getPressed()) {
+            if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP).getPressed()) {
                 tsm.pickupTrigger.execute();
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_CANCEL).getPressed()) {
                 tsm.pickupCancelTrigger.execute();
