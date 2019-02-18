@@ -17,7 +17,7 @@ public class State implements Named {
 
         final Name name;
         private Consumer<Event>[] onEnter, onExit;
-        private boolean permitNoChildSelection = false;
+        private boolean permitNoChildSelection = true;
         private boolean permitMistrigger = false;
 
         public StateConfig(Name name) {
@@ -34,8 +34,8 @@ public class State implements Named {
             return this;
         }
 
-        public StateConfig permitNoChildSelection() {
-            permitNoChildSelection = true;
+        public StateConfig requireChildSelection() {
+            permitNoChildSelection = false;
             return this;
         }
 

@@ -1,5 +1,7 @@
 package frc.team7170.lib.fsm;
 
+import java.util.Arrays;
+
 public class Event {
 
     public final State src;
@@ -15,5 +17,27 @@ public class Event {
         this.transition = transition;
         this.machine = machine;
         this.trigger = trigger;
+    }
+
+    public void assertArgumentsCount(int count) {
+        if (arguments.length != count) {
+            throw new IllegalArgumentException(
+                    String.format("invalid number of arguments; expected %d, got %d", count, arguments.length)
+            );
+        }
+    }
+
+    public void assertArgumentsTypes(Class<?>... types) {
+        assertArgumentsCount(types.length);
+        for (int i = 0; i < types.length; ++i) {
+            if (!types[i].isInstance(arguments[i])) {
+                throw new IllegalArgumentException(
+                        String.format("invalid arguments type; expected %s, got %s",
+                                Arrays.toString(Arrays.stream(types).map(Class::getName).toArray()),
+                                Arrays.toString(Arrays.stream(arguments).map(Object::getClass).map(Class::getName).toArray())
+                        )
+                );
+            }
+        }
     }
 }

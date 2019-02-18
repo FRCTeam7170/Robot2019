@@ -63,10 +63,18 @@ public class Transition {
             return ret;
         }
 
+        public static TransitionConfig newReflexive(State state, Trigger trigger) {
+            return newReflexive(new State[] {state}, trigger);
+        }
+
         public static TransitionConfig newInternal(State[] states, Trigger trigger) {
             TransitionConfig ret = new TransitionConfig(states, null, trigger);
             ret.mode = TransitionMode.INTERNAL;
             return ret;
+        }
+
+        public static TransitionConfig newInternal(State state, Trigger trigger) {
+            return newInternal(new State[] {state}, trigger);
         }
     }
 

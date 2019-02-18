@@ -17,6 +17,12 @@ public class EndEffector extends Subsystem {
         retractPin();
     }
 
+    private static final EndEffector INSTANCE = new EndEffector();
+
+    public static EndEffector getInstance() {
+        return INSTANCE;
+    }
+
     public void eject() {
         ejectSolenoid.startPulse();
     }

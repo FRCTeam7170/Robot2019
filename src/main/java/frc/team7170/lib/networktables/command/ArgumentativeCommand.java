@@ -21,14 +21,11 @@ public class ArgumentativeCommand implements Consumer<StringArguments> {
         public final int consume;
 
         public Argument(Name longName, Name shortName, int consume) {
-            if (longName == null) {
-                throw new NullPointerException("argument long name must be non-null");
-            }
             if (consume < 0) {
                 throw new IllegalArgumentException("argument cannot consume less that zero arguments");
             }
             this.longName = longName.getName();
-            this.shortName = shortName.getName();
+            this.shortName = shortName != null ? shortName.getName() : null;
             this.consume = consume;
         }
 

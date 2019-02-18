@@ -1,10 +1,9 @@
 package frc.team7170.lib.networktables.command;
 
 import edu.wpi.first.networktables.EntryNotification;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import frc.team7170.lib.Name;
-import frc.team7170.lib.logging.LoggerManager;
 import frc.team7170.lib.networktables.stream.StringStream;
 
 import java.util.Arrays;
@@ -27,9 +26,9 @@ public class Commander {
     private final HashMap<String, Consumer<StringArguments>> commandMap = new HashMap<>();
     private final StringStream commandStream;
 
-    public Commander(NetworkTableInstance inst, Name namePrefix) {
-        NetworkTableEntry receivingEntry = inst.getEntry(namePrefix + UPLOAD_SUFFIX);
-        NetworkTableEntry transmittingEntry = inst.getEntry(namePrefix + DOWNLOAD_SUFFIX);
+    public Commander(NetworkTable table, Name namePrefix) {
+        NetworkTableEntry receivingEntry = table.getEntry(namePrefix + UPLOAD_SUFFIX);
+        NetworkTableEntry transmittingEntry = table.getEntry(namePrefix + DOWNLOAD_SUFFIX);
         commandStream = new StringStream(new StringStream.Config()
                 .receivingEntry(receivingEntry)
                 .transmittingEntry(transmittingEntry));

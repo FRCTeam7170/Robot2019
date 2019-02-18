@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.Units;
@@ -84,6 +85,15 @@ public class ClimbLegs extends Subsystem implements Named {
 
         @Override
         protected void initDefaultCommand() {}
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+            super.initSendable(builder);
+            builder.addDoubleProperty("P", null, value -> talon.config_kP(0, value));
+            builder.addDoubleProperty("I", null, value -> talon.config_kI(0, value));
+            builder.addDoubleProperty("D", null, value -> talon.config_kD(0, value));
+            builder.addDoubleProperty("F", null, value -> talon.config_kF(0, value));
+        }
     }
 
     private final LinearActuator leftLinearActuator = new LinearActuator(

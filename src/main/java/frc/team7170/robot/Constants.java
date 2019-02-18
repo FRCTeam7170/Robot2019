@@ -20,43 +20,45 @@ public final class Constants {
     }
 
     public static final class CAN {
-        public static final int PDP = 0;
-        public static final int PCM = 0;
+        public static final int PDP = 5;
+        public static final int PCM = 6;
 
         // Drive talons
-        public static final int DRIVE_TALON_LEFT_MASTER = 0;  // Front
-        public static final int DRIVE_TALON_LEFT_FOLLOWER = 0;  // Back
-        public static final int DRIVE_TALON_RIGHT_MASTER = 0;  // Front
-        public static final int DRIVE_TALON_RIGHT_FOLLOWER = 0;  // Back
+        public static final int DRIVE_TALON_LEFT_MASTER = 10;  // Front
+        public static final int DRIVE_TALON_LEFT_FOLLOWER = 11;  // Back
+        public static final int DRIVE_TALON_RIGHT_MASTER = 12;  // Front
+        public static final int DRIVE_TALON_RIGHT_FOLLOWER = 13;  // Back
 
         // Front arm talons
-        public static final int FRONT_ARM_TALON_MASTER = 0;  // Left
-        public static final int FRONT_ARM_TALON_FOLLOWER = 0;  // Right
+        public static final int FRONT_ARM_TALON_MASTER = 14;  // Left
+        public static final int FRONT_ARM_TALON_FOLLOWER = 15;  // Right
 
         // Climb leg talons
-        public static final int CLIMB_LEGS_TALON_LEFT = 0;
-        public static final int CLIMB_LEGS_TALON_RIGHT = 0;
+        public static final int CLIMB_LEGS_TALON_LEFT = 16;
+        public static final int CLIMB_LEGS_TALON_RIGHT = 17;
 
         // Elevator victors
-        public static final int ELEVATOR_SPARK_MAX_MASTER = 0;  // Left
-        public static final int ELEVATOR_SPARK_MAX_FOLLOWER = 0;  // Right
+        public static final int ELEVATOR_SPARK_MAX_MASTER = 20;  // Left
+        public static final int ELEVATOR_SPARK_MAX_FOLLOWER = 21;  // Right
 
         // Climb drive spark maxes
-        public static final int CLIMB_DRIVE_VICTOR_LEFT = 0;
-        public static final int CLIMB_DRIVE_VICTOR_RIGHT = 0;
+        public static final int CLIMB_DRIVE_VICTOR_LEFT = 18;
+        public static final int CLIMB_DRIVE_VICTOR_RIGHT = 19;
     }
 
     public static final class DIO {
         // Elevator encoder
         public static final int ELEVATOR_ENCODER_A = 0;
-        public static final int ELEVATOR_ENCODER_B = 0;
+        public static final int ELEVATOR_ENCODER_B = 1;
 
         // Seat motor DIOs
-        public static final int SEAT_MOTOR_DIO_LEFT = 0;
-        public static final int SEAT_MOTOR_DIO_RIGHT = 0;
+        public static final int SEAT_MOTOR_DIO_LEFT = 2;
+        public static final int SEAT_MOTOR_DIO_RIGHT = 3;
     }
 
-    public static final class PWM {}
+    public static final class PWM {
+        public static final int LATERAL_SLIDE_SERVO = 0;
+    }
 
     public static final class PCM {
         public static final int PIN_SOLENOID = 0;
@@ -75,6 +77,12 @@ public final class Constants {
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
+    }
+
+    public static final class State {
+        public static final boolean PROPORTIONAL_MODE = false;
+        public static final double PROPORTIONAL_MULTIPLIER = 0.0;  // 1/[elevator height metres]
+        public static final double THRESHOLD_MULTIPLIER = 0.5;
     }
 
     public static final class Drive {
@@ -162,7 +170,7 @@ public final class Constants {
         public static final int PEAK_CURRENT_LIMIT_DURATION_MS = 100;
 
         // Inversion
-        public static final boolean INVERT_LEFT = false;
+        public static final boolean INVERT_LEFT = true;
         public static final boolean INVERT_RIGHT = false;
         public static final boolean SENSOR_PHASE = false;
 
@@ -196,7 +204,7 @@ public final class Constants {
         public static final int PEAK_CURRENT_LIMIT_DURATION_MS = 100;
 
         // Inversion
-        public static final boolean INVERT_LEFT = false;
+        public static final boolean INVERT_LEFT = true;
         public static final boolean INVERT_RIGHT = false;
         public static final boolean SENSOR_PHASE_LEFT = false;
         public static final boolean SENSOR_PHASE_RIGHT = false;
@@ -248,6 +256,7 @@ public final class Constants {
 
     public static final class Elevator {
         public static final double DISTANCE_FACTOR = 0.0;  // metres/pulse
+        public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final CANSparkMax.IdleMode IDLE_MODE = CANSparkMax.IdleMode.kBrake;
         public static final int CURRENT_LIMIT_AMPS = 40;  // per motor

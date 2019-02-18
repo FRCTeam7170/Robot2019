@@ -10,13 +10,13 @@ public class POVButton extends TriggerButton {
 
     public enum POVAngle {
         A0(0),
-        A45(0),
-        A90(0),
-        A135(0),
-        A180(0),
-        A225(0),
-        A270(0),
-        A315(0);
+        A45(45),
+        A90(90),
+        A135(135),
+        A180(180),
+        A225(225),
+        A270(270),
+        A315(315);
 
         private final int angle;
 

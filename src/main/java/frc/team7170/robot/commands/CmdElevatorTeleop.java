@@ -18,11 +18,11 @@ public class CmdElevatorTeleop extends Command {
     protected void execute() {
         try {
             if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL1).getPressed()) {
-                new CmdMoveElevator(Constants.Elevator.LEVEL1_METRES, true);
+                new CmdMoveElevator(Constants.Elevator.LEVEL1_METRES, true).start();
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL2).getPressed()) {
-                new CmdMoveElevator(Constants.Elevator.LEVEL2_METRES, true);
+                new CmdMoveElevator(Constants.Elevator.LEVEL2_METRES, true).start();
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL3).getPressed()) {
-                new CmdMoveElevator(Constants.Elevator.LEVEL3_METRES, true);
+                new CmdMoveElevator(Constants.Elevator.LEVEL3_METRES, true).start();
             }
         } catch (NullPointerException e) {
             if (!warned) {

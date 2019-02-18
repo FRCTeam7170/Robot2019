@@ -10,9 +10,11 @@ public class HIDButton extends TriggerButton {
 
     public HIDButton(GenericHID hid, int port, Name name) {
         super(name);
+        /*
         if (port > hid.getButtonCount()) {
             throw new IllegalArgumentException("button port number exceeds the number of buttons on given HID");
         }
+        */
         this.hid = hid;
         this.port = port;
     }

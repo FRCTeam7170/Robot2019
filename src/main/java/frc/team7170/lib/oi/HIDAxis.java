@@ -11,9 +11,11 @@ public class HIDAxis extends ScaledAxis {
 
     public HIDAxis(GenericHID hid, int port, Name name) {
         super(name);
+        /*
         if (port >= hid.getAxisCount()) {
             throw new IllegalArgumentException("axis port number exceeds the number of axes on given HID");
         }
+        */
         this.hid = hid;
         this.port = port;
     }

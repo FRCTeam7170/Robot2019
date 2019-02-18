@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.Units;
 import frc.team7170.lib.CalcUtil;
@@ -93,5 +94,14 @@ public class FrontArms extends Subsystem {
 
     private static double degreesToTalonUnits(double value) {
         return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addDoubleProperty("P", null, value -> master.config_kP(0, value));
+        builder.addDoubleProperty("I", null, value -> master.config_kI(0, value));
+        builder.addDoubleProperty("D", null, value -> master.config_kD(0, value));
+        builder.addDoubleProperty("F", null, value -> master.config_kF(0, value));
     }
 }
