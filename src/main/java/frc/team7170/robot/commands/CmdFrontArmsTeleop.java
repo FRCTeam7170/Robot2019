@@ -2,7 +2,7 @@ package frc.team7170.robot.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.lib.oi.KeyBindings;
-import frc.team7170.robot.Constants;
+import frc.team7170.robot.TeleopStateMachine;
 import frc.team7170.robot.actions.ButtonActions;
 import frc.team7170.robot.subsystems.FrontArms;
 
@@ -12,16 +12,24 @@ import java.util.logging.Logger;
 public class CmdFrontArmsTeleop extends Command {
 
     private static final Logger LOGGER = Logger.getLogger(CmdFrontArmsTeleop.class.getName());
-    private static final FrontArms frontArms = FrontArms.getInstance();
+    private static final TeleopStateMachine tsm = TeleopStateMachine.getInstance();
 
     private boolean warned = false;
+
+    public CmdFrontArmsTeleop() {
+        requires(FrontArms.getInstance());
+    }
 
     @Override
     protected void execute() {
         try {
+            // TODO: Make pickup prepare and pickup the same button
             if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_PREPARE).getPressed()) {
-                new CmdRotateFrontArms(Constants.FrontArms.HORIZONTAL_ANGLE_DEGREES, true).start();
+                tsm.pickupPrepareTrigger.execute();
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP).getPressed()) {
+                tsm.pickupTrigger.execute();
+            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_CANCEL).getPressed()) {
+                tsm.pickupCancelTrigger.execute();
             }
         } catch (NullPointerException e) {
             if (!warned) {

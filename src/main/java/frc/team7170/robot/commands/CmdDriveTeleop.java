@@ -3,6 +3,7 @@ package frc.team7170.robot.commands;
 import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.lib.oi.KeyBindings;
 import frc.team7170.lib.oi.KeyMap;
+import frc.team7170.robot.TeleopStateMachine;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.subsystems.Drive;
 
@@ -12,13 +13,13 @@ import java.util.logging.Logger;
 public class CmdDriveTeleop extends Command {
 
     private static final Logger LOGGER = Logger.getLogger(CmdDriveTeleop.class.getName());
-    private static final Drive drive = Drive.getInstance();
+    private static final TeleopStateMachine tsm = TeleopStateMachine.getInstance();
 
     private boolean isTankDrive = true;
     private boolean warned = false;
 
     public CmdDriveTeleop() {
-        requires(drive);
+        requires(Drive.getInstance());
     }
 
     @Override
@@ -34,14 +35,16 @@ public class CmdDriveTeleop extends Command {
     protected void execute() {
         try {
             if (isTankDrive) {
-                drive.tankDrive(
+                tsm.driveTrigger.execute(
                         KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_L).get(),
-                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_R).get()
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_R).get(),
+                        true
                 );
             } else {
-                drive.arcadeDrive(
+                tsm.driveTrigger.execute(
                         KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_Y).get(),
-                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_Z).get()
+                        KeyBindings.getInstance().actionToAxis(AxisActions.DRIVE_Z).get(),
+                        false
                 );
             }
         } catch (NullPointerException e) {

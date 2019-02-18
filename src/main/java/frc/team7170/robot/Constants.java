@@ -77,12 +77,15 @@ public final class Constants {
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
+
     }
 
     public static final class State {
-        public static final boolean PROPORTIONAL_MODE = false;
-        public static final double PROPORTIONAL_MULTIPLIER = 0.0;  // 1/[elevator height metres]
-        public static final double THRESHOLD_MULTIPLIER = 0.5;
+        public static final double HOME_MULTIPLIER = 1.0;
+        public static final double LEVEL1_MULTIPLIER = 1.0;
+        public static final double LEVEL2_MULTIPLIER = 0.75;
+        public static final double LEVEL3_MULTIPLIER = 0.5;
+        public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
     }
 
     public static final class Drive {
@@ -264,7 +267,7 @@ public final class Constants {
         // Preset positions
         public static final double HOME_METRES = 0.0;
         public static final double RECEIVE_HATCH_PANEL_METRES = 0.0;
-        public static final double LEVEL1_METRES = 0.0;
+        public static final double LEVEL1_METRES = HOME_METRES;
         public static final double LEVEL2_METRES = 0.0;
         public static final double LEVEL3_METRES = 0.0;
 
