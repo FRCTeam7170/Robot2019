@@ -50,6 +50,7 @@ public class  Elevator extends Subsystem {
         upperLimitSwitch.enableLimitSwitch(true);
 
         encoder.setDistancePerPulse(Constants.Elevator.DISTANCE_FACTOR);
+        pidController.disable();  // TODO: is this necessary?
     }
 
     private static final Elevator INSTANCE = new Elevator();

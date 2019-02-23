@@ -33,7 +33,8 @@ public final class DataLogManager {
         saveLogFileNum(LOG_NUM + 1);
     }
 
-    private final Commander dataLogCommander = new Commander(NetworkTableInstance.getDefault(), new Name("dataLog"));
+    // TODO: TEMP NT TABLE
+    private final Commander dataLogCommander = new Commander(NetworkTableInstance.getDefault().getTable("temp"), new Name("dataLog"));
     private final MessagePacker packer;
     private final DataCollectorThread thread = new DataCollectorThread();
     private volatile HashMap<DataLogger, Pair<String[], String>> dataLoggers = new HashMap<>();

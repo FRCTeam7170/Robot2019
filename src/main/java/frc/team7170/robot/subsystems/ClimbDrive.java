@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.SeatMotorDIO;
 import frc.team7170.lib.unit.Unit;
@@ -13,6 +14,7 @@ import frc.team7170.robot.Constants;
 
 import java.util.logging.Logger;
 
+// TODO: convert to bang-bang control
 public class ClimbDrive extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbDrive.class.getName());
@@ -73,6 +75,15 @@ public class ClimbDrive extends Subsystem implements Named {
 
         @Override
         protected void initDefaultCommand() {}
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+            super.initSendable(builder);
+            builder.addDoubleProperty("P", null, value -> getPIDController().setP(value));
+            builder.addDoubleProperty("I", null, value -> getPIDController().setI(value));
+            builder.addDoubleProperty("D", null, value -> getPIDController().setD(value));
+            builder.addDoubleProperty("F", null, value -> getPIDController().setF(value));
+        }
     }
 
     private final SeatMotor leftSeatMotor = new SeatMotor(

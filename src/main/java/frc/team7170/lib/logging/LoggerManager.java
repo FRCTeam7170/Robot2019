@@ -14,7 +14,8 @@ public final class LoggerManager {
     private static final Logger LOGGER = Logger.getLogger(LoggerManager.class.getName());
 
     // TODO this commander should HAVE to be on...
-    private static final Commander commander = new Commander(NetworkTableInstance.getDefault(), new Name("log"));
+    // TODO: TEMP NT TABLE
+    private static final Commander commander = new Commander(NetworkTableInstance.getDefault().getTable("temp"), new Name("log"));
     private static FileHandler fileHandler;
     private static ConsoleHandler consoleHandler;
 

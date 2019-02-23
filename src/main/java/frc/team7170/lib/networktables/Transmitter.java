@@ -18,7 +18,8 @@ public class Transmitter extends Communicator {
     @Override
     public boolean start() {
         if (!isRunning() && pollRateMs != TransmitFrequency.STATIC) {
-            cmdTimedRunnable = new CmdTimedRunnable(runnable, pollRateMs, true);
+            cmdTimedRunnable = new CmdTimedRunnable(runnable, pollRateMs);
+            cmdTimedRunnable.start();
             return true;
         }
         return false;

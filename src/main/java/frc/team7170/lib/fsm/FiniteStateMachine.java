@@ -2,6 +2,7 @@ package frc.team7170.lib.fsm;
 
 import frc.team7170.lib.Name;
 
+import java.lang.reflect.Array;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -57,10 +58,6 @@ public class FiniteStateMachine {
         }
         State state = new State(config, this);
         states.add(state);
-        // Make first state the initial state.
-        if (currentState == null && state.getPermitNoChildSelection()) {
-            currentState = state;
-        }
         return state;
     }
 

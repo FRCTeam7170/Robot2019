@@ -7,7 +7,8 @@ import frc.team7170.lib.Named;
 import frc.team7170.lib.oi.*;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.actions.ButtonActions;
-import frc.team7170.robot.subsystems.ClimbLegs;
+import frc.team7170.robot.commands.*;
+import frc.team7170.robot.subsystems.*;
 
 // TODO: spooky-console: NTBrowser needs ability to make new entry
 // TODO: make everything a singleton instead of static
@@ -22,24 +23,24 @@ public class Robot extends TimedRobot implements Named {
         Robot.startRobot(Robot::new);
     }
 
-    private LE3DPJoystick joystick;
+    //private LE3DPJoystick joystick;
     private LF310Gamepad gamepad;
 
     private KeyMap defaultKeyMap;
 
     @Override
     public void robotInit() {
-        joystick = new LE3DPJoystick(new GenericHID(Constants.OI.JOYSTICK_PORT) {
-            @Override
-            public double getX(Hand hand) {
-                return getRawAxis(0);
-            }
-
-            @Override
-            public double getY(Hand hand) {
-                return getRawAxis(1);
-            }
-        });
+//        joystick = new LE3DPJoystick(new GenericHID(Constants.OI.JOYSTICK_PORT) {
+//            @Override
+//            public double getX(Hand hand) {
+//                return getRawAxis(0);
+//            }
+//
+//            @Override
+//            public double getY(Hand hand) {
+//                return getRawAxis(1);
+//            }
+//        });
 
         gamepad = new LF310Gamepad(new GenericHID(Constants.OI.GAMEPAD_PORT) {
             @Override
@@ -62,44 +63,47 @@ public class Robot extends TimedRobot implements Named {
         });
 
         // Setup keybindings system
-        KeyBindings.getInstance().registerController(joystick);
+        //KeyBindings.getInstance().registerController(joystick);
         KeyBindings.getInstance().registerController(gamepad);
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
-                .addPair(AxisActions.LIN_ACTUATOR, gamepad, gamepad.A_RY)
+                .addPair(ButtonActions.EJECT, gamepad, gamepad.B_A)
+                .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_B)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
 
         // Setup subsystem default commands (for whatever reason, this cannot be done in a singleton subsystem constructor)
-        // Drive.INSTANCE.setDefaultCommand(new CmdDriveTeleop());
+         Drive.getInstance().setDefaultCommand(new CmdDriveTeleop());
+         FrontArms.getInstance().setDefaultCommand(new CmdFrontArmsTeleop());
+         Elevator.getInstance().setDefaultCommand(new CmdElevatorTeleop());
+         EndEffector.getInstance().setDefaultCommand(new CmdEndEffectorTeleop());
     }
 
     @Override
     public void disabledInit() {}
 
+    // AKA: sandstormInit
     @Override
     public void autonomousInit() {}
 
     @Override
-    public void teleopInit() {
-        double value = KeyBindings.getInstance().actionToAxis(AxisActions.LIN_ACTUATOR).get();
-        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(value);
-        ClimbLegs.getInstance().getRightLinearActuator().setPercent(value);
-    }
+    public void teleopInit() {}
 
     @Override
     public void testInit() {}
 
     @Override
     public void robotPeriodic() {
+        // TODO: does this mean default commands run all the time?
          Scheduler.getInstance().run();
     }
 
     @Override
     public void disabledPeriodic() {}
 
+    // AKA: sandstormPeriodic
     @Override
     public void autonomousPeriodic() {}
 

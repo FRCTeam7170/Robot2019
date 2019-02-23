@@ -6,9 +6,8 @@ import frc.team7170.robot.Constants;
 
 public class EndEffector extends Subsystem {
 
-    private final Solenoid ejectSolenoid = new Solenoid(Constants.PCM.PIN_SOLENOID);
+    private final Solenoid ejectSolenoid = new Solenoid(Constants.PCM.EJECT_SOLENOID);
     private final Solenoid pinSolenoid = new Solenoid(Constants.PCM.PIN_SOLENOID);
-    // TODO: servo for lateral slide
 
     private EndEffector() {
         super("endEffector");
@@ -33,6 +32,10 @@ public class EndEffector extends Subsystem {
 
     public void retractPin() {
         pinSolenoid.set(false);
+    }
+
+    public void togglePin() {
+        pinSolenoid.set(!pinSolenoid.get());
     }
 
     @Override

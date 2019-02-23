@@ -10,4 +10,7 @@ public enum ButtonActions implements ButtonAction {
     // PICKUP_PREPARE,
     PICKUP,
     PICKUP_CANCEL,
+
+    EJECT,
+    TOGGLE_PIN  // TODO: TEMP
 }

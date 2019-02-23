@@ -4,7 +4,6 @@ import frc.team7170.lib.CalcUtil;
 import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.UniversalUnitType;
 
-// TODO: should we really force inputs to be in metres & m/s?
 public interface PIDFController {
 
     ProfileAccessor getProfileForSlot(int slot);

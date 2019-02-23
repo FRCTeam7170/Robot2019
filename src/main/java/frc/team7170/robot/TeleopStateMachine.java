@@ -2,13 +2,11 @@ package frc.team7170.robot;
 
 import frc.team7170.lib.Name;
 import frc.team7170.lib.fsm.*;
+import frc.team7170.robot.commands.CmdEject;
 import frc.team7170.robot.commands.CmdMoveElevator;
 import frc.team7170.robot.commands.CmdPickup;
 import frc.team7170.robot.commands.CmdRotateFrontArms;
 import frc.team7170.robot.subsystems.Drive;
-import frc.team7170.robot.subsystems.Elevator;
-import frc.team7170.robot.subsystems.EndEffector;
-import frc.team7170.robot.subsystems.FrontArms;
 
 import java.util.logging.Logger;
 
@@ -18,9 +16,6 @@ public class TeleopStateMachine {
     private static final Logger LOGGER = Logger.getLogger(TeleopStateMachine.class.getName());
 
     private static final Drive drive = Drive.getInstance();
-    private static final FrontArms frontArms = FrontArms.getInstance();
-    private static final EndEffector endEffector = EndEffector.getInstance();
-    private static final Elevator elevator = Elevator.getInstance();
 
     private double driveMultiplier = Constants.State.HOME_MULTIPLIER;
 
@@ -29,11 +24,13 @@ public class TeleopStateMachine {
     private final State normalState = fsm.newState(new Name("normal"));
     private final State pickupPrepareState = fsm.newState(new Name("pickupPrepare"));
     private final State pickupState = fsm.newState(new Name("pickup"));
-    // private final State ejectingState = fsm.newState(new Name("ejecting"));
+    private final State ejectingState = fsm.newState(new Name("ejecting"));
 
     public final Trigger driveTrigger = fsm.newTrigger(new Name("drive"));
     public final Trigger elevateTrigger = fsm.newTrigger(new Name("elevate"));
-    // public final Trigger ejectTrigger = fsm.newTrigger(new Name("eject"));
+    public final Trigger ejectTrigger = fsm.newTrigger(new Name("eject"));
+    public final Trigger ejectFinishedTrigger = fsm.newTrigger(new Name("ejectFinished"));
+    // For manual movement of lateral slide...
     // public final Trigger lateralSlideTrigger = fsm.newTrigger(new Name("lateralSlide"));
     // public final Trigger pickupPrepareTrigger = fsm.newTrigger(new Name("pickupPrepare"));
     public final Trigger pickupTrigger = fsm.newTrigger(new Name("pickup"));
@@ -50,9 +47,16 @@ public class TeleopStateMachine {
             Transition.TransitionConfig.newInternal(normalState, elevateTrigger)
                     .onStart(this::elevate)
     );
-    // private final Transition ejectTransition = fsm.newTransition(
-    //         new Transition.TransitionConfig(normalState, ejectingState, ejectTrigger)
-    // );  TODO: will need finishedEject trigger/transition too
+    @SuppressWarnings("unchecked")
+    private final Transition ejectTransition = fsm.newTransition(
+            new Transition.TransitionConfig(normalState, ejectingState, ejectTrigger)
+                    .onStart(this::eject)
+    );
+    @SuppressWarnings("unchecked")
+    private final Transition ejectFinishedTransition = fsm.newTransition(
+            new Transition.TransitionConfig(ejectingState, normalState, ejectFinishedTrigger)
+                    .onStart(this::ejectFinished)
+    );
     @SuppressWarnings("unchecked")
     private final Transition pickupPrepareTransition = fsm.newTransition(
             new Transition.TransitionConfig(normalState, pickupPrepareState, pickupTrigger)
@@ -107,7 +111,13 @@ public class TeleopStateMachine {
 
     private void eject(Event event) {
         event.assertArgumentsCount(0);
-        // TODO
+        new CmdEject().start();
+    }
+
+    private void ejectFinished(Event event) {
+        event.assertArgumentsCount(0);
+        System.out.println("CENTER LATERAL SLIDE");
+        // TODO: center lateral slide
     }
 
     private void pickupPrepare(Event event) {

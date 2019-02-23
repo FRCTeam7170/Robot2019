@@ -10,5 +10,6 @@ public class CmdZeroSystems extends CommandGroup {
         addParallel(new CmdZeroLinearActuator(ClimbLegs.getInstance().getRightLinearActuator()));
         addParallel(new CmdZeroFrontArms());
         addParallel(new CmdZeroElevator());
+        addParallel(new CmdZeroEndEffector());
     }
 }

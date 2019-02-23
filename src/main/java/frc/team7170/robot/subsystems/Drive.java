@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.unit.*;
 import frc.team7170.lib.CalcUtil;
@@ -110,7 +111,7 @@ public class Drive extends Subsystem implements Named {
     public void arcadeDrive(double y, double z) {
         // The arcade to tank drive conversion here is copied from DifferentialDrive in WPILib.
         y = CalcUtil.applyBounds(y, -1.0, 1.0);
-        z = CalcUtil.applyBounds(z, -1.0, 1.0);
+        z = -CalcUtil.applyBounds(z, -1.0, 1.0);  // TODO: negated z
 
         double l;
         double r;
@@ -264,6 +265,34 @@ public class Drive extends Subsystem implements Named {
 
     private static double metresPerSecondToTalonUnits(double value) {
         return Units.convertAndCheck(value, Units.METRES_PER_SECOND, VELOCITY_UNIT);
+    }
+
+    @Override
+    public void initSendable(SendableBuilder builder) {
+        super.initSendable(builder);
+        builder.addDoubleProperty("P_LEFT_VELOCITY", null, P -> leftMaster.config_kP(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("I_LEFT_VELOCITY", null, P -> leftMaster.config_kI(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("D_LEFT_VELOCITY", null, P -> leftMaster.config_kD(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("F_LEFT_VELOCITY", null, P -> leftMaster.config_kP(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("IZONE_LEFT_VELOCITY", null, P -> leftMaster.config_IntegralZone(Constants.Drive.PARAMETER_SLOT_VELOCITY, (int) P));
+
+        builder.addDoubleProperty("P_RIGHT_VELOCITY", null, P -> rightMaster.config_kP(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("I_RIGHT_VELOCITY", null, P -> rightMaster.config_kI(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("D_RIGHT_VELOCITY", null, P -> rightMaster.config_kD(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("F_RIGHT_VELOCITY", null, P -> rightMaster.config_kP(Constants.Drive.PARAMETER_SLOT_VELOCITY, P));
+        builder.addDoubleProperty("IZONE_RIGHT_VELOCITY", null, P -> rightMaster.config_IntegralZone(Constants.Drive.PARAMETER_SLOT_VELOCITY, (int) P));
+
+        builder.addDoubleProperty("P_LEFT_POSITION", null, P -> leftMaster.config_kP(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("I_LEFT_POSITION", null, P -> leftMaster.config_kI(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("D_LEFT_POSITION", null, P -> leftMaster.config_kD(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("F_LEFT_POSITION", null, P -> leftMaster.config_kP(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("IZONE_LEFT_POSITION", null, P -> leftMaster.config_IntegralZone(Constants.Drive.PARAMETER_SLOT_POSITION, (int) P));
+
+        builder.addDoubleProperty("P_RIGHT_POSITION", null, P -> rightMaster.config_kP(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("I_RIGHT_POSITION", null, P -> rightMaster.config_kI(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("D_RIGHT_POSITION", null, P -> rightMaster.config_kD(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("F_RIGHT_POSITION", null, P -> rightMaster.config_kP(Constants.Drive.PARAMETER_SLOT_POSITION, P));
+        builder.addDoubleProperty("IZONE_RIGHT_POSITION", null, P -> rightMaster.config_IntegralZone(Constants.Drive.PARAMETER_SLOT_POSITION, (int) P));
     }
 
     /*

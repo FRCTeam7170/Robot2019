@@ -35,8 +35,7 @@ public class FrontArms extends Subsystem {
         master.config_IntegralZone(0, Constants.FrontArms.IZONE);
 
         master.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-        master.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-        master.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+        master.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
         master.configClosedloopRamp(Constants.FrontArms.RAMP_TIME);
         master.setNeutralMode(Constants.FrontArms.NEUTRAL_MODE);
         master.enableVoltageCompensation(Constants.FrontArms.ENABLE_VOLTAGE_COMPENSATION);
@@ -76,10 +75,6 @@ public class FrontArms extends Subsystem {
         master.setSelectedSensorPosition(0);
     }
 
-    public boolean isForwardLimitSwitchTriggered() {
-        return master.getSensorCollection().isFwdLimitSwitchClosed();
-    }
-
     public boolean isReverseLimitSwitchTriggered() {
         return master.getSensorCollection().isRevLimitSwitchClosed();
     }
@@ -103,5 +98,6 @@ public class FrontArms extends Subsystem {
         builder.addDoubleProperty("I", null, value -> master.config_kI(0, value));
         builder.addDoubleProperty("D", null, value -> master.config_kD(0, value));
         builder.addDoubleProperty("F", null, value -> master.config_kF(0, value));
+        builder.addDoubleProperty("IZONE", null, value -> master.config_IntegralZone(0, (int) value));
     }
 }

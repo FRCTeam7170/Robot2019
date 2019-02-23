@@ -25,8 +25,6 @@ public class CmdFrontArmsTeleop extends Command {
         try {
             if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP).getPressed()) {
                 tsm.pickupTrigger.execute();
-            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_CANCEL).getPressed()) {
-                tsm.pickupCancelTrigger.execute();
             }
         } catch (NullPointerException e) {
             if (!warned) {

@@ -1,8 +1,6 @@
 package frc.team7170.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +35,7 @@ public class DIOMultiplexer {
         }
     }
 
+    // TODO: make this an EnumMap?
     private final Map<Byte, Boolean> inputStates = new HashMap<>(8);
     {
         for (byte i = 0; i < 8; ++i) {

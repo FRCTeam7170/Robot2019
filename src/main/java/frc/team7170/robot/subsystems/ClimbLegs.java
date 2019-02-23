@@ -39,8 +39,8 @@ public class ClimbLegs extends Subsystem implements Named {
             talon.config_IntegralZone(0, kIZONE);
 
             talon.configSelectedFeedbackSensor(FeedbackDevice.QuadEncoder);
-            talon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
-            talon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyOpen);
+            talon.configForwardLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
+            talon.configReverseLimitSwitchSource(LimitSwitchSource.FeedbackConnector, LimitSwitchNormal.NormallyClosed);
             talon.configClosedloopRamp(Constants.ClimbLegs.RAMP_TIME);
             talon.setNeutralMode(Constants.ClimbLegs.NEUTRAL_MODE);
             talon.enableVoltageCompensation(Constants.ClimbLegs.ENABLE_VOLTAGE_COMPENSATION);
@@ -93,6 +93,7 @@ public class ClimbLegs extends Subsystem implements Named {
             builder.addDoubleProperty("I", null, value -> talon.config_kI(0, value));
             builder.addDoubleProperty("D", null, value -> talon.config_kD(0, value));
             builder.addDoubleProperty("F", null, value -> talon.config_kF(0, value));
+            builder.addDoubleProperty("IZONE", null, value -> talon.config_IntegralZone(0, (int) value));
         }
     }
 

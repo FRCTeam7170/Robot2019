@@ -86,4 +86,22 @@ public final class LF310Gamepad extends RumbleController {
     public Map<String, Button> getButtonsNamesMap() {
         return new HashMap<>(buttons);
     }
+
+    public void centerLeftTriggerRange() {
+        A_LTRIGGER.setScale(2.0);
+        A_LTRIGGER.setOffset(-1.0);
+    }
+
+    public void resetLeftTriggerRange() {
+        A_LTRIGGER.resetModifiers();
+    }
+
+    public void centerRightTriggerRange() {
+        A_RTRIGGER.setScale(2.0);
+        A_RTRIGGER.setOffset(-1.0);
+    }
+
+    public void resetRightTriggerRange() {
+        A_RTRIGGER.resetModifiers();
+    }
 }

@@ -27,7 +27,7 @@ public class CmdDriveTeleop extends Command {
         KeyMap km = KeyBindings.getInstance().getCurrKeyMap();
         if (!km.hasBindingFor(AxisActions.DRIVE_L) && !km.hasBindingFor(AxisActions.DRIVE_R) &&
                 km.hasBindingFor(AxisActions.DRIVE_Y) && km.hasBindingFor(AxisActions.DRIVE_Z)) {
-            isTankDrive = true;
+            isTankDrive = false;
         }
     }
 
