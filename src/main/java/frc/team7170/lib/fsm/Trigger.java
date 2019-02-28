@@ -3,7 +3,11 @@ package frc.team7170.lib.fsm;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 
+import java.util.logging.Logger;
+
 public class Trigger implements Named {
+
+    private static final Logger LOGGER = Logger.getLogger(Trigger.class.getName());
 
     private final Name name;
     private final boolean permitMistrigger;
@@ -15,8 +19,20 @@ public class Trigger implements Named {
         this.machine = machine;
     }
 
+    public boolean execute(boolean log, Object... arguments) {
+        boolean success = machine.executeTrigger(this, arguments);
+        if (log) {
+            if (success) {
+                LOGGER.info(String.format("Trigger '%s' executed successfully.", toString()));
+            } else {
+                LOGGER.info(String.format("Trigger '%s' failed to execute.", toString()));
+            }
+        }
+        return success;
+    }
+
     public boolean execute(Object... arguments) {
-        return machine.executeTrigger(this, arguments);
+        return execute(true, arguments);
     }
 
     public boolean getPermitMistrigger() {

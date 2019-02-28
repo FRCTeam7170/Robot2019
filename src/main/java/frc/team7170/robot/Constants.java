@@ -56,7 +56,6 @@ public final class Constants {
         public static final int SEAT_MOTOR_DIO_RIGHT = 1;
 
         // Lateral slide
-        public static final int LATERAL_SLIDE_SERVO_HALL_EFFECT = 4;
         public static final int LATERAL_SLIDE_LIMIT_SWITCH = 5;
 
         // Reflectance sensor array
@@ -72,12 +71,14 @@ public final class Constants {
         public static final int REFLECTANCE_SENSOR_ARRAY_0 = 0;
         public static final int REFLECTANCE_SENSOR_ARRAY_1 = 1;
         public static final int REFLECTANCE_SENSOR_ARRAY_2 = 2;
-        public static final int REFLECTANCE_SENSOR_ARRAY_3 = 3;
+        public static final int LATERAL_SLIDE_SERVO_FEEDBACK = 3;
     }
 
     public static final class PCM {
-        public static final int PIN_SOLENOID = 0;
-        public static final int EJECT_SOLENOID = 1;
+        public static final int EJECT_DEPLOY_SOLENOID = 1;
+        public static final int EJECT_RETRACT_SOLENOID = 0;
+        public static final int PIN_DEPLOY_SOLENOID = 2;
+        public static final int PIN_RETRACT_SOLENOID = 3;
     }
 
     public static final class Field {
@@ -92,7 +93,8 @@ public final class Constants {
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.244475;
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
-
+        public static final double END_EFFECTOR_INNER_WIDTH_METRES = 0.218;
+        public static final double PIN_CYCLINDER_DIAMETER_METRES = 0.01559;
     }
 
     public static final class State {
@@ -296,11 +298,56 @@ public final class Constants {
         public static final double I = 0.0;
         public static final double D = 0.0;
         public static final double F = 0.0;
-        public static final double IZONE = 0;
+        public static final double IZONE = 0.0;
     }
 
     public static final class EndEffector {
-        public static final double EJECT_PULSE_DURATION_SECONDS = 0.5;
+        public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
+
+        // Pneumatics timing
+        public static final double EJECT_PULSE_DURATION_SECONDS = 0.1;
+        public static final double EJECT_SOLENOID_PULSE_DURATION_SECONDS = 0.05;
+        public static final double PIN_SOLENOID_PULSE_DURATION_SECONDS = 0.1;
+
+        // Inversion
+        public static final boolean INVERT_SERVO = false;
+        public static final boolean INVERT_SERVO_FEEDBACK = false;
+
+        // Servo specs
+        public static final int SERVO_MAX_US = 1720;
+        public static final int SERVO_DEADBAND_MAX_US = 1520;
+        public static final int SERVO_CENTRE_US = 1500;
+        public static final int SERVO_DEADBAND_MIN_US = 1480;
+        public static final int SERVO_MIN_US = 1280;
+
+        // Other servo parameters
+        public static final int SERVO_FEEDBACK_POLL_PERIOD_US = 1000;
+        public static final int SERVO_FEEDBACK_MAX_POTENTIAL_mV = 3204;  // 3300 * 97.1% duty cycle
+        public static final int SERVO_FEEDBACK_MIN_POTENTIAL_mV = 96;  // 3300 * 2.9% duty cycle
+        public static final int SERVO_FEEDBACK_POTENTIAL_RANGE_mV =
+                SERVO_FEEDBACK_MAX_POTENTIAL_mV - SERVO_FEEDBACK_MIN_POTENTIAL_mV;
+        public static final double SERVO_FEEDBACK_MULTIPLIER =
+                (Dimensions.END_EFFECTOR_INNER_WIDTH_METRES - Dimensions.PIN_CYCLINDER_DIAMETER_METRES) /
+                        SERVO_FEEDBACK_POTENTIAL_RANGE_mV;
+        public static final double ABSOLUTE_SERVO_SPEED_AUTOMATIC = 1.0;
+        public static final double ABSOLUTE_SERVO_SPEED_MANUAL = 1.0;
+
+        // Preset lateral slide positions
+        public static final double LATERAL_SLIDE_CENTRE_METRES =
+                (Dimensions.END_EFFECTOR_INNER_WIDTH_METRES - Dimensions.PIN_CYCLINDER_DIAMETER_METRES) / 2;
+        public static final double LATERAL_SLIDE_LEFT_METRES = 0.0;
+        public static final double LATERAL_SLIDE_RIGHT_METRES =
+                Dimensions.END_EFFECTOR_INNER_WIDTH_METRES - Dimensions.PIN_CYCLINDER_DIAMETER_METRES;
+    }
+
+    public static final class ReflectanceSensorArray {
+        public static final double MIN_DEVIATION_FROM_AVG_VOLTS = 1.0;
+        public static final double SENSOR_SPACING_M = 0.02009902;
+        public static final double SENSOR_WIDTH_M = 0.0075;
+        public static final double ARRAY_LENGTH_M = 0.2286;
+        // Physically impossible for more than 3 to be triggered on 2 in. tape and at least 2 must be triggered.
+        public static final int MAX_TRIGGERED_SENSORS = 3;
+        public static final int MIN_TRIGGERED_SENSORS = 2;  // (Unless line is partly out of view)
     }
 
     public static final class Climb {

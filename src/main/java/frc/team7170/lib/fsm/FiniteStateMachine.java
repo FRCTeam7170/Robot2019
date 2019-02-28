@@ -11,7 +11,10 @@ public class FiniteStateMachine {
     public static class Builder {
 
         private boolean permitMistrigger;
-        private Consumer<Event>[] beforeStateChange, afterStateChange;
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] beforeStateChange = new Consumer[0];
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] afterStateChange = new Consumer[0];
 
         public Builder permitMistrigger() {
             permitMistrigger = true;

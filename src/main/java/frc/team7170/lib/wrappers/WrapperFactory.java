@@ -32,4 +32,16 @@ public final class WrapperFactory {
     public static Encoder wrapWPIEncoder(edu.wpi.first.wpilibj.Encoder encoder, int cyclesPerRotation) {
         return new WrappedWPIEncoder(encoder, cyclesPerRotation);
     }
+
+    public static DigitalInput wrapWPIDigitalInput(edu.wpi.first.wpilibj.DigitalInput wpiDigitalInput) {
+        return new WrappedWPIDigitalInput(wpiDigitalInput);
+    }
+
+    public static DigitalOutput wrapWPIDigitalOutput(edu.wpi.first.wpilibj.DigitalOutput wpiDigitalOutput) {
+        return new WrappedWPIDigitalOutput(wpiDigitalOutput);
+    }
+
+    public static AnalogInput wrapWPIAnalogInput(edu.wpi.first.wpilibj.AnalogInput wpiAnalogInput) {
+        return new WrappedWPIAnalogInput(wpiAnalogInput);
+    }
 }

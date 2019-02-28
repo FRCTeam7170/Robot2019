@@ -3,8 +3,11 @@ package frc.team7170.lib.fsm;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 
 public class Transition {
+
+    private static final Logger LOGGER = Logger.getLogger(Transition.class.getName());
 
     public static final State[] ALL_STATES = new State[0];
 
@@ -17,8 +20,14 @@ public class Transition {
         private final State[] srcs;
         private final State dest;
         private final Trigger trigger;
-        private Consumer<Event>[] prepare, onStart, onEnd;
-        private Predicate<Event>[] conditions;
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] prepare = new Consumer[0];
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] onStart = new Consumer[0];
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] onEnd = new Consumer[0];
+        @SuppressWarnings("unchecked")
+        private Predicate<Event>[] conditions = new Predicate[0];
         private boolean permitMistrigger;
         private TransitionMode mode = TransitionMode.NORMAL;
 
@@ -176,8 +185,20 @@ public class Transition {
         return mapsTo(state) != null;
     }
 
+    public boolean execute(boolean log, Object... arguments) {
+        boolean success = machine.executeTransition(this, arguments);
+        if (log) {
+            if (success) {
+                LOGGER.info(String.format("Transition '%s' executed successfully.", toString()));
+            } else {
+                LOGGER.info(String.format("Transition '%s' failed to execute.", toString()));
+            }
+        }
+        return success;
+    }
+
     public boolean execute(Object... arguments) {
-        return machine.executeTransition(this, arguments);
+        return execute(true, arguments);
     }
 
     void started(Event event) {

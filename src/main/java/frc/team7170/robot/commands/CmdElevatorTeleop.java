@@ -33,7 +33,7 @@ public class CmdElevatorTeleop extends Command {
             }
         } catch (NullPointerException e) {
             if (!warned) {
-                LOGGER.log(Level.WARNING, "Unbound button for elevator movement requested");
+                LOGGER.log(Level.WARNING, "Unbound button for elevator movement requested.", e);
                 warned = true;
             }
         }

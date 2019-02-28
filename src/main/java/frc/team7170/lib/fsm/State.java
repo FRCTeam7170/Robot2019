@@ -16,7 +16,10 @@ public class State implements Named {
     public static class StateConfig {
 
         final Name name;
-        private Consumer<Event>[] onEnter, onExit;
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] onEnter = new Consumer[0];
+        @SuppressWarnings("unchecked")
+        private Consumer<Event>[] onExit = new Consumer[0];
         private boolean permitNoChildSelection = true;
         private boolean permitMistrigger = false;
 

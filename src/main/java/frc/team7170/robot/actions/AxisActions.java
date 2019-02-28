@@ -7,4 +7,6 @@ public enum AxisActions implements AxisAction {
     DRIVE_R,
     DRIVE_Y,
     DRIVE_Z,
+
+    LATERAL_SLIDE,
 }

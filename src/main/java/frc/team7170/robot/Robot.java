@@ -28,6 +28,9 @@ public class Robot extends TimedRobot implements Named {
 
     private KeyMap defaultKeyMap;
 
+    // TODO: TEMP?
+    private final Compressor compressor = new Compressor(Constants.CAN.PCM);
+
     @Override
     public void robotInit() {
 //        joystick = new LE3DPJoystick(new GenericHID(Constants.OI.JOYSTICK_PORT) {
@@ -62,8 +65,10 @@ public class Robot extends TimedRobot implements Named {
             }
         });
 
+        compressor.start();
+
         // Setup keybindings system
-        //KeyBindings.getInstance().registerController(joystick);
+        // KeyBindings.getInstance().registerController(joystick);
         KeyBindings.getInstance().registerController(gamepad);
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
@@ -75,10 +80,10 @@ public class Robot extends TimedRobot implements Named {
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
 
         // Setup subsystem default commands (for whatever reason, this cannot be done in a singleton subsystem constructor)
-         Drive.getInstance().setDefaultCommand(new CmdDriveTeleop());
-         FrontArms.getInstance().setDefaultCommand(new CmdFrontArmsTeleop());
-         Elevator.getInstance().setDefaultCommand(new CmdElevatorTeleop());
-         EndEffector.getInstance().setDefaultCommand(new CmdEndEffectorTeleop());
+        Drive.getInstance().setDefaultCommand(new CmdDriveTeleop());
+        FrontArms.getInstance().setDefaultCommand(new CmdFrontArmsTeleop());
+        Elevator.getInstance().setDefaultCommand(new CmdElevatorTeleop());
+        EndEffector.getInstance().setDefaultCommand(new CmdEndEffectorTeleop());
     }
 
     @Override
@@ -96,7 +101,6 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void robotPeriodic() {
-        // TODO: does this mean default commands run all the time?
          Scheduler.getInstance().run();
     }
 

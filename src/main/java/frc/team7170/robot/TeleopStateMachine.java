@@ -2,18 +2,10 @@ package frc.team7170.robot;
 
 import frc.team7170.lib.Name;
 import frc.team7170.lib.fsm.*;
-import frc.team7170.robot.commands.CmdEject;
-import frc.team7170.robot.commands.CmdMoveElevator;
-import frc.team7170.robot.commands.CmdPickup;
-import frc.team7170.robot.commands.CmdRotateFrontArms;
+import frc.team7170.robot.commands.*;
 import frc.team7170.robot.subsystems.Drive;
 
-import java.util.logging.Logger;
-
-// TODO: issue warnings when transitions fail?
 public class TeleopStateMachine {
-
-    private static final Logger LOGGER = Logger.getLogger(TeleopStateMachine.class.getName());
 
     private static final Drive drive = Drive.getInstance();
 
@@ -105,7 +97,7 @@ public class TeleopStateMachine {
     private void elevate(Event event) {
         event.assertArgumentsTypes(ElevatorLevel.class);
         ElevatorLevel elevatorLevel = (ElevatorLevel) event.arguments[0];
-        new CmdMoveElevator(elevatorLevel.getHeightMetres(), true);
+        new CmdMoveElevator(elevatorLevel.getHeightMetres(), true).start();
         driveMultiplier = elevatorLevel.getDriveMultiplier();
     }
 
@@ -116,8 +108,7 @@ public class TeleopStateMachine {
 
     private void ejectFinished(Event event) {
         event.assertArgumentsCount(0);
-        System.out.println("CENTER LATERAL SLIDE");
-        // TODO: center lateral slide
+        new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES).start();
     }
 
     private void pickupPrepare(Event event) {

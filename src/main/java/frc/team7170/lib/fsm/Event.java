@@ -40,4 +40,10 @@ public class Event {
             }
         }
     }
+
+    @Override
+    public String toString() {
+        return String.format("Src: '%s'; Dest: '%s'; Transition: '%s'; Trigger: '%s'",
+                src.getName(), dest.getName(), transition, trigger.getName());
+    }
 }
