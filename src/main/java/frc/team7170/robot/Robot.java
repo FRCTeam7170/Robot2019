@@ -4,7 +4,9 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
+import frc.team7170.lib.TimedRunnable;
 import frc.team7170.lib.oi.*;
+import frc.team7170.lib.wrappers.AnalogInput;
 import frc.team7170.robot.actions.AxisActions;
 import frc.team7170.robot.actions.ButtonActions;
 import frc.team7170.robot.commands.*;
@@ -114,8 +116,23 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void teleopPeriodic() {}
 
+    // TODO: TEMP
+    private void pollAndPrintSensors() {
+        StringBuilder sb = new StringBuilder();
+        for (AnalogInput sensor : EndEffector.ReflectanceSensorArray.getInstance().sensors) {
+            sb.append(sensor.getVoltage() < Constants.ReflectanceSensorArray.SENSOR_TRIGGER_THRESHOLD ? "1" : "0");
+        }
+        sb.append("->");
+        sb.append(EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine());
+        System.out.println(sb.toString());
+    }
+
+    private TimedRunnable timedRunnable = new TimedRunnable(this::pollAndPrintSensors, 3000);
+
     @Override
-    public void testPeriodic() {}
+    public void testPeriodic() {
+        timedRunnable.run();
+    }
 
     @Override
     public String getName() {

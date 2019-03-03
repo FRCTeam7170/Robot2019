@@ -125,18 +125,18 @@ public final class Constants {
         public static final boolean SENSOR_PHASE = false;
 
         // Left PIDF parameters -- velocity control
-        public static final double P_LEFT_VELOCITY = 0.0;  // throttle / error
-        public static final double I_LEFT_VELOCITY = 0.0;  // throttle / integrated error
-        public static final double D_LEFT_VELOCITY = 0.0;  // throttle / differentiated error
-        public static final double F_LEFT_VELOCITY = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_LEFT_VELOCITY = 0;  // max integrated error to permit I accumulation on
+        // public static final double P_LEFT_VELOCITY = 0.0;  // throttle / error
+        // public static final double I_LEFT_VELOCITY = 0.0;  // throttle / integrated error
+        // public static final double D_LEFT_VELOCITY = 0.0;  // throttle / differentiated error
+        // public static final double F_LEFT_VELOCITY = 0.0;  // multiplied directly by setpoint
+        // public static final int IZONE_LEFT_VELOCITY = 0;  // max integrated error to permit I accumulation on
 
         // Right PIDF parameters -- velocity control
-        public static final double P_RIGHT_VELOCITY = 0.0;  // throttle / error
-        public static final double I_RIGHT_VELOCITY = 0.0;  // throttle / integrated error
-        public static final double D_RIGHT_VELOCITY = 0.0;  // throttle / differentiated error
-        public static final double F_RIGHT_VELOCITY = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_RIGHT_VELOCITY = 0;  // max integrated error to permit I accumulation on
+        // public static final double P_RIGHT_VELOCITY = 0.0;  // throttle / error
+        // public static final double I_RIGHT_VELOCITY = 0.0;  // throttle / integrated error
+        // public static final double D_RIGHT_VELOCITY = 0.0;  // throttle / differentiated error
+        // public static final double F_RIGHT_VELOCITY = 0.0;  // multiplied directly by setpoint
+        // public static final int IZONE_RIGHT_VELOCITY = 0;  // max integrated error to permit I accumulation on
 
         // Left PIDF parameters -- position control
         public static final double P_LEFT_POSITION = 0.01;  // throttle / error
@@ -153,17 +153,17 @@ public final class Constants {
         public static final int IZONE_RIGHT_POSITION = 0;  // max integrated error to permit I accumulation on
 
         // Talon parameter slots
-        public static final int PARAMETER_SLOT_VELOCITY = 0;
-        public static final int PARAMETER_SLOT_POSITION = 1;
+        public static final int PARAMETER_SLOT_POSITION = 0;
+        // public static final int PARAMETER_SLOT_VELOCITY = 1;
 
         // Talon allowable error
-        public static final int ALLOWABLE_CLOSED_LOOP_VELOCITY_ERROR = 0;  // raw units (enc_ticks/0.1s)
+        // public static final int ALLOWABLE_CLOSED_LOOP_VELOCITY_ERROR = 0;  // raw units (enc_ticks/0.1s)
         public static final int ALLOWABLE_CLOSED_LOOP_POSITION_ERROR = 0;  // raw units (enc_ticks)
 
         // Characterized -- TODO
-        public static final double ABSOLUTE_MAX_VELOCITY = 5.0;  // m/s
-        public static final double MAX_VELOCITY = 0.9 * ABSOLUTE_MAX_VELOCITY;  // m/s
-        public static final double VOLTAGE_DEADBAND = 1.0;  // V
+        // public static final double ABSOLUTE_MAX_VELOCITY = 5.0;  // m/s
+        // public static final double MAX_VELOCITY = 0.9 * ABSOLUTE_MAX_VELOCITY;  // m/s
+        // public static final double VOLTAGE_DEADBAND = 1.0;  // V
     }
 
     public static final class FrontArms {
@@ -341,7 +341,8 @@ public final class Constants {
     }
 
     public static final class ReflectanceSensorArray {
-        public static final double MIN_DEVIATION_FROM_AVG_VOLTS = 1.0;
+        // public static final double MIN_DEVIATION_FROM_AVG_VOLTS = 1.5;
+        public static final double SENSOR_TRIGGER_THRESHOLD = 2.0;
         public static final double SENSOR_SPACING_M = 0.02009902;
         public static final double SENSOR_WIDTH_M = 0.0075;
         public static final double ARRAY_LENGTH_M = 0.2286;

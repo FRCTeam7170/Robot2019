@@ -11,8 +11,8 @@ public enum MotorMode {
     PERCENT(ControlMode.PercentOutput, ControlType.kDutyCycle, null, Units.IDENTITY),
     VOLTAGE(null, ControlType.kVoltage, null, Units.VOLT),
     CURRENT(ControlMode.Current, null, null, Units.AMPERE),
-    POSITION(ControlMode.Position, ControlType.kPosition, PIDSourceType.kDisplacement, Units.METRE),
-    VELOCITY(ControlMode.Velocity, ControlType.kVelocity, PIDSourceType.kRate, Units.METRES_PER_SECOND);
+    POSITION(ControlMode.Position, ControlType.kPosition, PIDSourceType.kDisplacement, Units.REVOLUTION),
+    VELOCITY(ControlMode.Velocity, ControlType.kVelocity, PIDSourceType.kRate, Units.RPM);
 
     private final ControlMode eqControlMode;
     private final ControlType eqControlType;

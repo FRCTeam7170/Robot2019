@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
 import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.PIDBase;
 
+// TODO: major flaw: state isn't respected between different wrappers (i.e. PIDFController doesn't know about Encoder state)
 public final class WrapperFactory {
 
     // Enforce non-instantiablilty.
@@ -20,6 +21,7 @@ public final class WrapperFactory {
     public static PIDFController wrapWPIPIDBase(PIDBase pidBase) {
         return new WrappedWPIPIDBase(pidBase);
     }
+
 
     public static Encoder wrapCTREEncoder(BaseMotorController ctreMotorController, int cyclesPerRotation) {
         return new WrappedCTREEncoder(ctreMotorController, cyclesPerRotation);

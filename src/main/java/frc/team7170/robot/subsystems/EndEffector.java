@@ -2,7 +2,6 @@ package frc.team7170.robot.subsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.team7170.lib.CalcUtil;
 import frc.team7170.lib.WrappingCounter;
 import frc.team7170.lib.multiplex.AnalogMultiplexer;
 import frc.team7170.lib.wrappers.WrapperFactory;
@@ -130,14 +129,19 @@ public class EndEffector extends Subsystem {
             public boolean isError() {
                 return isError;
             }
+
+            @Override
+            public String toString() {
+                return isError ? "ERROR" : String.format("%.03f", deviation);
+            }
         }
 
         private static final Logger LOGGER = Logger.getLogger(ReflectanceSensorArray.class.getName());
 
         private final AnalogMultiplexer mux0 = new AnalogMultiplexer(
                 WrapperFactory.wrapWPIAnalogInput(new AnalogInput(Constants.AIN.REFLECTANCE_SENSOR_ARRAY_0)),
-                WrapperFactory.wrapWPIDigitalOutput(new DigitalOutput(Constants.DIO.REFLECTANCE_SENSOR_ARRAY_SELECT_0)),
-                WrapperFactory.wrapWPIDigitalOutput(new DigitalOutput(Constants.DIO.REFLECTANCE_SENSOR_ARRAY_SELECT_1))
+                WrapperFactory.wrapWPIDigitalOutput(new DigitalOutput(Constants.DIO.REFLECTANCE_SENSOR_ARRAY_SELECT_1)),
+                WrapperFactory.wrapWPIDigitalOutput(new DigitalOutput(Constants.DIO.REFLECTANCE_SENSOR_ARRAY_SELECT_0))
         );
 
         private final AnalogMultiplexer mux1 = new AnalogMultiplexer(
@@ -148,19 +152,19 @@ public class EndEffector extends Subsystem {
                 WrapperFactory.wrapWPIAnalogInput(new AnalogInput(Constants.AIN.REFLECTANCE_SENSOR_ARRAY_2)), mux0
         );
 
-        private final frc.team7170.lib.wrappers.AnalogInput sensor0 = mux0.getAnalogInputFor(0);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor1 = mux0.getAnalogInputFor(1);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor2 = mux0.getAnalogInputFor(2);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor3 = mux0.getAnalogInputFor(3);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor4 = mux1.getAnalogInputFor(0);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor5 = mux1.getAnalogInputFor(1);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor6 = mux1.getAnalogInputFor(2);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor7 = mux1.getAnalogInputFor(3);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor8 = mux2.getAnalogInputFor(0);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor9 = mux2.getAnalogInputFor(1);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor10 = mux2.getAnalogInputFor(2);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
-        private final frc.team7170.lib.wrappers.AnalogInput[] sensors = {
+        public final frc.team7170.lib.wrappers.AnalogInput sensor0 = mux0.getAnalogInputFor(0);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor1 = mux0.getAnalogInputFor(2);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor2 = mux0.getAnalogInputFor(1);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor3 = mux0.getAnalogInputFor(3);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor4 = mux1.getAnalogInputFor(0);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor5 = mux1.getAnalogInputFor(2);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor6 = mux1.getAnalogInputFor(1);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor7 = mux1.getAnalogInputFor(3);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor8 = mux2.getAnalogInputFor(0);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor9 = mux2.getAnalogInputFor(2);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor10 = mux2.getAnalogInputFor(1);
+        public final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
+        public final frc.team7170.lib.wrappers.AnalogInput[] sensors = {
                 sensor0, sensor1, sensor2, sensor3,
                 sensor4, sensor5, sensor6, sensor7,
                 sensor8, sensor9, sensor10, sensor11
@@ -176,12 +180,13 @@ public class EndEffector extends Subsystem {
         }
 
         public LineDeviation getDeviationFromLine() {
-            double avg = averageVoltage();
+            // double avg = averageVoltage();
             boolean onStreak = false;
             List<Integer> triggeredSensorIndices = new ArrayList<>(Constants.ReflectanceSensorArray.MAX_TRIGGERED_SENSORS);
             for (int i = 0; i < sensors.length; ++i) {
-                if (!CalcUtil.inThreshold(sensors[i].getVoltage(), avg,
-                        Constants.ReflectanceSensorArray.MIN_DEVIATION_FROM_AVG_VOLTS)) {
+                // if (!CalcUtil.inThreshold(sensors[i].getVoltage(), avg,
+                //         Constants.ReflectanceSensorArray.MIN_DEVIATION_FROM_AVG_VOLTS)) {
+                if (sensors[i].getVoltage() < Constants.ReflectanceSensorArray.SENSOR_TRIGGER_THRESHOLD) {
                     if (!onStreak) {
                         if (triggeredSensorIndices.size() != 0) {
                             LOGGER.warning("Sensed more than one reflective object.");
@@ -211,6 +216,10 @@ public class EndEffector extends Subsystem {
                     onStreak = false;
                 }
             }
+            if (triggeredSensorIndices.isEmpty()) {
+                LOGGER.warning("No reflectance sensors were triggered.");
+                return new LineDeviation(0.0, true);
+            }
             /*
              * Let x = deviation from centre of array (desired measure),
              *     w = width of a single sensor (in m),
@@ -237,6 +246,7 @@ public class EndEffector extends Subsystem {
             return new LineDeviation(w/2 + r * (i + (n-1)/2) - l/2, false);
         }
 
+        /*
         private double averageVoltage() {
             double average = 0.0;
             for (frc.team7170.lib.wrappers.AnalogInput sensor : sensors) {
@@ -244,6 +254,7 @@ public class EndEffector extends Subsystem {
             }
             return average / sensors.length;
         }
+        */
     }
 
     private final Solenoid ejectDeploySolenoid = new Solenoid(Constants.CAN.PCM, Constants.PCM.EJECT_DEPLOY_SOLENOID);

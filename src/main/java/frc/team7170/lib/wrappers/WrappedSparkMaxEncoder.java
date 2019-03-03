@@ -4,6 +4,7 @@ import com.revrobotics.CANEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 
+// TODO: state here isn't enforced elsewhere...
 class WrappedSparkMaxEncoder extends AbstractEncoder {
 
     private final CANSparkMax sparkMax;

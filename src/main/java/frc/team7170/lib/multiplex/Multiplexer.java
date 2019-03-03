@@ -9,7 +9,7 @@ import java.util.List;
 // TODO: support linking multiplexers with different numbers of select lines
 public abstract class Multiplexer {
 
-    private static final int UPDATE_PERIOD_MS = 1;
+    private static final int UPDATE_PERIOD_MS = 10;  // TODO: why doesn't this work at 1 ms?
 
     private final Notifier notifier;
     private final DigitalOutput[] selectLines;
@@ -56,7 +56,7 @@ public abstract class Multiplexer {
                 child.updateState(currSelected);
             }
         }
-        if (currSelected == nInputs - 1) {
+        if (currSelected == (nInputs - 1)) {
             currSelected = 0;
         } else {
             ++currSelected;
