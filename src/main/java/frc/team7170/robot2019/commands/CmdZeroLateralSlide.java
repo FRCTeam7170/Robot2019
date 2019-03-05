@@ -14,7 +14,6 @@ public class CmdZeroLateralSlide extends Command {
 
     @Override
     protected void initialize() {
-        // TODO: this is only correct if the LS is on the left.
         lateralSlide.set(-Constants.EndEffector.ZEROING_THROTTLE_PERCENT);
     }
 

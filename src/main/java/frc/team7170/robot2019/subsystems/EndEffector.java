@@ -2,7 +2,7 @@ package frc.team7170.robot2019.subsystems;
 
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.team7170.lib.WrappingCounter;
+import frc.team7170.lib.WrappingDouble;
 import frc.team7170.lib.multiplex.AnalogMultiplexer;
 import frc.team7170.lib.wrappers.WrapperFactory;
 import frc.team7170.robot2019.Constants;
@@ -16,15 +16,14 @@ public class EndEffector extends Subsystem {
     // TODO: make this generic (e.g. implement lib.wrappers.Servo and generalize for all (continuous) servos) and move into spooky-lib
     public static class LateralSlide {
 
-        private final PWM pwm;
-        private final AnalogInput feedback;
-        private final WrappingCounter wrappingCounter = new WrappingCounter(
-                Constants.EndEffector.SERVO_FEEDBACK_POTENTIAL_RANGE_mV);
+        private final PWM pwm = new PWM(Constants.PWM.LATERAL_SLIDE_SERVO);
+        private final AnalogInput feedback = new AnalogInput(Constants.AIN.LATERAL_SLIDE_SERVO_FEEDBACK);
+        private final WrappingDouble wrappingDouble;
+        // public final WrappingDouble.WrappingDoubleCharacterizer wdc;
         private final Notifier feedbackNotifier = new Notifier(this::pollFeedback);
         private final DigitalInput limitSwitch = new DigitalInput(Constants.DIO.LATERAL_SLIDE_LIMIT_SWITCH);
 
         public LateralSlide() {
-            pwm = new PWM(Constants.PWM.LATERAL_SLIDE_SERVO);
             pwm.setBounds((double) Constants.EndEffector.SERVO_MAX_US / 1000.0,
                     (double) Constants.EndEffector.SERVO_DEADBAND_MAX_US / 1000.0,
                     (double) Constants.EndEffector.SERVO_CENTRE_US / 1000.0,
@@ -32,12 +31,20 @@ public class EndEffector extends Subsystem {
                     (double) Constants.EndEffector.SERVO_MIN_US / 1000.0);
             pwm.setSpeed(0.0);
 
-            feedback = new AnalogInput(Constants.AIN.LATERAL_SLIDE_SERVO_FEEDBACK);
             feedback.setOversampleBits(0);
-            feedback.setAverageBits(5);
-            // 2^5 = 32 samples per averaged value => 512 us to generate an averaged value with all 8 analog channels in use.
-            // This is important since 512 us is less than the 1000 us poll period
-            feedbackNotifier.startPeriodic((double) Constants.EndEffector.SERVO_FEEDBACK_POLL_PERIOD_US / 1_000_000.0);
+            feedback.setAverageBits(Constants.EndEffector.SERVO_FEEDBACK_AVERAGE_BITS);
+
+            wrappingDouble = new WrappingDouble(
+                    Constants.EndEffector.SERVO_FEEDBACK_POTENTIAL_RANGE_mV,
+                    Constants.EndEffector.SERVO_FEEDBACK_NEAR_EXTREME_THRESHOLD,
+                    Constants.EndEffector.SERVO_FEEDBACK_MAX_NOISE_DEVIATION,
+                    Constants.EndEffector.SERVO_FEEDBACK_STD_DEVIATION,
+                    Constants.EndEffector.SERVO_FEEDBACK_MEAN,
+                    feedback.getAverageVoltage()
+            );
+            // wdc = new WrappingDouble.WrappingDoubleCharacterizer(feedback.getAverageVoltage());
+
+            feedbackNotifier.startPeriodic((double) Constants.EndEffector.SERVO_FEEDBACK_POLL_PERIOD_MS / 1000.0);
         }
 
         private static final LateralSlide INSTANCE = new LateralSlide();
@@ -63,11 +70,15 @@ public class EndEffector extends Subsystem {
         }
 
         public double getFeedbackRaw() {
-            return wrappingCounter.get();
+            return wrappingDouble.get();
+        }
+
+        public double getFeedbackVoltage() {
+            return feedback.getAverageVoltage() * 1000.0;
         }
 
         public void resetFeedback() {
-            wrappingCounter.reset();
+            wrappingDouble.reset();
         }
 
         public boolean isLimitSwitchTriggered() {
@@ -75,11 +86,12 @@ public class EndEffector extends Subsystem {
         }
 
         private void pollFeedback() {
-            double value = feedback.getAverageVoltage() - Constants.EndEffector.SERVO_FEEDBACK_MIN_POTENTIAL_mV;
+            double value = feedback.getAverageVoltage() * 1000.0 - Constants.EndEffector.SERVO_FEEDBACK_MIN_POTENTIAL_mV;
             if (Constants.EndEffector.INVERT_SERVO_FEEDBACK) {
                 value = Constants.EndEffector.SERVO_FEEDBACK_POTENTIAL_RANGE_mV - value;
             }
-            wrappingCounter.feed(value);
+            wrappingDouble.feed(value);
+            // wdc.feed(value);
         }
 
         /*
@@ -152,19 +164,19 @@ public class EndEffector extends Subsystem {
                 WrapperFactory.wrapWPIAnalogInput(new AnalogInput(Constants.AIN.REFLECTANCE_SENSOR_ARRAY_2)), mux0
         );
 
-        public final frc.team7170.lib.wrappers.AnalogInput sensor0 = mux0.getAnalogInputFor(0);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor1 = mux0.getAnalogInputFor(2);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor2 = mux0.getAnalogInputFor(1);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor3 = mux0.getAnalogInputFor(3);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor4 = mux1.getAnalogInputFor(0);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor5 = mux1.getAnalogInputFor(2);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor6 = mux1.getAnalogInputFor(1);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor7 = mux1.getAnalogInputFor(3);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor8 = mux2.getAnalogInputFor(0);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor9 = mux2.getAnalogInputFor(2);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor10 = mux2.getAnalogInputFor(1);
-        public final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
-        public final frc.team7170.lib.wrappers.AnalogInput[] sensors = {
+        private final frc.team7170.lib.wrappers.AnalogInput sensor0 = mux0.getAnalogInputFor(0);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor1 = mux0.getAnalogInputFor(2);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor2 = mux0.getAnalogInputFor(1);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor3 = mux0.getAnalogInputFor(3);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor4 = mux1.getAnalogInputFor(0);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor5 = mux1.getAnalogInputFor(2);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor6 = mux1.getAnalogInputFor(1);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor7 = mux1.getAnalogInputFor(3);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor8 = mux2.getAnalogInputFor(0);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor9 = mux2.getAnalogInputFor(2);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor10 = mux2.getAnalogInputFor(1);
+        private final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
+        private final frc.team7170.lib.wrappers.AnalogInput[] sensors = {
                 sensor0, sensor1, sensor2, sensor3,
                 sensor4, sensor5, sensor6, sensor7,
                 sensor8, sensor9, sensor10, sensor11
@@ -244,6 +256,17 @@ public class EndEffector extends Subsystem {
             double i = triggeredSensorIndices.get(0);
             double l = Constants.ReflectanceSensorArray.ARRAY_LENGTH_M;
             return new LineDeviation(w/2 + r * (i + (n-1)/2) - l/2, false);
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            for (frc.team7170.lib.wrappers.AnalogInput sensor : sensors) {
+                sb.append(sensor.getVoltage() < Constants.ReflectanceSensorArray.SENSOR_TRIGGER_THRESHOLD ? "1" : "0");
+            }
+            sb.append("->");
+            sb.append(EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine());
+            return sb.toString();
         }
 
         /*

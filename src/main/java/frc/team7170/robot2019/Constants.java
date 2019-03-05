@@ -56,11 +56,11 @@ public final class Constants {
         public static final int SEAT_MOTOR_DIO_RIGHT = 1;
 
         // Lateral slide
-        public static final int LATERAL_SLIDE_LIMIT_SWITCH = 5;
+        public static final int LATERAL_SLIDE_LIMIT_SWITCH = 6;
 
         // Reflectance sensor array
-        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_0 = 6;
-        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_1 = 7;
+        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_0 = 4;
+        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_1 = 5;
     }
 
     public static final class PWM {
@@ -303,7 +303,7 @@ public final class Constants {
     }
 
     public static final class EndEffector {
-        public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
+        public static final double ZEROING_THROTTLE_PERCENT = 0.5;  // Non-negative.
 
         // Pneumatics timing
         public static final double EJECT_PULSE_DURATION_SECONDS = 0.1;
@@ -311,7 +311,7 @@ public final class Constants {
         public static final double PIN_SOLENOID_PULSE_DURATION_SECONDS = 0.1;
 
         // Inversion
-        public static final boolean INVERT_SERVO = false;
+        public static final boolean INVERT_SERVO = true;
         public static final boolean INVERT_SERVO_FEEDBACK = false;
 
         // Servo specs
@@ -322,16 +322,19 @@ public final class Constants {
         public static final int SERVO_MIN_US = 1280;
 
         // Other servo parameters
-        public static final int SERVO_FEEDBACK_POLL_PERIOD_US = 1000;
-        public static final int SERVO_FEEDBACK_MAX_POTENTIAL_mV = 3204;  // 3300 * 97.1% duty cycle
-        public static final int SERVO_FEEDBACK_MIN_POTENTIAL_mV = 96;  // 3300 * 2.9% duty cycle
+        public static final int SERVO_FEEDBACK_POLL_PERIOD_MS = 1;
+        public static final int SERVO_FEEDBACK_MAX_POTENTIAL_mV = 3098;  // empirically determined
+        public static final int SERVO_FEEDBACK_MIN_POTENTIAL_mV = 104;  // empirically determined
         public static final int SERVO_FEEDBACK_POTENTIAL_RANGE_mV =
                 SERVO_FEEDBACK_MAX_POTENTIAL_mV - SERVO_FEEDBACK_MIN_POTENTIAL_mV;
-        public static final double SERVO_FEEDBACK_MULTIPLIER =
-                (Dimensions.END_EFFECTOR_INNER_WIDTH_METRES - Dimensions.PIN_CYCLINDER_DIAMETER_METRES) /
-                        SERVO_FEEDBACK_POTENTIAL_RANGE_mV;
+        public static final double SERVO_FEEDBACK_MULTIPLIER = 0.0269875 / SERVO_FEEDBACK_POTENTIAL_RANGE_mV;  // (1 1/16 in. per servo rotation)
         public static final double ABSOLUTE_SERVO_SPEED_AUTOMATIC = 1.0;
         public static final double ABSOLUTE_SERVO_SPEED_MANUAL = 1.0;
+        public static final double SERVO_FEEDBACK_NEAR_EXTREME_THRESHOLD = 500.0;  // mV
+        public static final double SERVO_FEEDBACK_MAX_NOISE_DEVIATION = 3.0;  // standard deviations
+        public static final double SERVO_FEEDBACK_STD_DEVIATION = 11.000762;  // characterized
+        public static final double SERVO_FEEDBACK_MEAN = 13.786602;  // characterized
+        public static final int SERVO_FEEDBACK_AVERAGE_BITS = 0;
 
         // Preset lateral slide positions
         public static final double LATERAL_SLIDE_CENTRE_METRES =

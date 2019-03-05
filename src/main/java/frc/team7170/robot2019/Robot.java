@@ -77,6 +77,7 @@ public class Robot extends TimedRobot implements Named {
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
                 .addPair(ButtonActions.EJECT, gamepad, gamepad.B_A)
                 .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_B)
+                .addPair(AxisActions.LATERAL_SLIDE, gamepad, gamepad.A_RX)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
@@ -89,11 +90,19 @@ public class Robot extends TimedRobot implements Named {
     }
 
     @Override
-    public void disabledInit() {}
+    public void disabledInit() {
+        // For characterizing the servo feedback:
+        // System.out.println(String.format("SD: %f; MEAN: %f",
+        //         EndEffector.LateralSlide.getInstance().wdc.getStdDeviation(),
+        //         EndEffector.LateralSlide.getInstance().wdc.getMean()));
+    }
 
     // AKA: sandstormInit
     @Override
-    public void autonomousInit() {}
+    public void autonomousInit() {
+        new CmdZeroLateralSlide().start();
+        new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES).start();
+    }
 
     @Override
     public void teleopInit() {}
@@ -104,6 +113,7 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void robotPeriodic() {
          Scheduler.getInstance().run();
+         // TODO: currently having CPU issues
     }
 
     @Override
@@ -116,22 +126,15 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void teleopPeriodic() {}
 
-    // TODO: TEMP
-    private void pollAndPrintSensors() {
-        StringBuilder sb = new StringBuilder();
-        for (AnalogInput sensor : EndEffector.ReflectanceSensorArray.getInstance().sensors) {
-            sb.append(sensor.getVoltage() < Constants.ReflectanceSensorArray.SENSOR_TRIGGER_THRESHOLD ? "1" : "0");
-        }
-        sb.append("->");
-        sb.append(EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine());
-        System.out.println(sb.toString());
-    }
+    // private TimedRunnable timedRunnable = new TimedRunnable(() -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance()), 3000);
 
-    private TimedRunnable timedRunnable = new TimedRunnable(this::pollAndPrintSensors, 3000);
+    private TimedRunnable timedRunnable2 = new TimedRunnable(() -> System.out.println(EndEffector.LateralSlide.getInstance().getFeedbackRaw()), 100);
 
     @Override
     public void testPeriodic() {
-        timedRunnable.run();
+        // timedRunnable.run();
+        timedRunnable2.run();
+        EndEffector.LateralSlide.getInstance().set(KeyBindings.getInstance().actionToAxis(AxisActions.LATERAL_SLIDE).get());
     }
 
     @Override
