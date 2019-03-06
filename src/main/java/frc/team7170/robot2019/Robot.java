@@ -1,12 +1,12 @@
 package frc.team7170.robot2019;
 
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.TimedRunnable;
 import frc.team7170.lib.oi.*;
-import frc.team7170.lib.wrappers.AnalogInput;
 import frc.team7170.robot2019.actions.AxisActions;
 import frc.team7170.robot2019.actions.ButtonActions;
 import frc.team7170.robot2019.commands.*;
@@ -15,6 +15,7 @@ import frc.team7170.robot2019.subsystems.*;
 // TODO: spooky-console: NTBrowser needs ability to make new entry
 // TODO: make everything a singleton instead of static
 // TODO: "primitive-mode" option
+// TODO: make zeroable interface for all zeroable subsystems
 
 public class Robot extends TimedRobot implements Named {
 
@@ -75,8 +76,8 @@ public class Robot extends TimedRobot implements Named {
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
-                .addPair(ButtonActions.EJECT, gamepad, gamepad.B_A)
-                .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_B)
+                .addPair(ButtonActions.RESET_SERVO, gamepad, gamepad.B_A)
+                .addPair(ButtonActions.PRINT, gamepad, gamepad.B_B)
                 .addPair(AxisActions.LATERAL_SLIDE, gamepad, gamepad.A_RX)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
@@ -100,8 +101,13 @@ public class Robot extends TimedRobot implements Named {
     // AKA: sandstormInit
     @Override
     public void autonomousInit() {
-        new CmdZeroLateralSlide().start();
-        new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES).start();
+        new CommandGroup() {
+            public CommandGroup init() {
+                addSequential(new CmdZeroLateralSlide());
+                addSequential(new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES));
+                return this;
+            }
+        }.init().start();
     }
 
     @Override
@@ -128,13 +134,18 @@ public class Robot extends TimedRobot implements Named {
 
     // private TimedRunnable timedRunnable = new TimedRunnable(() -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance()), 3000);
 
-    private TimedRunnable timedRunnable2 = new TimedRunnable(() -> System.out.println(EndEffector.LateralSlide.getInstance().getFeedbackRaw()), 100);
+    // private TimedRunnable timedRunnable3 = new TimedRunnable(() -> System.out.println(EndEffector.LateralSlide.getInstance().getFeedbackVoltage()), 50);
 
     @Override
     public void testPeriodic() {
         // timedRunnable.run();
-        timedRunnable2.run();
+        // timedRunnable3.run();
         EndEffector.LateralSlide.getInstance().set(KeyBindings.getInstance().actionToAxis(AxisActions.LATERAL_SLIDE).get());
+        if (KeyBindings.getInstance().actionToButton(ButtonActions.RESET_SERVO).getPressed()) {
+            EndEffector.LateralSlide.getInstance().resetFeedback();
+        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.PRINT).get()) {
+            System.out.println(String.format("%.03f, %.03f", EndEffector.LateralSlide.getInstance().getFeedback(), EndEffector.LateralSlide.getInstance().getFeedbackRaw()));
+        }
     }
 
     @Override

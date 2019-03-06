@@ -1,6 +1,9 @@
 package frc.team7170.lib;
 
+import java.util.Random;
 import java.util.logging.Logger;
+
+// TODO: CURRENTLY HERE - print the min and max deltas, not including wraps
 
 public class WrappingDouble {
 
@@ -93,6 +96,7 @@ public class WrappingDouble {
     private final double stdDeviation;
     private final double mean;
     private double lastValue;
+    private double relativePosition;
     private int cycles = 0;
     private double offset = 0.0;
     private WrapDirection currWrapDirection = WrapDirection.INVALID;
@@ -108,24 +112,23 @@ public class WrappingDouble {
         this.maxNoiseDeviation = maxNoiseDeviation;
         this.stdDeviation = stdDeviation;
         this.mean = mean;
-        this.lastValue = initVal;
+        this.lastValue = this.relativePosition = initVal;
     }
 
     // TODO: telescoping constructors / builder
 
     public void feed(double value) {
-        double offsetValue = value - offset;
-        double delta = offsetValue - lastValue;
+        double delta = value - lastValue;
         if (!deltaDeviationPermissible(delta)) {
             if (!currWrapDirection.isWrap) {
                 currWrapDirection = deltaToWrapDirection(delta);
                 switch (currWrapDirection) {
                     case HIGH_TO_LOW:
-                        // System.out.println("TRIGGERED HIGH -> LOW WRAP");
+                        System.out.println("TRIGGERED HIGH -> LOW WRAP");
                         ++cycles;
                         break;
                     case LOW_TO_HIGH:
-                        // System.out.println("TRIGGERED LOW -> HIGH WRAP");
+                        System.out.println("TRIGGERED LOW -> HIGH WRAP");
                         --cycles;
                         break;
                     case INVALID:
@@ -145,7 +148,7 @@ public class WrappingDouble {
                         break;
                 }
             }
-        } else if (currWrapDirection.isWrap && nearOppositeExtreme(offsetValue)) {
+        } else if (currWrapDirection.isWrap && nearOppositeExtreme(value)) {
             /* This is from before the second condition above was added.
             switch (currWrapDirection) {
                 case HIGH_TO_LOW:
@@ -162,7 +165,7 @@ public class WrappingDouble {
             */
             currWrapDirection = WrapDirection.INVALID;
         }
-        lastValue = offsetValue;
+        relativePosition = lastValue = value;
     }
 
     private boolean nearOppositeExtreme(double value) {
@@ -199,23 +202,26 @@ public class WrappingDouble {
     }
 
     public double get() {
-        return lastValue + cycles * maxValue;
+        return getRaw() - offset;
+    }
+
+    private double getRaw() {
+        return relativePosition + cycles * maxValue;
     }
 
     public void reset() {
-        offset = lastValue;
-        lastValue = 0.0;
+        offset = getRaw();
+        relativePosition = 0.0;
         cycles = 0;
     }
 
-    /*
     public static void main(String[] args) {
         Random random = new Random();
         WrappingDoubleCharacterizer wdc = new WrappingDoubleCharacterizer(random.nextDouble());
         for (double j = 0.0; j <= 360.0; j += random.nextDouble()) {
             wdc.feed(j);
         }
-        // System.out.println(String.format("SD: %f; MEAN: %f", wdc.getStdDeviation(), wdc.getMean()));
+        System.out.println(String.format("SD: %f; MEAN: %f", wdc.getStdDeviation(), wdc.getMean()));
         for (int j = 0; j < 100; j++) {
             double initVal = random.nextDouble();
             WrappingDouble wc = new WrappingDouble(
@@ -241,5 +247,4 @@ public class WrappingDouble {
             System.out.println(wc.get());
         }
     }
-    */
 }

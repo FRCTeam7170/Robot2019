@@ -16,12 +16,33 @@ public class EndEffector extends Subsystem {
     // TODO: make this generic (e.g. implement lib.wrappers.Servo and generalize for all (continuous) servos) and move into spooky-lib
     public static class LateralSlide {
 
+        private class PollerThread extends Thread {
+
+            private PollerThread() {
+                super("LateralSlide.PollerThread");
+                setDaemon(true);
+            }
+
+            @Override
+            public void run() {
+                while (true) {
+                    pollFeedback();
+                    try {
+                        Thread.sleep(Constants.EndEffector.SERVO_FEEDBACK_POLL_PERIOD_MS);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+            }
+        }
+
         private final PWM pwm = new PWM(Constants.PWM.LATERAL_SLIDE_SERVO);
         private final AnalogInput feedback = new AnalogInput(Constants.AIN.LATERAL_SLIDE_SERVO_FEEDBACK);
         private final WrappingDouble wrappingDouble;
         // public final WrappingDouble.WrappingDoubleCharacterizer wdc;
-        private final Notifier feedbackNotifier = new Notifier(this::pollFeedback);
+        // private final Notifier feedbackNotifier = new Notifier(this::pollFeedback);
         private final DigitalInput limitSwitch = new DigitalInput(Constants.DIO.LATERAL_SLIDE_LIMIT_SWITCH);
+        private final Thread pollerThread = new PollerThread();
 
         public LateralSlide() {
             pwm.setBounds((double) Constants.EndEffector.SERVO_MAX_US / 1000.0,
@@ -44,7 +65,8 @@ public class EndEffector extends Subsystem {
             );
             // wdc = new WrappingDouble.WrappingDoubleCharacterizer(feedback.getAverageVoltage());
 
-            feedbackNotifier.startPeriodic((double) Constants.EndEffector.SERVO_FEEDBACK_POLL_PERIOD_MS / 1000.0);
+            // feedbackNotifier.startPeriodic((double) Constants.EndEffector.SERVO_FEEDBACK_POLL_PERIOD_MS / 1000.0);
+            pollerThread.start();
         }
 
         private static final LateralSlide INSTANCE = new LateralSlide();
@@ -65,19 +87,19 @@ public class EndEffector extends Subsystem {
             return pwm.getSpeed();
         }
 
-        public double getFeedback() {
+        public synchronized double getFeedback() {
             return Constants.EndEffector.SERVO_FEEDBACK_MULTIPLIER * getFeedbackRaw();
         }
 
-        public double getFeedbackRaw() {
+        public synchronized double getFeedbackRaw() {
             return wrappingDouble.get();
         }
 
-        public double getFeedbackVoltage() {
+        public synchronized double getFeedbackVoltage() {
             return feedback.getAverageVoltage() * 1000.0;
         }
 
-        public void resetFeedback() {
+        public synchronized void resetFeedback() {
             wrappingDouble.reset();
         }
 
@@ -85,7 +107,7 @@ public class EndEffector extends Subsystem {
             return limitSwitch.get();
         }
 
-        private void pollFeedback() {
+        private synchronized void pollFeedback() {
             double value = feedback.getAverageVoltage() * 1000.0 - Constants.EndEffector.SERVO_FEEDBACK_MIN_POTENTIAL_mV;
             if (Constants.EndEffector.INVERT_SERVO_FEEDBACK) {
                 value = Constants.EndEffector.SERVO_FEEDBACK_POTENTIAL_RANGE_mV - value;

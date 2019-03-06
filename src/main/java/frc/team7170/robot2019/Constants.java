@@ -303,7 +303,7 @@ public final class Constants {
     }
 
     public static final class EndEffector {
-        public static final double ZEROING_THROTTLE_PERCENT = 0.5;  // Non-negative.
+        public static final double ZEROING_THROTTLE_PERCENT = 1.0;  // Non-negative.
 
         // Pneumatics timing
         public static final double EJECT_PULSE_DURATION_SECONDS = 0.1;
@@ -332,8 +332,8 @@ public final class Constants {
         public static final double ABSOLUTE_SERVO_SPEED_MANUAL = 1.0;
         public static final double SERVO_FEEDBACK_NEAR_EXTREME_THRESHOLD = 500.0;  // mV
         public static final double SERVO_FEEDBACK_MAX_NOISE_DEVIATION = 3.0;  // standard deviations
-        public static final double SERVO_FEEDBACK_STD_DEVIATION = 11.000762;  // characterized
-        public static final double SERVO_FEEDBACK_MEAN = 13.786602;  // characterized
+        public static final double SERVO_FEEDBACK_STD_DEVIATION = 15.0;  // characterized (sorta)
+        public static final double SERVO_FEEDBACK_MEAN = 12.0;  // characterized (sorta)
         public static final int SERVO_FEEDBACK_AVERAGE_BITS = 0;
 
         // Preset lateral slide positions
