@@ -18,6 +18,7 @@ public enum ButtonActions implements ButtonAction {
     LATERAL_SLIDE_LEFT,
     LATERAL_SLIDE_RIGHT,
 
-    RESET_SERVO,  // TODO: TEMP
-    PRINT,  // TODO: TEMP
+    NEW_CMD,  // TODO: TEMP
+    CANCEL_CMD,  // TODO: TEMP
+    RESET_ENC,  // TODO: TEMP
 }

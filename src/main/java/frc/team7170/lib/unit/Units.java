@@ -15,7 +15,7 @@ public final class Units {
 
     public static <F extends Enum<F> & FundamentalUnitType> double
     convert(double value, Unit<F> from, Unit<F> to) {
-        return value * to.getScale() / from.getScale();
+        return value * from.getScale() / to.getScale();
     }
 
     public static Unit<UniversalUnitType> newTalonQuadratureEncoderRotationUnit(int encoderCyclesPerRotation) {
@@ -23,14 +23,21 @@ public final class Units {
     }
 
     public static Unit<UniversalUnitType> newTalonQuadratureEncoderDistanceUnit(
-            Unit<UniversalUnitType> talonQuadratureEncoderUnit, double wheelDiameterInches) {
-        return talonQuadratureEncoderUnit.multiply(INCH).multiply(wheelDiameterInches * Math.PI);
+            Unit<UniversalUnitType> talonQuadratureEncoderRotationUnit, double wheelDiameterInches) {
+        // TODO: This is broken
+        return INCH.multiply(talonQuadratureEncoderRotationUnit).multiply(wheelDiameterInches * Math.PI);
     }
 
     public static Unit<UniversalUnitType> newTalonQuadratureEncoderVelocityUnit(
             Unit<UniversalUnitType> talonQuadratureEncoderDistanceUnit) {
         return talonQuadratureEncoderDistanceUnit.divide(DECISECOND);
     }
+
+//    public static void main(String[] args) {
+//        Unit<UniversalUnitType> rot = newTalonQuadratureEncoderRotationUnit(1024);
+//        Unit<UniversalUnitType> dist = newTalonQuadratureEncoderDistanceUnit(rot, 6);
+//        System.out.println(String.format("%f inches = %f talon_units", 4.7, convertAndCheck(4.7, INCH, dist)));
+//    }
 
     /* Base units */
 

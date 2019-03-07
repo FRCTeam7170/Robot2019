@@ -14,13 +14,11 @@ public class CmdZeroLateralSlide extends Command {
 
     @Override
     protected void initialize() {
-        System.out.println("Setting servo speed for zeroing...");
         lateralSlide.set(-Constants.EndEffector.ZEROING_THROTTLE_PERCENT);
     }
 
     @Override
     protected void end() {
-        System.out.println("DONE servo zeroing.");
         lateralSlide.kill();
         lateralSlide.resetFeedback();
     }

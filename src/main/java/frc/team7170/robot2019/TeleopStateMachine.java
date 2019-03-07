@@ -81,7 +81,7 @@ public class TeleopStateMachine {
     }
 
     private void drive(Event event) {
-        event.assertArgumentsTypes(Integer.class, Integer.class, Boolean.class);
+        event.assertArgumentsTypes(Double.class, Double.class, Boolean.class);
 
         double val0 = driveMultiplier * (double) event.arguments[0];
         double val1 = driveMultiplier * (double) event.arguments[1];

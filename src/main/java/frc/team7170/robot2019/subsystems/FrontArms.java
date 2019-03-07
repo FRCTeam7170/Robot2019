@@ -7,10 +7,7 @@ import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
-import frc.team7170.lib.unit.Unit;
-import frc.team7170.lib.unit.Units;
 import frc.team7170.lib.CalcUtil;
-import frc.team7170.lib.unit.UniversalUnitType;
 import frc.team7170.robot2019.Constants;
 
 import java.util.logging.Logger;
@@ -19,8 +16,8 @@ public class FrontArms extends Subsystem {
 
     private static final Logger LOGGER = Logger.getLogger(FrontArms.class.getName());
 
-    private static final Unit<UniversalUnitType> ROTATION_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
-            .divide(Constants.FrontArms.TOTAL_REDUCTION);
+    // private static final Unit<UniversalUnitType> ROTATION_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
+    //         .divide(Constants.FrontArms.TOTAL_REDUCTION);
 
     private final TalonSRX master = new TalonSRX(Constants.CAN.FRONT_ARM_TALON_MASTER);
     private final TalonSRX follower = new TalonSRX(Constants.CAN.FRONT_ARM_TALON_FOLLOWER);
@@ -88,7 +85,8 @@ public class FrontArms extends Subsystem {
     protected void initDefaultCommand() {}
 
     private static double degreesToTalonUnits(double value) {
-        return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);
+        // return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);
+        return value / 360.0 * Constants.FrontArms.TOTAL_REDUCTION * (Constants.FrontArms.ENCODER_CPR * 4);
     }
 
     @Override

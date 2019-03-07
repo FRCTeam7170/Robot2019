@@ -1,6 +1,5 @@
 package frc.team7170.lib;
 
-import java.util.Random;
 import java.util.logging.Logger;
 
 // TODO: CURRENTLY HERE - print the min and max deltas, not including wraps
@@ -202,19 +201,16 @@ public class WrappingDouble {
     }
 
     public double get() {
-        return getRaw() - offset;
-    }
-
-    private double getRaw() {
-        return relativePosition + cycles * maxValue;
+        return relativePosition + cycles * maxValue - offset;
     }
 
     public void reset() {
-        offset = getRaw();
+        offset = relativePosition;
         relativePosition = 0.0;
         cycles = 0;
     }
 
+    /*
     public static void main(String[] args) {
         Random random = new Random();
         WrappingDoubleCharacterizer wdc = new WrappingDoubleCharacterizer(random.nextDouble());
@@ -247,4 +243,5 @@ public class WrappingDouble {
             System.out.println(wc.get());
         }
     }
+    */
 }

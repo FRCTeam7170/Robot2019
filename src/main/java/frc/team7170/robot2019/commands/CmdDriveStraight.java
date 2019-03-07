@@ -17,12 +17,14 @@ public class CmdDriveStraight extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("START DriveStraight");  // TODO: TEMP
         drive.zeroEncoders();
         drive.setPosition(distanceMetres);
     }
 
     @Override
     protected void end() {
+        System.out.println("ENDED DriveStraight");  // TODO: TEMP
         drive.killMotors();
     }
 

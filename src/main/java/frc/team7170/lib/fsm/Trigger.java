@@ -23,9 +23,9 @@ public class Trigger implements Named {
         boolean success = machine.executeTrigger(this, arguments);
         if (log) {
             if (success) {
-                LOGGER.info(String.format("Trigger '%s' executed successfully.", toString()));
+                LOGGER.fine(String.format("Trigger '%s' executed successfully.", toString()));
             } else {
-                LOGGER.info(String.format("Trigger '%s' failed to execute.", toString()));
+                LOGGER.fine(String.format("Trigger '%s' failed to execute.", toString()));
             }
         }
         return success;

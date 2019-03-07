@@ -27,8 +27,8 @@ public class ClimbDrive extends Subsystem implements Named {
             victorSPX = new VictorSPX(canID);
 
             this.dio.setDistancePerPulse(
-                    Units.convert(Constants.Dimensions.LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES * Math.PI /
-                            Constants.ClimbDrive.SEAT_MOTOR_GEAR_RATIO, Units.INCH, Units.METRE)
+                    Units.convert(Constants.Dimensions.LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES, Units.INCH, Units.METRE)
+                            * Math.PI / Constants.ClimbDrive.SEAT_MOTOR_GEAR_RATIO
             );
             victorSPX.setInverted(invert);
             victorSPX.configClosedloopRamp(Constants.ClimbDrive.RAMP_TIME);

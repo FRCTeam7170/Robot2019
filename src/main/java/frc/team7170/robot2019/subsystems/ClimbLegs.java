@@ -8,9 +8,6 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
 import frc.team7170.lib.Named;
-import frc.team7170.lib.unit.Unit;
-import frc.team7170.lib.unit.Units;
-import frc.team7170.lib.unit.UniversalUnitType;
 import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot2019.Constants;
 
@@ -20,8 +17,8 @@ public class ClimbLegs extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbLegs.class.getName());
 
-    private static final Unit<UniversalUnitType> DISTANCE_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
-            .multiply(Units.METRE).multiply(Constants.ClimbLegs.DISTANCE_FACTOR / Constants.ClimbLegs.TOTAL_REDUCTION);
+    // private static final Unit<UniversalUnitType> DISTANCE_UNIT = Constants.TALON_CIMCODER_ROTATION_UNIT
+    //         .multiply(Units.METRE).multiply(Constants.ClimbLegs.DISTANCE_FACTOR);
 
     public static class LinearActuator extends Subsystem implements Named {
 
@@ -175,6 +172,7 @@ public class ClimbLegs extends Subsystem implements Named {
     }
 
     private static double metresToTalonUnits(double value) {
-        return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
+        // return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
+        return value / Constants.ClimbLegs.DISTANCE_FACTOR * (Constants.ClimbLegs.ENCODER_CPR * 4);
     }
 }

@@ -189,9 +189,9 @@ public class Transition {
         boolean success = machine.executeTransition(this, arguments);
         if (log) {
             if (success) {
-                LOGGER.info(String.format("Transition '%s' executed successfully.", toString()));
+                LOGGER.fine(String.format("Transition '%s' executed successfully.", toString()));
             } else {
-                LOGGER.info(String.format("Transition '%s' failed to execute.", toString()));
+                LOGGER.fine(String.format("Transition '%s' failed to execute.", toString()));
             }
         }
         return success;

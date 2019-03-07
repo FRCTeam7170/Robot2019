@@ -223,13 +223,13 @@ public class EndEffector extends Subsystem {
                 if (sensors[i].getVoltage() < Constants.ReflectanceSensorArray.SENSOR_TRIGGER_THRESHOLD) {
                     if (!onStreak) {
                         if (triggeredSensorIndices.size() != 0) {
-                            LOGGER.warning("Sensed more than one reflective object.");
+                            LOGGER.fine("Sensed more than one reflective object.");
                             return new LineDeviation(0.0, true);
                         }
                         onStreak = true;
                     }
                     if (triggeredSensorIndices.size() == Constants.ReflectanceSensorArray.MAX_TRIGGERED_SENSORS) {
-                        LOGGER.warning(String.format(
+                        LOGGER.fine(String.format(
                                 "Sensed something reflective, but more than MAX_TRIGGERED_SENSORS (%d) were triggered.",
                                 Constants.ReflectanceSensorArray.MAX_TRIGGERED_SENSORS
                         ));
@@ -241,7 +241,7 @@ public class EndEffector extends Subsystem {
                     // to the left.
                     if (triggeredSensorIndices.size() < Constants.ReflectanceSensorArray.MIN_TRIGGERED_SENSORS &&
                             triggeredSensorIndices.get(0) != 0) {
-                        LOGGER.warning(String.format(
+                        LOGGER.fine(String.format(
                                 "Sensed something reflective, but fewer than MIN_TRIGGERED_SENSORS (%d) were triggered.",
                                 Constants.ReflectanceSensorArray.MIN_TRIGGERED_SENSORS
                         ));
@@ -251,7 +251,7 @@ public class EndEffector extends Subsystem {
                 }
             }
             if (triggeredSensorIndices.isEmpty()) {
-                LOGGER.warning("No reflectance sensors were triggered.");
+                LOGGER.fine("No reflectance sensors were triggered.");
                 return new LineDeviation(0.0, true);
             }
             /*

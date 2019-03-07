@@ -2,17 +2,13 @@ package frc.team7170.robot2019;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
-import frc.team7170.lib.unit.Unit;
-import frc.team7170.lib.unit.Units;
-import frc.team7170.lib.unit.UniversalUnitType;
 
 public final class Constants {
 
-    // TODO: do these really belong here?
-    public static final Unit<UniversalUnitType> TALON_MAG_ENCODER_ROTATION_UNIT =
-            Units.newTalonQuadratureEncoderRotationUnit(4096);
-    public static final Unit<UniversalUnitType> TALON_CIMCODER_ROTATION_UNIT =
-            Units.newTalonQuadratureEncoderRotationUnit(20);
+    // public static final Unit<UniversalUnitType> TALON_MAG_ENCODER_ROTATION_UNIT =
+    //         Units.newTalonQuadratureEncoderRotationUnit(1024);
+    // public static final Unit<UniversalUnitType> TALON_CIMCODER_ROTATION_UNIT =
+    //         Units.newTalonQuadratureEncoderRotationUnit(20);
 
     public static final class OI {
         public static final int JOYSTICK_PORT = 0;
@@ -108,6 +104,13 @@ public final class Constants {
     public static final class Drive {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
+        public static final int ENCODER_CPR = 1024;  // Talon Mag.
+        public static final int POSITION_PROFILE = 0;
+        public static final int ALLOWABLE_CLOSED_LOOP_POSITION_ERROR = 217;  // raw units (enc_ticks); +-1 in. on 6 in. wheels
+
+        // Smart tank drive
+        public static final boolean ENABLE_SMART_TANK_DRIVE = true;
+        public static final double SMART_TANK_DRIVE_THRESHOLD = 0.05;
 
         // Talon voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -122,48 +125,21 @@ public final class Constants {
         // Talon inversion
         public static final boolean INVERT_LEFT = true;
         public static final boolean INVERT_RIGHT = false;
-        public static final boolean SENSOR_PHASE = false;
-
-        // Left PIDF parameters -- velocity control
-        // public static final double P_LEFT_VELOCITY = 0.0;  // throttle / error
-        // public static final double I_LEFT_VELOCITY = 0.0;  // throttle / integrated error
-        // public static final double D_LEFT_VELOCITY = 0.0;  // throttle / differentiated error
-        // public static final double F_LEFT_VELOCITY = 0.0;  // multiplied directly by setpoint
-        // public static final int IZONE_LEFT_VELOCITY = 0;  // max integrated error to permit I accumulation on
-
-        // Right PIDF parameters -- velocity control
-        // public static final double P_RIGHT_VELOCITY = 0.0;  // throttle / error
-        // public static final double I_RIGHT_VELOCITY = 0.0;  // throttle / integrated error
-        // public static final double D_RIGHT_VELOCITY = 0.0;  // throttle / differentiated error
-        // public static final double F_RIGHT_VELOCITY = 0.0;  // multiplied directly by setpoint
-        // public static final int IZONE_RIGHT_VELOCITY = 0;  // max integrated error to permit I accumulation on
+        public static final boolean SENSOR_PHASE = true;
 
         // Left PIDF parameters -- position control
-        public static final double P_LEFT_POSITION = 0.01;  // throttle / error
-        public static final double I_LEFT_POSITION = 0.0;  // throttle / integrated error
-        public static final double D_LEFT_POSITION = 0.0;  // throttle / differentiated error
-        public static final double F_LEFT_POSITION = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_LEFT_POSITION = 0;  // max integrated error to permit I accumulation on
+        public static final double P_LEFT = 0.1;  // throttle / error
+        public static final double I_LEFT = 0.0001;  // throttle / integrated error
+        public static final double D_LEFT = 200.0;  // throttle / differentiated error
+        public static final double F_LEFT = 0.0;  // multiplied directly by setpoint
+        public static final int IZONE_LEFT = 4096;
 
         // Right PIDF parameters -- position control
-        public static final double P_RIGHT_POSITION = 0.01;  // throttle / error
-        public static final double I_RIGHT_POSITION = 0.0;  // throttle / integrated error
-        public static final double D_RIGHT_POSITION = 0.0;  // throttle / differentiated error
-        public static final double F_RIGHT_POSITION = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_RIGHT_POSITION = 0;  // max integrated error to permit I accumulation on
-
-        // Talon parameter slots
-        public static final int PARAMETER_SLOT_POSITION = 0;
-        // public static final int PARAMETER_SLOT_VELOCITY = 1;
-
-        // Talon allowable error
-        // public static final int ALLOWABLE_CLOSED_LOOP_VELOCITY_ERROR = 0;  // raw units (enc_ticks/0.1s)
-        public static final int ALLOWABLE_CLOSED_LOOP_POSITION_ERROR = 0;  // raw units (enc_ticks)
-
-        // Characterized -- TODO
-        // public static final double ABSOLUTE_MAX_VELOCITY = 5.0;  // m/s
-        // public static final double MAX_VELOCITY = 0.9 * ABSOLUTE_MAX_VELOCITY;  // m/s
-        // public static final double VOLTAGE_DEADBAND = 1.0;  // V
+        public static final double P_RIGHT = 0.1;  // throttle / error
+        public static final double I_RIGHT = 0.0001;  // throttle / integrated error
+        public static final double D_RIGHT = 200.0;  // throttle / differentiated error
+        public static final double F_RIGHT = 0.0;  // multiplied directly by setpoint
+        public static final int IZONE_RIGHT = 4096;
     }
 
     public static final class FrontArms {
@@ -172,6 +148,7 @@ public final class Constants {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
+        public static final int ENCODER_CPR = 20;  // CIMCoder
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
@@ -203,12 +180,12 @@ public final class Constants {
     }
 
     public static final class ClimbLegs {
-        public static final double TOTAL_REDUCTION = 64.0;  // gearbox reduction
-        public static final double DISTANCE_FACTOR = 0.0;  // metres/armature rotation
+        public static final double DISTANCE_FACTOR = 1.0;  // metres/output_shaft_rotation
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
+        public static final int ENCODER_CPR = 20;  // CIMCoder
 
         // Preset positions
         public static final double HOME_METRES = 0.0;
@@ -327,7 +304,8 @@ public final class Constants {
         public static final int SERVO_FEEDBACK_MIN_POTENTIAL_mV = 104;  // empirically determined
         public static final int SERVO_FEEDBACK_POTENTIAL_RANGE_mV =
                 SERVO_FEEDBACK_MAX_POTENTIAL_mV - SERVO_FEEDBACK_MIN_POTENTIAL_mV;
-        public static final double SERVO_FEEDBACK_MULTIPLIER = 0.0269875 / SERVO_FEEDBACK_POTENTIAL_RANGE_mV;  // (1 1/16 in. per servo rotation)
+        public static final double SERVO_FEEDBACK_MULTIPLIER =
+                (Dimensions.END_EFFECTOR_INNER_WIDTH_METRES - Dimensions.PIN_CYCLINDER_DIAMETER_METRES) / 13760.0;
         public static final double ABSOLUTE_SERVO_SPEED_AUTOMATIC = 1.0;
         public static final double ABSOLUTE_SERVO_SPEED_MANUAL = 1.0;
         public static final double SERVO_FEEDBACK_NEAR_EXTREME_THRESHOLD = 500.0;  // mV
