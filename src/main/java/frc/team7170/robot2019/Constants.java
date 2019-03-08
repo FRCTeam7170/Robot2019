@@ -10,6 +10,10 @@ public final class Constants {
     // public static final Unit<UniversalUnitType> TALON_CIMCODER_ROTATION_UNIT =
     //         Units.newTalonQuadratureEncoderRotationUnit(20);
 
+    public static final class Shuffleboard {
+        public static final String MAIN_TAB = "main";
+    }
+
     public static final class OI {
         public static final int JOYSTICK_PORT = 0;
         public static final int GAMEPAD_PORT = 1;
@@ -71,10 +75,15 @@ public final class Constants {
     }
 
     public static final class PCM {
-        public static final int EJECT_DEPLOY_SOLENOID = 1;
-        public static final int EJECT_RETRACT_SOLENOID = 0;
-        public static final int PIN_DEPLOY_SOLENOID = 2;
+        public static final int EJECT_DEPLOY_SOLENOID = 0;
+        public static final int EJECT_RETRACT_SOLENOID = 2;
+        public static final int PIN_DEPLOY_SOLENOID = 1;
         public static final int PIN_RETRACT_SOLENOID = 3;
+    }
+
+    public static final class Camera {
+        public static final String CAMERA0_NAME = "Camera 0";
+        public static final String CAMERA1_NAME = "Camera 1";
     }
 
     public static final class Field {
@@ -107,10 +116,11 @@ public final class Constants {
         public static final int ENCODER_CPR = 1024;  // Talon Mag.
         public static final int POSITION_PROFILE = 0;
         public static final int ALLOWABLE_CLOSED_LOOP_POSITION_ERROR = 217;  // raw units (enc_ticks); +-1 in. on 6 in. wheels
+        public static final boolean SQUARE_INPUTS = true;
 
         // Smart tank drive
-        public static final boolean ENABLE_SMART_TANK_DRIVE = true;
-        public static final double SMART_TANK_DRIVE_THRESHOLD = 0.05;
+        public static final boolean ENABLE_TANK_FORWARD_ASSIST = false;
+        public static final double TANK_FORWARD_ASSIST_THRESHOLD = 0.05;
 
         // Talon voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -147,14 +157,15 @@ public final class Constants {
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
-        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
+        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 50;  // 3 degrees
         public static final int ENCODER_CPR = 20;  // CIMCoder
+        public static final double MAX_ABSOLUTE_OUTPUT = 0.5;
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
-        public static final double VERTICAL_ANGLE_DEGREES = 0.0;
+        public static final double VERTICAL_ANGLE_DEGREES = 13.7;
         public static final double HORIZONTAL_ANGLE_DEGREES = VERTICAL_ANGLE_DEGREES + 90.0;
-        public static final double PICKUP_ANGLE_DEGREES = 0.0;
+        public static final double PICKUP_ANGLE_DEGREES = 125.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -167,14 +178,14 @@ public final class Constants {
         public static final int PEAK_CURRENT_LIMIT_DURATION_MS = 100;
 
         // Inversion
-        public static final boolean INVERT_LEFT = false;
-        public static final boolean INVERT_RIGHT = false;
+        public static final boolean INVERT_LEFT = true;
+        public static final boolean INVERT_RIGHT = true;
         public static final boolean SENSOR_PHASE = false;
 
         // Left PIDF parameters
-        public static final double P = 0.0;  // throttle / error
-        public static final double I = 0.0;  // throttle / integrated error
-        public static final double D = 0.0;  // throttle / differentiated error
+        public static final double P = 1.5;  // throttle / error
+        public static final double I = 0.001;  // throttle / integrated error
+        public static final double D = 8;  // throttle / differentiated error
         public static final double F = 0.0;  // multiplied directly by setpoint
         public static final int IZONE = 0;  // max integrated error to permit I accumulation on
     }

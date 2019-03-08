@@ -8,5 +8,10 @@ public enum AxisActions implements AxisAction {
     DRIVE_Y,
     DRIVE_Z,
 
+    ELEVATOR,
+    LEFT_LINEAR_ACTUATOR,
+    RIGHT_LINEAR_ACTUATOR,
+    FRONT_ARMS,
+    CLIMB_DRIVE,
     LATERAL_SLIDE,
 }

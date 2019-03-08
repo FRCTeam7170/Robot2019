@@ -24,7 +24,8 @@ public class CmdEndEffectorTeleop extends Command {
     protected void execute() {
         try {
             if (KeyBindings.getInstance().actionToButton(ButtonActions.EJECT).getPressed()) {
-                tsm.ejectTrigger.execute();
+                // tsm.ejectTrigger.execute();  // TODO :TEMP
+                EndEffector.getInstance().eject();
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.TOGGLE_PIN).getPressed()) {
                 // TODO: TEMP
                 EndEffector.getInstance().togglePin();

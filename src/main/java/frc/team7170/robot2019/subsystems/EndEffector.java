@@ -1,7 +1,9 @@
 package frc.team7170.robot2019.subsystems;
 
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import frc.team7170.lib.WrappingDouble;
 import frc.team7170.lib.multiplex.AnalogMultiplexer;
 import frc.team7170.lib.wrappers.WrapperFactory;
@@ -313,8 +315,12 @@ public class EndEffector extends Subsystem {
     private boolean ejecting = false;
     private boolean togglingPin = false;
 
+    private final NetworkTableEntry pinStateEntry;
+
     private EndEffector() {
         super("endEffector");
+
+        pinStateEntry = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB).add("pinState", false).getEntry();
 
         ejectDeploySolenoid.setPulseDuration(Constants.EndEffector.EJECT_SOLENOID_PULSE_DURATION_SECONDS);
         ejectRetractSolenoid.setPulseDuration(Constants.EndEffector.EJECT_SOLENOID_PULSE_DURATION_SECONDS);
@@ -354,6 +360,7 @@ public class EndEffector extends Subsystem {
             pinDeployed = true;
             pinDeploySolenoid.startPulse();
             pinNotifer.startSingle(Constants.EndEffector.PIN_SOLENOID_PULSE_DURATION_SECONDS);
+            pinStateEntry.setBoolean(true);
             return true;
         }
         return false;
@@ -365,6 +372,7 @@ public class EndEffector extends Subsystem {
             pinDeployed = false;
             pinRetractSolenoid.startPulse();
             pinNotifer.startSingle(Constants.EndEffector.PIN_SOLENOID_PULSE_DURATION_SECONDS);
+            pinStateEntry.setBoolean(false);
             return true;
         }
         return false;

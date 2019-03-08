@@ -14,7 +14,7 @@ public class CmdZeroFrontArms extends Command {
 
     @Override
     protected void initialize() {
-        frontArms.setPercent(-Constants.FrontArms.ZEROING_THROTTLE_PERCENT);
+        frontArms.setPercent(Constants.FrontArms.ZEROING_THROTTLE_PERCENT);
     }
 
     @Override

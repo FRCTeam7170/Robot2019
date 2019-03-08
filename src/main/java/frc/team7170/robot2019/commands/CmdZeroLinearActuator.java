@@ -15,7 +15,7 @@ public class CmdZeroLinearActuator extends Command {
 
     @Override
     protected void initialize() {
-        linearActuator.setPercent(-Constants.ClimbLegs.ZEROING_THROTTLE_PERCENT);
+        linearActuator.setPercent(Constants.ClimbLegs.ZEROING_THROTTLE_PERCENT);
     }
 
     @Override

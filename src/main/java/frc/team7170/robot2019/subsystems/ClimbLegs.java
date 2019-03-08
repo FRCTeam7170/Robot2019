@@ -5,8 +5,11 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.ctre.phoenix.motorcontrol.LimitSwitchSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot2019.Constants;
@@ -24,21 +27,14 @@ public class ClimbLegs extends Subsystem implements Named {
 
         private final TalonSRX talon;
 
-        private double P;
-        private double I;
-        private double D;
-        private double F;
-        private double IZONE;
+        private final NetworkTableEntry lowerLimitSwitchEntry;
+        private final NetworkTableEntry upperLimitSwitchEntry;
+        private final NetworkTableEntry encoderEntry;
 
         private LinearActuator(String name, int id, boolean invert, boolean sensorPhase,
                                double P, double I, double D, double F, int IZONE) {
             super(name);
             talon = new TalonSRX(id);
-            this.P = P;
-            this.I = I;
-            this.D = D;
-            this.F = F;
-            this.IZONE = IZONE;
 
             talon.config_kP(0, P);
             talon.config_kI(0, I);
@@ -60,6 +56,39 @@ public class ClimbLegs extends Subsystem implements Named {
             talon.configAllowableClosedloopError(0, Constants.ClimbLegs.ALLOWABLE_CLOSED_LOOP_ERROR);
             talon.setInverted(invert);
             talon.setSensorPhase(sensorPhase);
+
+            ShuffleboardTab linearActuatorTab = Shuffleboard.getTab(name);
+
+            linearActuatorTab.add("P", P).getEntry().addListener(
+                    notification -> talon.config_kP(0, notification.value.getDouble()),
+                    EntryListenerFlags.kUpdate
+            );
+            linearActuatorTab.add("I", I).getEntry().addListener(
+                    notification -> talon.config_kI(0, notification.value.getDouble()),
+                    EntryListenerFlags.kUpdate
+            );
+            linearActuatorTab.add("D", D).getEntry().addListener(
+                    notification -> talon.config_kD(0, notification.value.getDouble()),
+                    EntryListenerFlags.kUpdate
+            );
+            linearActuatorTab.add("F", F).getEntry().addListener(
+                    notification -> talon.config_kF(0, notification.value.getDouble()),
+                    EntryListenerFlags.kUpdate
+            );
+            linearActuatorTab.add("IZONE", IZONE).getEntry().addListener(
+                    notification -> talon.config_IntegralZone(0, (int) notification.value.getDouble()),
+                    EntryListenerFlags.kUpdate
+            );
+            lowerLimitSwitchEntry = linearActuatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
+            upperLimitSwitchEntry = linearActuatorTab.add("upperLimitSwitch", isUpperLimitSwitchTriggered()).getEntry();
+            encoderEntry = linearActuatorTab.add("encoder", getEncoder()).getEntry();
+        }
+
+        @Override
+        public void periodic() {
+            lowerLimitSwitchEntry.setBoolean(isLowerLimitSwitchTriggered());
+            upperLimitSwitchEntry.setBoolean(isUpperLimitSwitchTriggered());
+            encoderEntry.setDouble(getEncoder());
         }
 
         public void setPercent(double percent) {
@@ -76,11 +105,11 @@ public class ClimbLegs extends Subsystem implements Named {
         }
 
         public boolean isLowerLimitSwitchTriggered() {
-            return talon.getSensorCollection().isFwdLimitSwitchClosed();
+            return !talon.getSensorCollection().isFwdLimitSwitchClosed();
         }
 
         public boolean isUpperLimitSwitchTriggered() {
-            return talon.getSensorCollection().isRevLimitSwitchClosed();
+            return !talon.getSensorCollection().isRevLimitSwitchClosed();
         }
 
         public void zeroEncoder() {
@@ -91,39 +120,12 @@ public class ClimbLegs extends Subsystem implements Named {
             setPercent(0.0);
         }
 
+        public double getEncoder() {
+            return talon.getSelectedSensorPosition();
+        }
+
         @Override
         protected void initDefaultCommand() {}
-
-        @Override
-        public void initSendable(SendableBuilder builder) {
-            super.initSendable(builder);
-
-            builder.addDoubleProperty(
-                    "P",
-                    () -> P,
-                    value -> talon.config_kP(0, value)
-            );
-            builder.addDoubleProperty(
-                    "I",
-                    () -> I,
-                    value -> talon.config_kI(0, value)
-            );
-            builder.addDoubleProperty(
-                    "D",
-                    () -> D,
-                    value -> talon.config_kD(0, value)
-            );
-            builder.addDoubleProperty(
-                    "F",
-                    () -> F,
-                    value -> talon.config_kF(0, value)
-            );
-            builder.addDoubleProperty(
-                    "IZONE",
-                    () -> IZONE,
-                    value -> talon.config_IntegralZone(0, (int) value)
-            );
-        }
     }
 
     private final LinearActuator leftLinearActuator = new LinearActuator(

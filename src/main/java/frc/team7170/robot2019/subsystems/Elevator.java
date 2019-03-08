@@ -1,10 +1,13 @@
 package frc.team7170.robot2019.subsystems;
 
 import com.revrobotics.*;
+import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SendableBuilder;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Named;
 import frc.team7170.robot2019.Constants;
 
@@ -39,6 +42,10 @@ public class  Elevator extends Subsystem implements Named {
     // private final DigitalInput lowerLimitSwitch = new DigitalInput(Constants.DIO.ELEVATOR_LIMIT_SWITCH_LOW);
     // private final DigitalInput higherLimitSwitch = new DigitalInput(Constants.DIO.ELEVATOR_LIMIT_SWITCH_HIGH);
 
+    private final NetworkTableEntry lowerLimitSwitchEntry;
+    private final NetworkTableEntry upperLimitSwitchEntry;
+    private final NetworkTableEntry encoderEntry;
+
     private Elevator() {
         super("elevator");
 
@@ -54,6 +61,28 @@ public class  Elevator extends Subsystem implements Named {
 
         encoder.setDistancePerPulse(Constants.Elevator.DISTANCE_FACTOR);
         pidController.disable();
+
+        ShuffleboardTab elevatorTab = Shuffleboard.getTab("elevator");
+
+        elevatorTab.add("P", Constants.Elevator.P).getEntry().addListener(
+                notification -> pidController.setP(notification.value.getDouble()),
+                EntryListenerFlags.kUpdate
+        );
+        elevatorTab.add("I", Constants.Elevator.I).getEntry().addListener(
+                notification -> pidController.setI(notification.value.getDouble()),
+                EntryListenerFlags.kUpdate
+        );
+        elevatorTab.add("D", Constants.Elevator.D).getEntry().addListener(
+                notification -> pidController.setD(notification.value.getDouble()),
+                EntryListenerFlags.kUpdate
+        );
+        elevatorTab.add("F", Constants.Elevator.F).getEntry().addListener(
+                notification -> pidController.setF(notification.value.getDouble()),
+                EntryListenerFlags.kUpdate
+        );
+        lowerLimitSwitchEntry = elevatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
+        upperLimitSwitchEntry = elevatorTab.add("upperLimitSwitch", isUpperLimitSwitchTriggered()).getEntry();
+        encoderEntry = elevatorTab.add("encoder", getEncoder()).getEntry();
     }
 
     private static final Elevator INSTANCE = new Elevator();
@@ -66,6 +95,13 @@ public class  Elevator extends Subsystem implements Named {
         max.setRampRate(Constants.Elevator.RAMP_TIME);
         max.setIdleMode(Constants.Elevator.IDLE_MODE);
         max.setSecondaryCurrentLimit(Constants.Elevator.CURRENT_LIMIT_AMPS);
+    }
+
+    @Override
+    public void periodic() {
+        lowerLimitSwitchEntry.setBoolean(isLowerLimitSwitchTriggered());
+        upperLimitSwitchEntry.setBoolean(isUpperLimitSwitchTriggered());
+        encoderEntry.setDouble(getEncoder());
     }
 
     public void setPercent(double percent) {
@@ -91,6 +127,10 @@ public class  Elevator extends Subsystem implements Named {
         setPercent(0.0);
     }
 
+    public double getEncoder() {
+        return encoder.getDistance();
+    }
+
     public boolean isLowerLimitSwitchTriggered() {
         return lowerLimitSwitch.get();
     }
@@ -101,14 +141,4 @@ public class  Elevator extends Subsystem implements Named {
 
     @Override
     protected void initDefaultCommand() {}
-
-    @Override
-    public void initSendable(SendableBuilder builder) {
-        super.initSendable(builder);
-
-        builder.addDoubleProperty("P", pidController::getP, pidController::setP);
-        builder.addDoubleProperty("I", pidController::getI, pidController::setI);
-        builder.addDoubleProperty("D", pidController::getD, pidController::setD);
-        builder.addDoubleProperty("F", pidController::getF, pidController::setF);
-    }
 }

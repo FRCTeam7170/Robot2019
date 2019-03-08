@@ -11,14 +11,16 @@ public enum ButtonActions implements ButtonAction {
     PICKUP,
     PICKUP_CANCEL,
 
+    LOAD,
+    CLIMB,
+
     EJECT,
     EJECT_CANCEL,
-    TOGGLE_PIN,  // TODO: TEMP
 
     LATERAL_SLIDE_LEFT,
     LATERAL_SLIDE_RIGHT,
 
-    NEW_CMD,  // TODO: TEMP
-    CANCEL_CMD,  // TODO: TEMP
-    RESET_ENC,  // TODO: TEMP
+    TOGGLE_PIN,  // TODO: TEMP
+    TEST_GENERIC_0,  // TODO: TEMP
+    TEST_GENERIC_1,  // TODO: TEMP
 }

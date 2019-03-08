@@ -1,6 +1,7 @@
 package frc.team7170.lib.oi;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import frc.team7170.lib.CalcUtil;
 import frc.team7170.lib.Name;
 
 import java.util.HashMap;
@@ -8,12 +9,29 @@ import java.util.Map;
 
 public final class LF310Gamepad extends RumbleController {
 
+    private static final double ZERO_THRESHOLD = 0.01;
+
     public final HIDAxis A_LX;
     public final HIDAxis A_LY;
     public final HIDAxis A_RX;
     public final HIDAxis A_RY;
     public final HIDAxis A_LTRIGGER;
     public final HIDAxis A_RTRIGGER;
+    public final ScaledAxis A_TRIGGERS = new ScaledAxis(new Name("TRIGGERS")) {
+        @Override
+        public double getRaw() {
+            double left = A_LTRIGGER.get();
+            double right = A_RTRIGGER.get();
+            boolean leftIsZero = CalcUtil.inThreshold(left, 0, ZERO_THRESHOLD);
+            boolean rightIsZero = CalcUtil.inThreshold(right, 0, ZERO_THRESHOLD);
+            if (!leftIsZero && !rightIsZero) {
+                return 0.0;
+            } else if (leftIsZero) {
+                return right;
+            }
+            return -left;
+        }
+    };
 
     public final HIDButton B_A;
     public final HIDButton B_B;

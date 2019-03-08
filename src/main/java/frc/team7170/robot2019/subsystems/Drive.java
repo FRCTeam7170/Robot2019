@@ -28,20 +28,12 @@ public class Drive extends Subsystem implements Named {
     private final TalonSRX rightMaster = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_MASTER);
     private final TalonSRX rightFollower = new TalonSRX(Constants.CAN.DRIVE_TALON_RIGHT_FOLLOWER);
 
-    private double P_LEFT = Constants.Drive.P_LEFT;
-    private double I_LEFT = Constants.Drive.I_LEFT;
-    private double D_LEFT = Constants.Drive.D_LEFT;
-    private double F_LEFT = Constants.Drive.F_LEFT;
-    private int IZONE_LEFT = Constants.Drive.IZONE_LEFT;
-
-    private double P_RIGHT = Constants.Drive.P_RIGHT;
-    private double I_RIGHT = Constants.Drive.I_RIGHT;
-    private double D_RIGHT = Constants.Drive.D_RIGHT;
-    private double F_RIGHT = Constants.Drive.F_RIGHT;
-    private int IZONE_RIGHT = Constants.Drive.IZONE_RIGHT;
-
     private final NetworkTableEntry leftEncoderEntry;
     private final NetworkTableEntry rightEncoderEntry;
+
+    private boolean squareInputs = Constants.Drive.SQUARE_INPUTS;
+    private boolean enableTankForwardAssist = Constants.Drive.ENABLE_TANK_FORWARD_ASSIST;
+    private double tankForwardAssistThreshold = Constants.Drive.TANK_FORWARD_ASSIST_THRESHOLD;
 
     private Drive() {
         super("drive");
@@ -57,77 +49,69 @@ public class Drive extends Subsystem implements Named {
         leftMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
         rightMaster.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
 
-        leftMaster.config_kP(Constants.Drive.POSITION_PROFILE, P_LEFT);
-        leftMaster.config_kI(Constants.Drive.POSITION_PROFILE, I_LEFT);
-        leftMaster.config_kD(Constants.Drive.POSITION_PROFILE, D_LEFT);
-        leftMaster.config_kF(Constants.Drive.POSITION_PROFILE, F_LEFT);
-        leftMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, IZONE_LEFT);
+        leftMaster.config_kP(Constants.Drive.POSITION_PROFILE, Constants.Drive.P_LEFT);
+        leftMaster.config_kI(Constants.Drive.POSITION_PROFILE, Constants.Drive.I_LEFT);
+        leftMaster.config_kD(Constants.Drive.POSITION_PROFILE, Constants.Drive.D_LEFT);
+        leftMaster.config_kF(Constants.Drive.POSITION_PROFILE, Constants.Drive.F_LEFT);
+        leftMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, Constants.Drive.IZONE_LEFT);
 
-        rightMaster.config_kP(Constants.Drive.POSITION_PROFILE, P_RIGHT);
-        rightMaster.config_kI(Constants.Drive.POSITION_PROFILE, I_RIGHT);
-        rightMaster.config_kD(Constants.Drive.POSITION_PROFILE, D_RIGHT);
-        rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, F_RIGHT);
-        rightMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, IZONE_RIGHT);
+        rightMaster.config_kP(Constants.Drive.POSITION_PROFILE, Constants.Drive.P_RIGHT);
+        rightMaster.config_kI(Constants.Drive.POSITION_PROFILE, Constants.Drive.I_RIGHT);
+        rightMaster.config_kD(Constants.Drive.POSITION_PROFILE, Constants.Drive.D_RIGHT);
+        rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, Constants.Drive.F_RIGHT);
+        rightMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, Constants.Drive.IZONE_RIGHT);
 
-        ShuffleboardTab driveTab = Shuffleboard.getTab("Drive");
+        ShuffleboardTab driveTab = Shuffleboard.getTab("drive");
 
-        driveTab.add("P_LEFT", P_LEFT).getEntry().addListener(notification -> {
-            System.out.println("SET P_LEFT");
-            P_LEFT = notification.value.getDouble();
-            leftMaster.config_kP(Constants.Drive.POSITION_PROFILE, P_LEFT);
+        driveTab.add("P_LEFT", Constants.Drive.P_LEFT).getEntry().addListener(notification -> {
+            leftMaster.config_kP(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("I_LEFT", I_LEFT).getEntry().addListener(notification -> {
-            System.out.println("SET I_LEFT");
-            I_LEFT = notification.value.getDouble();
-            leftMaster.config_kI(Constants.Drive.POSITION_PROFILE, I_LEFT);
+        driveTab.add("I_LEFT", Constants.Drive.I_LEFT).getEntry().addListener(notification -> {
+            leftMaster.config_kI(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("D_LEFT", D_LEFT).getEntry().addListener(notification -> {
-            System.out.println("SET D_LEFT");
-            D_LEFT = notification.value.getDouble();
-            leftMaster.config_kD(Constants.Drive.POSITION_PROFILE, D_LEFT);
+        driveTab.add("D_LEFT", Constants.Drive.D_LEFT).getEntry().addListener(notification -> {
+            leftMaster.config_kD(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("F_LEFT", F_LEFT).getEntry().addListener(notification -> {
-            System.out.println("SET F_LEFT");
-            F_LEFT = notification.value.getDouble();
-            leftMaster.config_kF(Constants.Drive.POSITION_PROFILE, F_LEFT);
+        driveTab.add("F_LEFT", Constants.Drive.F_LEFT).getEntry().addListener(notification -> {
+            leftMaster.config_kF(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("IZONE_LEFT", IZONE_LEFT).getEntry().addListener(notification -> {
-            System.out.println("SET IZONE_LEFT");
-            IZONE_LEFT = (int) notification.value.getDouble();
-            leftMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, IZONE_LEFT);
+        driveTab.add("IZONE_LEFT", Constants.Drive.IZONE_LEFT).getEntry().addListener(notification -> {
+            leftMaster.config_IntegralZone(Constants.Drive.POSITION_PROFILE, (int) notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
 
-        driveTab.add("P_RIGHT", P_RIGHT).getEntry().addListener(notification -> {
-            System.out.println("SET P_RIGHT");
-            P_RIGHT = notification.value.getDouble();
-            rightMaster.config_kP(Constants.Drive.POSITION_PROFILE, P_RIGHT);
+        driveTab.add("P_RIGHT", Constants.Drive.P_RIGHT).getEntry().addListener(notification -> {
+            rightMaster.config_kP(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("I_RIGHT", I_RIGHT).getEntry().addListener(notification -> {
-            System.out.println("SET I_RIGHT");
-            I_RIGHT = notification.value.getDouble();
-            rightMaster.config_kI(Constants.Drive.POSITION_PROFILE, I_RIGHT);
+        driveTab.add("I_RIGHT", Constants.Drive.I_RIGHT).getEntry().addListener(notification -> {
+            rightMaster.config_kI(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("D_RIGHT", D_RIGHT).getEntry().addListener(notification -> {
-            System.out.println("SET D_RIGHT");
-            D_RIGHT = notification.value.getDouble();
-            rightMaster.config_kD(Constants.Drive.POSITION_PROFILE, D_RIGHT);
+        driveTab.add("D_RIGHT", Constants.Drive.D_RIGHT).getEntry().addListener(notification -> {
+            rightMaster.config_kD(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("F_RIGHT", F_RIGHT).getEntry().addListener(notification -> {
-            System.out.println("SET F_RIGHT");
-            F_RIGHT = notification.value.getDouble();
-            rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, F_RIGHT);
+        driveTab.add("F_RIGHT", Constants.Drive.F_RIGHT).getEntry().addListener(notification -> {
+            rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
-        driveTab.add("IZONE_RIGHT", IZONE_RIGHT).getEntry().addListener(notification -> {
-            System.out.println("SET IZONE_RIGHT");
-            IZONE_RIGHT = (int) notification.value.getDouble();
-            rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, IZONE_RIGHT);
+        driveTab.add("IZONE_RIGHT", Constants.Drive.IZONE_RIGHT).getEntry().addListener(notification -> {
+            rightMaster.config_kF(Constants.Drive.POSITION_PROFILE, (int) notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
 
         driveTab.add("TOLERANCE", Constants.Drive.ALLOWABLE_CLOSED_LOOP_POSITION_ERROR).getEntry().addListener(notification -> {
-            System.out.println("SET TOLERANCE");
             leftMaster.configAllowableClosedloopError(Constants.Drive.POSITION_PROFILE, (int) notification.value.getDouble());
             rightMaster.configAllowableClosedloopError(Constants.Drive.POSITION_PROFILE, (int) notification.value.getDouble());
         }, EntryListenerFlags.kUpdate);
+
+        driveTab.add("EANBLE_TANK_FORWARD_ASSIST", enableTankForwardAssist).getEntry().addListener(
+                notification -> enableTankForwardAssist = notification.value.getBoolean(),
+                EntryListenerFlags.kUpdate
+        );
+        driveTab.add("TANK_FORWARD_ASSIST_THRESHOLD", tankForwardAssistThreshold).getEntry().addListener(
+                notification -> tankForwardAssistThreshold = notification.value.getDouble(),
+                EntryListenerFlags.kUpdate
+        );
+        driveTab.add("SQUARE_INPUTS", squareInputs).getEntry().addListener(
+                notification -> squareInputs = notification.value.getBoolean(),
+                EntryListenerFlags.kUpdate
+        );
 
         leftEncoderEntry = driveTab.add("ENC_LEFT", 0.0).getEntry();
         rightEncoderEntry = driveTab.add("ENC_RIGHT", 0.0).getEntry();
@@ -168,9 +152,14 @@ public class Drive extends Subsystem implements Named {
         left = CalcUtil.applyBounds(left, -1.0, 1.0);
         right = CalcUtil.applyBounds(right, -1.0, 1.0);
 
-        if (Constants.Drive.ENABLE_SMART_TANK_DRIVE &&
-                CalcUtil.inThreshold(left, right, Constants.Drive.SMART_TANK_DRIVE_THRESHOLD)) {
+        // TODO: forward assist can apply to arcade too -- not good
+        if (enableTankForwardAssist && CalcUtil.inThreshold(left, right, tankForwardAssistThreshold)) {
             left = right = (left + right) / 2;
+        }
+
+        if (squareInputs) {
+            left = Math.copySign(left*left, left);
+            right = Math.copySign(right*right, right);
         }
 
         setLeftPercent(left);
@@ -278,31 +267,7 @@ public class Drive extends Subsystem implements Named {
     @Override
     protected void initDefaultCommand() {}
 
-    /*
-    private static double talonUnitsToRotations(double value) {
-        return Units.convertAndCheck(value, Constants.TALON_MAG_ENCODER_ROTATION_UNIT, Units.REVOLUTION);
-    }
-
-    private static double talonUnitsToMetres(double value) {
-         return Units.convertAndCheck(value, DISTANCE_UNIT, Units.METRE);
-    }
-
-    private static double talonUnitsToMetresPerSecond(double value) {
-        return Units.convertAndCheck(value, VELOCITY_UNIT, Units.METRES_PER_SECOND);
-    }
-
-    private static double rotationsToTalonUnits(double value) {
-        return Units.convertAndCheck(value, Units.REVOLUTION, Constants.TALON_MAG_ENCODER_ROTATION_UNIT);
-    }
-    */
-
     private static double metresToTalonUnits(double value) {
         return value / (Math.PI * Constants.Dimensions.WHEEL_DIAMETER_INCHES / 39.3701) * (Constants.Drive.ENCODER_CPR * 4);
     }
-
-    /*
-    private static double metresPerSecondToTalonUnits(double value) {
-        return Units.convertAndCheck(value, Units.METRES_PER_SECOND, VELOCITY_UNIT);
-    }
-    */
 }
