@@ -30,6 +30,8 @@ public class CmdElevatorTeleop extends Command {
                 tsm.elevateTrigger.execute(ElevatorLevel.LEVEL2);
             } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL3).getPressed()) {
                 tsm.elevateTrigger.execute(ElevatorLevel.LEVEL3);
+            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.LOAD).getPressed()) {
+                tsm.loadTrigger.execute();
             }
         } catch (NullPointerException e) {
             if (!warned) {

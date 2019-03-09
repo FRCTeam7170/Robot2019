@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Named;
 import frc.team7170.robot2019.Constants;
+import frc.team7170.robot2019.commands.CmdElevatorTeleop;
 
 // TODO: make this a PIDSubsystem?
 public class  Elevator extends Subsystem implements Named {
@@ -19,10 +20,11 @@ public class  Elevator extends Subsystem implements Named {
     private final CANSparkMax follower = new CANSparkMax(Constants.CAN.ELEVATOR_SPARK_MAX_FOLLOWER,
             CANSparkMaxLowLevel.MotorType.kBrushed);
 
-    private final CANDigitalInput lowerLimitSwitch = master.getReverseLimitSwitch(
-            CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
-    private final CANDigitalInput upperLimitSwitch = master.getForwardLimitSwitch(
-            CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+    // TODO: TEMP -- limit switches commented out
+//    private final CANDigitalInput lowerLimitSwitch = master.getReverseLimitSwitch(
+//            CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
+//    private final CANDigitalInput upperLimitSwitch = master.getForwardLimitSwitch(
+//            CANDigitalInput.LimitSwitchPolarity.kNormallyOpen);
 
     private final Encoder encoder = new Encoder(
             Constants.DIO.ELEVATOR_ENCODER_A,
@@ -42,8 +44,8 @@ public class  Elevator extends Subsystem implements Named {
     // private final DigitalInput lowerLimitSwitch = new DigitalInput(Constants.DIO.ELEVATOR_LIMIT_SWITCH_LOW);
     // private final DigitalInput higherLimitSwitch = new DigitalInput(Constants.DIO.ELEVATOR_LIMIT_SWITCH_HIGH);
 
-    private final NetworkTableEntry lowerLimitSwitchEntry;
-    private final NetworkTableEntry upperLimitSwitchEntry;
+//    private final NetworkTableEntry lowerLimitSwitchEntry;
+//    private final NetworkTableEntry upperLimitSwitchEntry;
     private final NetworkTableEntry encoderEntry;
 
     private Elevator() {
@@ -56,8 +58,8 @@ public class  Elevator extends Subsystem implements Named {
         follower.setInverted(Constants.Elevator.INVERT_RIGHT);
         follower.follow(master);
 
-        lowerLimitSwitch.enableLimitSwitch(true);
-        upperLimitSwitch.enableLimitSwitch(true);
+//        lowerLimitSwitch.enableLimitSwitch(true);
+//        upperLimitSwitch.enableLimitSwitch(true);
 
         encoder.setDistancePerPulse(Constants.Elevator.DISTANCE_FACTOR);
         pidController.disable();
@@ -80,8 +82,8 @@ public class  Elevator extends Subsystem implements Named {
                 notification -> pidController.setF(notification.value.getDouble()),
                 EntryListenerFlags.kUpdate
         );
-        lowerLimitSwitchEntry = elevatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
-        upperLimitSwitchEntry = elevatorTab.add("upperLimitSwitch", isUpperLimitSwitchTriggered()).getEntry();
+//        lowerLimitSwitchEntry = elevatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
+//        upperLimitSwitchEntry = elevatorTab.add("upperLimitSwitch", isUpperLimitSwitchTriggered()).getEntry();
         encoderEntry = elevatorTab.add("encoder", getEncoder()).getEntry();
     }
 
@@ -99,8 +101,8 @@ public class  Elevator extends Subsystem implements Named {
 
     @Override
     public void periodic() {
-        lowerLimitSwitchEntry.setBoolean(isLowerLimitSwitchTriggered());
-        upperLimitSwitchEntry.setBoolean(isUpperLimitSwitchTriggered());
+        // lowerLimitSwitchEntry.setBoolean(isLowerLimitSwitchTriggered());
+        // upperLimitSwitchEntry.setBoolean(isUpperLimitSwitchTriggered());
         encoderEntry.setDouble(getEncoder());
     }
 
@@ -123,7 +125,6 @@ public class  Elevator extends Subsystem implements Named {
     }
 
     public void killMotor() {
-        pidController.disable();
         setPercent(0.0);
     }
 
@@ -131,14 +132,16 @@ public class  Elevator extends Subsystem implements Named {
         return encoder.getDistance();
     }
 
-    public boolean isLowerLimitSwitchTriggered() {
-        return lowerLimitSwitch.get();
-    }
-
-    public boolean isUpperLimitSwitchTriggered() {
-        return upperLimitSwitch.get();
-    }
+//    public boolean isLowerLimitSwitchTriggered() {
+//        return lowerLimitSwitch.get();
+//    }
+//
+//    public boolean isUpperLimitSwitchTriggered() {
+//        return upperLimitSwitch.get();
+//    }
 
     @Override
-    protected void initDefaultCommand() {}
+    protected void initDefaultCommand() {
+        setDefaultCommand(new CmdElevatorTeleop());
+    }
 }

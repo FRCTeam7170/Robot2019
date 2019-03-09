@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot2019.Constants;
+import frc.team7170.robot2019.commands.CmdFrontArmsTeleop;
 
 import java.util.logging.Logger;
 
@@ -27,6 +28,7 @@ public class FrontArms extends Subsystem {
 
     private final NetworkTableEntry limitSwitchEntry;
     private final NetworkTableEntry encoderEntry;
+//    private final NetworkTableEntry outputEntry;
 
     private FrontArms() {
         super("frontArms");
@@ -81,6 +83,7 @@ public class FrontArms extends Subsystem {
         );
         limitSwitchEntry = frontArmsTab.add("limitSwitch", isReverseLimitSwitchTriggered()).getEntry();
         encoderEntry = frontArmsTab.add("encoder", getEncoder()).getEntry();
+//        outputEntry = frontArmsTab.add("output", master.getMotorOutputPercent()).getEntry();
     }
 
     private static final FrontArms INSTANCE = new FrontArms();
@@ -93,6 +96,7 @@ public class FrontArms extends Subsystem {
     public void periodic() {
         limitSwitchEntry.setBoolean(isReverseLimitSwitchTriggered());
         encoderEntry.setDouble(getEncoder());
+//        outputEntry.setDouble(master.getMotorOutputPercent());
     }
 
     public void setPercent(double percent) {
@@ -125,7 +129,9 @@ public class FrontArms extends Subsystem {
     }
 
     @Override
-    protected void initDefaultCommand() {}
+    protected void initDefaultCommand() {
+        setDefaultCommand(new CmdFrontArmsTeleop());
+    }
 
     private static double degreesToTalonUnits(double value) {
         // return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);

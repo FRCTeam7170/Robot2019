@@ -8,6 +8,7 @@ import frc.team7170.lib.WrappingDouble;
 import frc.team7170.lib.multiplex.AnalogMultiplexer;
 import frc.team7170.lib.wrappers.WrapperFactory;
 import frc.team7170.robot2019.Constants;
+import frc.team7170.robot2019.commands.CmdEndEffectorTeleop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -394,5 +395,7 @@ public class EndEffector extends Subsystem {
     }
 
     @Override
-    protected void initDefaultCommand() {}
+    protected void initDefaultCommand() {
+        setDefaultCommand(new CmdEndEffectorTeleop());
+    }
 }

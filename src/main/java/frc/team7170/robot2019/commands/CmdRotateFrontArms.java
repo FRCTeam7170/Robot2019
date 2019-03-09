@@ -18,11 +18,13 @@ public class CmdRotateFrontArms extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("INIT ROTATE");
         frontArms.setAngle(angleDegrees);
     }
 
     @Override
     protected void end() {
+        System.out.println("END ROTATE");
         if (!hold) {
             frontArms.killMotors();
         }

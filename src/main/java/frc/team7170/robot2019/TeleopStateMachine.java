@@ -28,6 +28,7 @@ public class TeleopStateMachine {
     public final Trigger pickupTrigger = fsm.newTrigger(new Name("pickup"));
     public final Trigger pickupCancelTrigger = fsm.newTrigger(new Name("pickupCancel"));
     public final Trigger pickupFinishedTrigger = fsm.newTrigger(new Name("pickupFinished"));
+    public final Trigger loadTrigger = fsm.newTrigger(new Name("load"));
 
     @SuppressWarnings("unchecked")
     private final Transition driveTransition = fsm.newTransition(
@@ -68,6 +69,11 @@ public class TeleopStateMachine {
     private final Transition pickupFinishedTransition = fsm.newTransition(
             new Transition.TransitionConfig(pickupState, normalState, pickupFinishedTrigger)
                     .onStart(this::pickupFinished)
+    );
+    @SuppressWarnings("unchecked")
+    private final Transition loadTransitiion = fsm.newTransition(
+            Transition.TransitionConfig.newInternal(normalState, loadTrigger)
+                    .onStart(this::load)
     );
 
     private TeleopStateMachine() {
@@ -134,5 +140,10 @@ public class TeleopStateMachine {
         event.assertArgumentsCount(0);
         new CmdMoveElevator(Constants.Elevator.LEVEL1_METRES, true).start();
         driveMultiplier = Constants.State.LEVEL1_MULTIPLIER;
+    }
+
+    private void load(Event event) {
+        event.assertArgumentsCount(0);
+        new CmdLoad().start();
     }
 }

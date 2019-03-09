@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.CalcUtil;
 import frc.team7170.robot2019.Constants;
+import frc.team7170.robot2019.commands.CmdDriveTeleop;
 
 import java.util.logging.Logger;
 
@@ -249,11 +250,11 @@ public class Drive extends Subsystem implements Named {
     }
 
     public void setLeftPosition(double distanceMetres) {
-        leftMaster.set(ControlMode.Position, metresToTalonUnits(distanceMetres));
+        leftMaster.set(ControlMode.Position, metresToTalonUnits(-distanceMetres));
     }
 
     public void setRightPosition(double distanceMetres) {
-        rightMaster.set(ControlMode.Position, metresToTalonUnits(distanceMetres));
+        rightMaster.set(ControlMode.Position, metresToTalonUnits(-distanceMetres));
     }
 
     public double getLeftEncoder() {
@@ -265,7 +266,9 @@ public class Drive extends Subsystem implements Named {
     }
 
     @Override
-    protected void initDefaultCommand() {}
+    protected void initDefaultCommand() {
+        setDefaultCommand(new CmdDriveTeleop());
+    }
 
     private static double metresToTalonUnits(double value) {
         return value / (Math.PI * Constants.Dimensions.WHEEL_DIAMETER_INCHES / 39.3701) * (Constants.Drive.ENCODER_CPR * 4);

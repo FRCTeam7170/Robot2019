@@ -2,6 +2,7 @@ package frc.team7170.robot2019;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
@@ -86,6 +87,13 @@ public class Robot extends TimedRobot implements Named {
         ShuffleboardTab mainTab = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB);
 
         mainTab.add(Constants.Camera.CAMERA0_NAME, camera0);
+        mainTab.add("compressorEnabled", true).getEntry().addListener(notification -> {
+            if (notification.value.getBoolean()) {
+                compressor.start();
+            } else {
+                compressor.stop();
+            }
+        }, EntryListenerFlags.kUpdate);
         matchTimeEntry = mainTab.add("matchTime", 0.0).getEntry();
 
         // Force load subsystems
@@ -102,30 +110,29 @@ public class Robot extends TimedRobot implements Named {
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
-                // TODO: TEMP drive disabled
                 // .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
-                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LTRIGGER)
-                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RTRIGGER)
-                // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
-                // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
+                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LTRIGGER)
+                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RTRIGGER)
+                .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
+                .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_A)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_B)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL3, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.PICKUP, gamepad, gamepad.B_LBUMPER)
                 // .addPair(ButtonActions.PICKUP_CANCEL, gamepad, gamepad.B_X)
-                .addPair(ButtonActions.EJECT, gamepad, gamepad.B_RBUMPER)
+                // .addPair(ButtonActions.EJECT, gamepad, gamepad.B_RBUMPER)
                 // .addPair(ButtonActions.EJECT_CANCEL, gamepad, gamepad.B_A)
                 // .addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
                 // .addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
                 // .addPair(ButtonActions.LOAD, gamepad, gamepad.B_X)
                 // .addPair(ButtonActions.CLIMB, gamepad, gamepad.B_START)
-                .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
-                .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
-                .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
-                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
-                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
+                // .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
+                // .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
+                // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
+                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
+                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
@@ -134,9 +141,9 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void disabledInit() {
         // For characterizing the servo feedback:
-        // System.out.println(String.format("SD: %f; MEAN: %f",
-        //         EndEffector.LateralSlide.getInstance().wdc.getStdDeviation(),
-        //         EndEffector.LateralSlide.getInstance().wdc.getMean()));
+//        System.out.println(String.format("SD: %f; MEAN: %f",
+//                EndEffector.LateralSlide.getInstance().wdc.getStdDeviation(),
+//                EndEffector.LateralSlide.getInstance().wdc.getMean()));
     }
 
     // private double lastCommandedPosition;
@@ -167,18 +174,22 @@ public class Robot extends TimedRobot implements Named {
 //                return this;
 //            }
 //        }.initSubcommands().start();
-        // teleopInit();  // TODO : TEMP
-        // new CmdZeroFrontArms().start();
-        new CmdZeroLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator()).start();
-        new CmdZeroLinearActuator(ClimbLegs.getInstance().getRightLinearActuator()).start();
+        teleopInit();
+//        new CmdZeroFrontArms().start();
+//        currLeftCommand = new CmdZeroLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator());
+//        currRightCommand = new CmdZeroLinearActuator(ClimbLegs.getInstance().getRightLinearActuator());
+//        currLeftCommand.start();
+//        currRightCommand.start();
+        new CmdZeroSystems().start();
     }
 
     @Override
     public void teleopInit() {
-        new CmdDriveTeleop().start();
+        // Set these as default cmd in subsystems.
+        // new CmdDriveTeleop().start();
         // new CmdFrontArmsTeleop().start();
         // new CmdElevatorTeleop().start();
-        new CmdEndEffectorTeleop().start();
+        // new CmdEndEffectorTeleop().start();
     }
 
     @Override
@@ -196,8 +207,12 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void disabledPeriodic() {}
 
-     private Command currCommand = null;
-     // private int state = 0;
+//    private Command currLeftCommand = null;
+//    private Command currRightCommand = null;
+//    private Command currBothCommand = null;
+//    private Command currCommand;
+//    private double currSetpoint = 0.0;
+//    private int state = 0;
 
     // AKA: sandstormPeriodic
     @Override
@@ -219,7 +234,6 @@ public class Robot extends TimedRobot implements Named {
 //            System.out.println("RESET ENCODERS");
 //            Drive.getInstance().zeroEncoders();
 //        }
-        // teleopPeriodic();  // TODO: TEMP
 //        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
 //            if (currCommand != null) {
 //                currCommand.cancel();
@@ -262,24 +276,45 @@ public class Robot extends TimedRobot implements Named {
 //                currCommand = null;
 //            }
 //        }
+//        if (currLeftCommand.isCompleted() && currRightCommand.isCompleted() && currSetpoint < 0.3) {
+//            currSetpoint += 0.05;
+//            currLeftCommand = new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(), currSetpoint, true);
+//            currRightCommand = new CmdExtendLinearActuator(ClimbLegs.getInstance().getRightLinearActuator(), currSetpoint, true);
+//            currLeftCommand.start();
+//            currRightCommand.start();
+//            System.out.println("NEW SETPOINT");
+//        }
+//        if (currLeftCommand.isCompleted() && currRightCommand.isCompleted() && currBothCommand == null) {
+//            currBothCommand = new CmdSynchronousLegsExtend(0.3);
+//            currBothCommand.start();
+//        }
+//        if (KeyBindings.getInstance().actionToButton(ButtonActions.CLIMB).getPressed()) {
+//            new CmdClimb(ClimbLevel.LEVEL_3).start();
+//        }if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
 //        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
 //            if (currCommand != null) {
 //                currCommand.cancel();
 //            }
-//            currCommand = new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(), 0.5, true);
+//            currCommand = new CmdMoveElevator(0.5, true);
 //            currCommand.start();
-//            System.out.println("STARTED LA CMD");
+//            System.out.println("STARTED ELEVATOR CMD");
 //        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
 //            if (currCommand != null) {
 //                currCommand.cancel();
-//                System.out.println("CANCELLED LA CMD");
+//                System.out.println("CANCELLED ELEVATOR CMD");
 //                currCommand = null;
 //            }
 //        }
+        teleopPeriodic();
     }
 
     @Override
-    public void teleopPeriodic() {}
+    public void teleopPeriodic() {
+//        FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
+//        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
+//        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
+//        Elevator.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get());
+    }
 
     // private TimedRunnable timedRunnable = new TimedRunnable(() -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance()), 3000);
 
@@ -287,15 +322,12 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void testPeriodic() {
-        // timedRunnable.run();
-        // timedRunnable3.run();
+//        timedRunnable.run();
+//        timedRunnable3.run();
 //        EndEffector.LateralSlide.getInstance().set(KeyBindings.getInstance().actionToAxis(AxisActions.LATERAL_SLIDE).get());
 //        if (KeyBindings.getInstance().actionToButton(ButtonActions.RESET_SERVO).getPressed()) {
 //            EndEffector.LateralSlide.getInstance().resetFeedback();
 //        }
-        // FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
-        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
-        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
     }
 
     @Override

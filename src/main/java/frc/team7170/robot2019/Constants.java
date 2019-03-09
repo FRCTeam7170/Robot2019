@@ -2,6 +2,7 @@ package frc.team7170.robot2019;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.revrobotics.CANSparkMax;
+import frc.team7170.robot2019.subsystems.ClimbLegs;
 
 public final class Constants {
 
@@ -75,8 +76,8 @@ public final class Constants {
     }
 
     public static final class PCM {
-        public static final int EJECT_DEPLOY_SOLENOID = 0;
-        public static final int EJECT_RETRACT_SOLENOID = 2;
+        public static final int EJECT_DEPLOY_SOLENOID = 2;
+        public static final int EJECT_RETRACT_SOLENOID = 0;
         public static final int PIN_DEPLOY_SOLENOID = 1;
         public static final int PIN_RETRACT_SOLENOID = 3;
     }
@@ -96,7 +97,7 @@ public final class Constants {
         public static final double FRONT_ARM_WHEEL_DIAMETER_INCHES = 2.0;
         public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.460375;
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.244475;
-        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.0;
+        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.01;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
         public static final double END_EFFECTOR_INNER_WIDTH_METRES = 0.218;
         public static final double PIN_CYCLINDER_DIAMETER_METRES = 0.01559;
@@ -183,20 +184,22 @@ public final class Constants {
         public static final boolean SENSOR_PHASE = false;
 
         // Left PIDF parameters
-        public static final double P = 1.5;  // throttle / error
+        public static final double P = 0.5;  // throttle / error
         public static final double I = 0.001;  // throttle / integrated error
         public static final double D = 8;  // throttle / differentiated error
         public static final double F = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE = 0;  // max integrated error to permit I accumulation on
+        public static final int IZONE = 500;  // max integrated error to permit I accumulation on
     }
 
     public static final class ClimbLegs {
-        public static final double DISTANCE_FACTOR = 1.0;  // metres/output_shaft_rotation
-        public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
+        public static final double DISTANCE_FACTOR = 0.00158;  // metres/output_shaft_rotation
+        public static final double ZEROING_THROTTLE_PERCENT = 0.5;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
-        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 0;  // enc_ticks/0.1s
+        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 100;  // 2 mm
         public static final int ENCODER_CPR = 20;  // CIMCoder
+        public static final double SPEED = 0.9;
+        public static final double MAX_DIFFERENTIAL = frc.team7170.robot2019.subsystems.ClimbLegs.metresToTalonUnits(0.01);
 
         // Preset positions
         public static final double HOME_METRES = 0.0;
@@ -218,18 +221,18 @@ public final class Constants {
         public static final boolean SENSOR_PHASE_RIGHT = false;
 
         // Left PIDF parameters
-        public static final double P_LEFT = 0.0;  // throttle / error
-        public static final double I_LEFT = 0.0;  // throttle / integrated error
+        public static final double P_LEFT = 5.0;  // throttle / error
+        public static final double I_LEFT = 0.001;  // throttle / integrated error
         public static final double D_LEFT = 0.0;  // throttle / differentiated error
         public static final double F_LEFT = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_LEFT = 0;  // max integrated error to permit I accumulation on
+        public static final int IZONE_LEFT = 500;  // max integrated error to permit I accumulation on
 
         // Right PIDF parameters
-        public static final double P_RIGHT = 0.0;  // throttle / error
-        public static final double I_RIGHT = 0.0;  // throttle / integrated error
+        public static final double P_RIGHT = 5.0;  // throttle / error
+        public static final double I_RIGHT = 0.001;  // throttle / integrated error
         public static final double D_RIGHT = 0.0;  // throttle / differentiated error
         public static final double F_RIGHT = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE_RIGHT = 0;  // max integrated error to permit I accumulation on
+        public static final int IZONE_RIGHT = 500;  // max integrated error to permit I accumulation on
     }
 
     public static final class ClimbDrive {
@@ -276,6 +279,7 @@ public final class Constants {
         public static final double LEVEL1_METRES = HOME_METRES;
         public static final double LEVEL2_METRES = 0.0;
         public static final double LEVEL3_METRES = 0.0;
+        public static final double LOAD_MOVE_UP_METRES = 0.0;
 
         // Inversion
         public static final boolean INVERT_LEFT = true;
@@ -346,10 +350,10 @@ public final class Constants {
 
     public static final class Climb {
         public static final double L2_BUMPER_DISTANCE_METRES = 0.0;
-        public static final double L3_BUMPER_DISTANCE_METRES = 0.1778;
+        public static final double L3_BUMPER_DISTANCE_METRES = 0.0; //0.1778;
         public static final double L2_CONTACT_ANGLE_DEGREES = 113.0;
-        public static final double L3_CONTACT_ANGLE_DEGREES = 69.0;
-        public static final double DELTA_HEIGHT_METRES = 0.01;
+        public static final double L3_CONTACT_ANGLE_DEGREES = 45.2;
+        public static final double DELTA_HEIGHT_METRES = 0.05;
         public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0254;
         public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.8128;
         public static final double POST_RETRACT_DRIVE_FORWARD_METRES = 0.508;

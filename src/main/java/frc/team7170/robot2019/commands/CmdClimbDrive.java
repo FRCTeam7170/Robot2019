@@ -17,6 +17,7 @@ public class CmdClimbDrive extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("INIT CLIMB DRIVE");
         climbDrive.zeroDIOs();
         if (distanceMetres < 0) {
             climbDrive.setPercent(-Constants.ClimbDrive.SPEED);
@@ -27,11 +28,12 @@ public class CmdClimbDrive extends Command {
 
     @Override
     protected void end() {
+        System.out.println("END CLIMB DRIVE");
         climbDrive.killMotors();
     }
 
     @Override
     protected boolean isFinished() {
-        return Math.abs(climbDrive.getAvgDistanceMetres()) >= distanceMetres;
+        return Math.abs(climbDrive.getAvgDistanceMetres()) >= Math.abs(distanceMetres);
     }
 }

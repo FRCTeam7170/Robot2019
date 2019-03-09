@@ -15,17 +15,19 @@ public class CmdZeroLinearActuator extends Command {
 
     @Override
     protected void initialize() {
+        System.out.println("INIT ZERO");
         linearActuator.setPercent(Constants.ClimbLegs.ZEROING_THROTTLE_PERCENT);
     }
 
     @Override
     protected void end() {
+        System.out.println("END ZERO");
         linearActuator.killMotor();
         linearActuator.zeroEncoder();
     }
 
     @Override
     protected boolean isFinished() {
-        return linearActuator.isUpperLimitSwitchTriggered();
+        return linearActuator.isLowerLimitSwitchTriggered();
     }
 }

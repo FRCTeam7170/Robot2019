@@ -23,4 +23,5 @@ public enum ButtonActions implements ButtonAction {
     TOGGLE_PIN,  // TODO: TEMP
     TEST_GENERIC_0,  // TODO: TEMP
     TEST_GENERIC_1,  // TODO: TEMP
+    NEW_CMD,  // TODO: TEMP
 }

@@ -60,23 +60,28 @@ public class ClimbLegs extends Subsystem implements Named {
             ShuffleboardTab linearActuatorTab = Shuffleboard.getTab(name);
 
             linearActuatorTab.add("P", P).getEntry().addListener(
-                    notification -> talon.config_kP(0, notification.value.getDouble()),
+                    notification -> {talon.config_kP(0, notification.value.getDouble());
+                        System.out.println("SET P");},
                     EntryListenerFlags.kUpdate
             );
             linearActuatorTab.add("I", I).getEntry().addListener(
-                    notification -> talon.config_kI(0, notification.value.getDouble()),
+                    notification -> {talon.config_kI(0, notification.value.getDouble());
+                        System.out.println("SET I");},
                     EntryListenerFlags.kUpdate
             );
             linearActuatorTab.add("D", D).getEntry().addListener(
-                    notification -> talon.config_kD(0, notification.value.getDouble()),
+                    notification -> {talon.config_kD(0, notification.value.getDouble());
+                        System.out.println("SET D");},
                     EntryListenerFlags.kUpdate
             );
             linearActuatorTab.add("F", F).getEntry().addListener(
-                    notification -> talon.config_kF(0, notification.value.getDouble()),
+                    notification -> {talon.config_kF(0, notification.value.getDouble());
+                        System.out.println("SET F");},
                     EntryListenerFlags.kUpdate
             );
             linearActuatorTab.add("IZONE", IZONE).getEntry().addListener(
-                    notification -> talon.config_IntegralZone(0, (int) notification.value.getDouble()),
+                    notification -> {talon.config_IntegralZone(0, (int) notification.value.getDouble());
+                        System.out.println("SET IZONE");},
                     EntryListenerFlags.kUpdate
             );
             lowerLimitSwitchEntry = linearActuatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
@@ -96,7 +101,7 @@ public class ClimbLegs extends Subsystem implements Named {
         }
 
         public void setPosition(double metres) {
-            talon.set(ControlMode.Position, metresToTalonUnits(metres));
+            talon.set(ControlMode.Position, metresToTalonUnits(-metres));
         }
 
         public boolean isErrorTolerable() {
@@ -173,7 +178,7 @@ public class ClimbLegs extends Subsystem implements Named {
         return rightLinearActuator;
     }
 
-    private static double metresToTalonUnits(double value) {
+    public static double metresToTalonUnits(double value) {
         // return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
         return value / Constants.ClimbLegs.DISTANCE_FACTOR * (Constants.ClimbLegs.ENCODER_CPR * 4);
     }
