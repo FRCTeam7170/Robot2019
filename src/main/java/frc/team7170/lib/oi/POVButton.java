@@ -68,6 +68,7 @@ public class POVButton extends TriggerButton {
         return false;
     }
 
+    // TODO: this is really inefficient! should poll only once for each pov and inform the appropriate POVButton if it's pressed or released
     private void pollPOV() {
         boolean isCurrentlyPressed = get();
         if (isCurrentlyPressed && !pressedLastIter) {

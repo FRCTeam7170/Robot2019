@@ -31,6 +31,7 @@ public class CmdSynchronousVertical extends Command {
     protected void execute() {
         if (currCommand == null || currCommand.isCompleted()) {
             if (!targetHeightReached()) {
+                // TODO: this doesn't work if we're descending and deltaHeightMetres is absolute
                 currHeightMetres += deltaHeightMetres;
                 currCommand = new CmdDeployAppendages(calcNextTheta(currHeightMetres),
                         currHeightMetres + laOffsetMetres, true);

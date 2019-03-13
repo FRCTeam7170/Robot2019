@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.team7170.lib.CalcUtil;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.command.CmdRunnable;
@@ -110,25 +111,25 @@ public class Robot extends TimedRobot implements Named {
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
-                // .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
-                // .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
-                // .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
-                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LTRIGGER)
-                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RTRIGGER)
-                .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
-                .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
-                // .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_A)
-                // .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_B)
+                .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
+                .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
+                .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
+                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LTRIGGER)
+                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RTRIGGER)
+                // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
+                // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
+                .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
+                // .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_X)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL3, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.PICKUP, gamepad, gamepad.B_LBUMPER)
                 // .addPair(ButtonActions.PICKUP_CANCEL, gamepad, gamepad.B_X)
-                // .addPair(ButtonActions.EJECT, gamepad, gamepad.B_RBUMPER)
+                .addPair(ButtonActions.EJECT, gamepad, gamepad.B_RBUMPER)
                 // .addPair(ButtonActions.EJECT_CANCEL, gamepad, gamepad.B_A)
                 // .addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
                 // .addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
-                // .addPair(ButtonActions.LOAD, gamepad, gamepad.B_X)
+//                .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.CLIMB, gamepad, gamepad.B_START)
-                // .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
+                .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
                 // .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
                 // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
                 // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
@@ -180,7 +181,35 @@ public class Robot extends TimedRobot implements Named {
 //        currRightCommand = new CmdZeroLinearActuator(ClimbLegs.getInstance().getRightLinearActuator());
 //        currLeftCommand.start();
 //        currRightCommand.start();
-        new CmdZeroSystems().start();
+//        new CmdZeroSystems().start();
+    }
+
+    private static class CmdTest extends Command {
+
+        private final double sleepS;
+        private final String print;
+        private double  startS;
+
+        public CmdTest(String print, int sleepMs) {
+            this.print = print;
+            this.sleepS = (double) sleepMs / 1000.0;
+        }
+
+        @Override
+        protected void initialize() {
+            System.out.print("Running '" + print + "'...");
+            startS = Timer.getFPGATimestamp();
+        }
+
+        @Override
+        protected void end() {
+            System.out.println("Done.");
+        }
+
+        @Override
+        protected boolean isFinished() {
+            return Timer.getFPGATimestamp() >= (sleepS + startS);
+        }
     }
 
     @Override
@@ -190,6 +219,16 @@ public class Robot extends TimedRobot implements Named {
         // new CmdFrontArmsTeleop().start();
         // new CmdElevatorTeleop().start();
         // new CmdEndEffectorTeleop().start();
+//        System.out.println("STARTING CMD TEST");
+//        new CommandGroup() {
+//            public CommandGroup init() {
+//                addSequential(new CmdTest("1", 1000));
+//                addSequential(new CmdTest("2", 1000));
+//                addSequential(new CmdTest("3", 1000));
+//                addSequential(new CmdTest("4", 1000));
+//                return this;
+//            }
+//        }.init().start();
     }
 
     @Override
@@ -295,7 +334,7 @@ public class Robot extends TimedRobot implements Named {
 //            if (currCommand != null) {
 //                currCommand.cancel();
 //            }
-//            currCommand = new CmdMoveElevator(0.5, true);
+//            currCommand = new CmdMoveElevator(Constants.Elevator.LEVEL2_METRES, true);
 //            currCommand.start();
 //            System.out.println("STARTED ELEVATOR CMD");
 //        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
@@ -314,6 +353,18 @@ public class Robot extends TimedRobot implements Named {
 //        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
 //        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
 //        Elevator.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get());
+//        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+//            System.out.println("ZEROING ELEVATOR");
+//            Elevator.getInstance().zeroEncoder();
+//        }
+        double elevatorReading = KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get();
+        if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
+            if (elevatorReading < 0) {
+                Elevator.getInstance().setPercent(0.25 * elevatorReading);
+            } else {
+                Elevator.getInstance().setPercent(elevatorReading);
+            }
+        }
     }
 
     // private TimedRunnable timedRunnable = new TimedRunnable(() -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance()), 3000);

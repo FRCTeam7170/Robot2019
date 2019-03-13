@@ -1,9 +1,11 @@
 package frc.team7170.robot2019;
 
 import frc.team7170.lib.Name;
+import frc.team7170.lib.command.CmdRunnable;
 import frc.team7170.lib.fsm.*;
 import frc.team7170.robot2019.commands.*;
 import frc.team7170.robot2019.subsystems.Drive;
+import frc.team7170.robot2019.subsystems.EndEffector;
 
 public class TeleopStateMachine {
 
@@ -17,6 +19,7 @@ public class TeleopStateMachine {
     private final State pickupPrepareState = fsm.newState(new Name("pickupPrepare"));
     private final State pickupState = fsm.newState(new Name("pickup"));
     private final State ejectingState = fsm.newState(new Name("ejecting"));
+    private final State loadingState= fsm.newState(new Name("loading"));
 
     public final Trigger driveTrigger = fsm.newTrigger(new Name("drive"));
     public final Trigger elevateTrigger = fsm.newTrigger(new Name("elevate"));
@@ -32,7 +35,7 @@ public class TeleopStateMachine {
 
     @SuppressWarnings("unchecked")
     private final Transition driveTransition = fsm.newTransition(
-            Transition.TransitionConfig.newInternal(new State[] {normalState, pickupPrepareState}, driveTrigger)
+            Transition.TransitionConfig.newInternal(new State[] {normalState, pickupPrepareState, loadingState}, driveTrigger)
                     .onStart(this::drive)
     );
     @SuppressWarnings("unchecked")
@@ -71,8 +74,13 @@ public class TeleopStateMachine {
                     .onStart(this::pickupFinished)
     );
     @SuppressWarnings("unchecked")
+    private final Transition loadPrepareTransitiion = fsm.newTransition(
+            new Transition.TransitionConfig(normalState, loadingState, loadTrigger)
+                    .onStart(this::loadPrepare)
+    );
+    @SuppressWarnings("unchecked")
     private final Transition loadTransitiion = fsm.newTransition(
-            Transition.TransitionConfig.newInternal(normalState, loadTrigger)
+            new Transition.TransitionConfig(loadingState, normalState, loadTrigger)
                     .onStart(this::load)
     );
 
@@ -142,8 +150,17 @@ public class TeleopStateMachine {
         driveMultiplier = Constants.State.LEVEL1_MULTIPLIER;
     }
 
+    private void loadPrepare(Event event) {
+        event.assertArgumentsCount(0);
+        new CmdRunnable(EndEffector.getInstance()::deployPin, EndEffector.getInstance()).start();
+        new CmdMoveElevator(Constants.Elevator.LOAD_INIT_METRES, true).start();
+        driveMultiplier = Constants.State.LOAD_PREPARE_MULTIPLIER;
+    }
+
     private void load(Event event) {
         event.assertArgumentsCount(0);
-        new CmdLoad().start();
+        new CmdRunnable(EndEffector.getInstance()::retractPin, EndEffector.getInstance()).start();
+        new CmdMoveElevator(Constants.Elevator.LOAD_MOVE_UP_METRES, true).start();
+        driveMultiplier = Constants.State.HOME_MULTIPLIER;
     }
 }

@@ -24,14 +24,15 @@ public class CmdElevatorTeleop extends Command {
     @Override
     protected void execute() {
         try {
-            if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL1).getPressed()) {
-                tsm.elevateTrigger.execute(ElevatorLevel.LEVEL1);
-            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL2).getPressed()) {
+//            if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL1).getPressed()) {
+//                tsm.elevateTrigger.execute(ElevatorLevel.LEVEL1);
+//            } else
+                if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL2).getPressed()) {
                 tsm.elevateTrigger.execute(ElevatorLevel.LEVEL2);
-            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL3).getPressed()) {
-                tsm.elevateTrigger.execute(ElevatorLevel.LEVEL3);
-            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.LOAD).getPressed()) {
-                tsm.loadTrigger.execute();
+//            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.ELEVATOR_LEVEL3).getPressed()) {
+//                tsm.elevateTrigger.execute(ElevatorLevel.LEVEL3);
+//            } else if (KeyBindings.getInstance().actionToButton(ButtonActions.LOAD).getPressed()) {
+//                tsm.loadTrigger.execute();
             }
         } catch (NullPointerException e) {
             if (!warned) {

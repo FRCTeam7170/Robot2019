@@ -109,6 +109,7 @@ public final class Constants {
         public static final double LEVEL2_MULTIPLIER = 0.75;
         public static final double LEVEL3_MULTIPLIER = 0.5;
         public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
+        public static final double LOAD_PREPARE_MULTIPLIER = 1.0;
     }
 
     public static final class Drive {
@@ -267,28 +268,31 @@ public final class Constants {
     }
 
     public static final class Elevator {
-        public static final double DISTANCE_FACTOR = 0.0;  // metres/pulse
+        public static final double DISTANCE_FACTOR = 3.224e-4;  // metres/pulse
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final CANSparkMax.IdleMode IDLE_MODE = CANSparkMax.IdleMode.kBrake;
         public static final int CURRENT_LIMIT_AMPS = 40;  // per motor
+        public static final double TOLERANCE_METRES = 0.01;
+        public static final double MANUAL_THRESH = 0.05;
 
         // Preset positions
         public static final double HOME_METRES = 0.0;
         public static final double RECEIVE_HATCH_PANEL_METRES = 0.0;
         public static final double LEVEL1_METRES = HOME_METRES;
-        public static final double LEVEL2_METRES = 0.0;
+        public static final double LEVEL2_METRES = 0.65;
         public static final double LEVEL3_METRES = 0.0;
-        public static final double LOAD_MOVE_UP_METRES = 0.0;
+        public static final double LOAD_INIT_METRES = 0.0;
+        public static final double LOAD_MOVE_UP_METRES = 0.07;
 
         // Inversion
-        public static final boolean INVERT_LEFT = true;
-        public static final boolean INVERT_RIGHT = true;
+        public static final boolean INVERT_LEFT = false;
+        public static final boolean INVERT_RIGHT = false;
         public static final boolean INVERT_ENCODER = false;
 
         // PIDF parameters
-        public static final double P = 0.0;
-        public static final double I = 0.0;
+        public static final double P = 5.0;
+        public static final double I = 0.02;
         public static final double D = 0.0;
         public static final double F = 0.0;
         // public static final double IZONE = 0.0;

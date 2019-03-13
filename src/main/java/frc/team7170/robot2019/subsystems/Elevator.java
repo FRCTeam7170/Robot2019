@@ -63,6 +63,8 @@ public class  Elevator extends Subsystem implements Named {
 
         encoder.setDistancePerPulse(Constants.Elevator.DISTANCE_FACTOR);
         pidController.disable();
+        pidController.setAbsoluteTolerance(Constants.Elevator.TOLERANCE_METRES);
+        zeroEncoder();
 
         ShuffleboardTab elevatorTab = Shuffleboard.getTab("elevator");
 

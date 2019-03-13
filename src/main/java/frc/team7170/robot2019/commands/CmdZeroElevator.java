@@ -25,6 +25,8 @@ public class CmdZeroElevator extends Command {
 
     @Override
     protected boolean isFinished() {
-        return elevator.isLowerLimitSwitchTriggered();
+        // TODO: TEMP -- elevator LS disabled
+        // return elevator.isLowerLimitSwitchTriggered();
+        return true;
     }
 }
