@@ -1,7 +1,7 @@
 package frc.team7170.lib.oi;
 
 import edu.wpi.first.wpilibj.GenericHID;
-import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.Name;
 
 import java.util.HashMap;

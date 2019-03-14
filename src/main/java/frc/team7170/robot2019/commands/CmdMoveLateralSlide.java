@@ -1,7 +1,7 @@
 package frc.team7170.robot2019.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
-import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.subsystems.EndEffector;
 

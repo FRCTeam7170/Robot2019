@@ -10,9 +10,8 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.robot2019.Constants;
-import frc.team7170.robot2019.commands.CmdFrontArmsTeleop;
 
 import java.util.logging.Logger;
 

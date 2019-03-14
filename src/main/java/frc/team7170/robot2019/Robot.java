@@ -5,23 +5,17 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
-import frc.team7170.lib.command.CmdRunnable;
-import frc.team7170.lib.command.CmdSleep;
 import frc.team7170.lib.oi.*;
 import frc.team7170.robot2019.actions.AxisActions;
 import frc.team7170.robot2019.actions.ButtonActions;
 import frc.team7170.robot2019.commands.*;
 import frc.team7170.robot2019.subsystems.*;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 // TODO: spooky-console: NTBrowser needs ability to make new entry
 // TODO: make everything a singleton instead of static

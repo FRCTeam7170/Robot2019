@@ -1,4 +1,4 @@
-package frc.team7170.lib.geometry2d;
+package frc.team7170.lib.math.geometry2d;
 
 public interface Vector extends Geometry<Vector> {
 

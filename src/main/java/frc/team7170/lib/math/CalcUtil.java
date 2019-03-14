@@ -1,4 +1,4 @@
-package frc.team7170.lib;
+package frc.team7170.lib.math;
 
 
 /**
@@ -37,7 +37,7 @@ public final class CalcUtil {
      * @param val The value to check.
      * @param lower The lower bound.
      * @param upper The upper bound.
-     * @return The original value if lower <= val <= upper otherwise the extreme of the range which the value exceeds.
+     * @return The original value if lower <= val <= upper, otherwise the extreme of the range which the value exceeds.
      */
     public static double applyBounds(double val, double lower, double upper) {
         if (lower > upper) {
@@ -70,5 +70,33 @@ public final class CalcUtil {
      */
     public static double mapRange(double val, double lower, double upper, double target_lower, double target_upper) {
         return (val - lower) / (upper - lower) * (target_upper - target_lower) + target_lower;
+    }
+
+    public static double interpolate(double val0, double val1, double x) {
+        return val0 + (val1 - val0) * x;
+    }
+
+    public static int rectifyArrayIndex(int idx, int length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must be greater than 0");
+        }
+        if (idx > length) {
+            return length;
+        } else if (idx < 0) {
+            return idx + length;
+        }
+        return idx;
+    }
+
+    public static int rectifyArrayIndexRestrictive(int idx, int length) {
+        if (length < 0) {
+            throw new IllegalArgumentException("length must be greater than 0");
+        }
+        if (idx >= length) {
+            throw new IndexOutOfBoundsException();
+        } else if (idx < 0) {
+            return idx + length;
+        }
+        return idx;
     }
 }

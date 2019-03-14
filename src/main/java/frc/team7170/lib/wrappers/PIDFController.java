@@ -1,6 +1,6 @@
 package frc.team7170.lib.wrappers;
 
-import frc.team7170.lib.CalcUtil;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.unit.Unit;
 import frc.team7170.lib.unit.UniversalUnitType;
 

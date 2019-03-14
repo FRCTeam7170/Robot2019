@@ -66,12 +66,20 @@ public class SerializableKeyMap implements KeyMap {
 
     @Override
     public Axis actionToAxis(AxisAction action) {
-        return axisMap.get(action).getRight();
+        Pair<Controller, Axis> pair = axisMap.get(action);
+        if (pair == null) {
+            return null;
+        }
+        return pair.getRight();
     }
 
     @Override
     public Button actionToButton(ButtonAction action) {
-        return buttonMap.get(action).getRight();
+        Pair<Controller, Button> pair = buttonMap.get(action);
+        if (pair == null) {
+            return null;
+        }
+        return pair.getRight();
     }
 
     @Override
