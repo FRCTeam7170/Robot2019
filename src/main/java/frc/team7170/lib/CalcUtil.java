@@ -40,12 +40,19 @@ public final class CalcUtil {
      * @return The original value if lower <= val <= upper otherwise the extreme of the range which the value exceeds.
      */
     public static double applyBounds(double val, double lower, double upper) {
+        if (lower > upper) {
+            throw new IllegalArgumentException("lower bound must be less than upper bound");
+        }
         if (lower <= val && val <= upper) {
             return val;
         } else if (val > upper) {
             return upper;
         }
         return lower;
+    }
+
+    public static double applyBounds(double val, double absMax) {
+        return applyBounds(val, -absMax, absMax);
     }
 
     /**

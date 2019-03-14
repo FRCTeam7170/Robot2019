@@ -51,7 +51,9 @@ repositories {
 // Also defines JUnit 4.
 dependencies {
     compile group: 'org.msgpack', name: 'msgpack-core', version: '0.8.16'
-    
+    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+
+
     compile wpi.deps.wpilib()
     compile wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
