@@ -11,7 +11,7 @@ public class TeleopStateMachine {
 
     private static final Drive drive = Drive.getInstance();
 
-    private double driveMultiplier = Constants.State.HOME_MULTIPLIER;
+    private double driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
 
     private final FiniteStateMachine fsm = new FiniteStateMachine.Builder().permitMistrigger().build();
 
@@ -129,7 +129,7 @@ public class TeleopStateMachine {
         event.assertArgumentsCount(0);
         new CmdRotateFrontArms(Constants.FrontArms.HORIZONTAL_ANGLE_DEGREES, true).start();
         new CmdMoveElevator(Constants.Elevator.RECEIVE_HATCH_PANEL_METRES, true).start();
-        driveMultiplier = Constants.State.PICKUP_PREPARE_MULTIPLIER;
+        driveMultiplier = Constants.Drive.PICKUP_PREPARE_MULTIPLIER;
     }
 
     private void pickup(Event event) {
@@ -141,26 +141,26 @@ public class TeleopStateMachine {
         event.assertArgumentsCount(0);
         new CmdRotateFrontArms(Constants.FrontArms.HOME_ANGLE_DEGREES, true).start();
         new CmdMoveElevator(Constants.Elevator.HOME_METRES, true).start();
-        driveMultiplier = Constants.State.HOME_MULTIPLIER;
+        driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
     }
 
     private void pickupFinished(Event event) {
         event.assertArgumentsCount(0);
         new CmdMoveElevator(Constants.Elevator.LEVEL1_METRES, true).start();
-        driveMultiplier = Constants.State.LEVEL1_MULTIPLIER;
+        driveMultiplier = Constants.Drive.LEVEL1_MULTIPLIER;
     }
 
     private void loadPrepare(Event event) {
         event.assertArgumentsCount(0);
         new CmdRunnable(EndEffector.getInstance()::deployPin, EndEffector.getInstance()).start();
         new CmdMoveElevator(Constants.Elevator.LOAD_INIT_METRES, true).start();
-        driveMultiplier = Constants.State.LOAD_PREPARE_MULTIPLIER;
+        driveMultiplier = Constants.Drive.LOAD_PREPARE_MULTIPLIER;
     }
 
     private void load(Event event) {
         event.assertArgumentsCount(0);
         new CmdRunnable(EndEffector.getInstance()::retractPin, EndEffector.getInstance()).start();
         new CmdMoveElevator(Constants.Elevator.LOAD_MOVE_UP_METRES, true).start();
-        driveMultiplier = Constants.State.HOME_MULTIPLIER;
+        driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
     }
 }

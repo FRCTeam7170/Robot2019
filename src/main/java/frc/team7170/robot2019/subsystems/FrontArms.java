@@ -130,7 +130,7 @@ public class FrontArms extends Subsystem {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new CmdFrontArmsTeleop());
+        // setDefaultCommand(new CmdFrontArmsTeleop());
     }
 
     private static double degreesToTalonUnits(double value) {

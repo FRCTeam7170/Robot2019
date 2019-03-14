@@ -6,8 +6,6 @@ import frc.team7170.lib.Name;
 
 public class POVButton extends TriggerButton {
 
-    private static final int pollRateMs = 1;
-
     public enum POVAngle {
         A0(0),
         A45(45),
@@ -25,18 +23,87 @@ public class POVButton extends TriggerButton {
         }
     }
 
-    private final Notifier notifier = new Notifier(this::pollPOV);
+    public static class POVButtonPoller {
+
+        private static final int pollRateMs = 1;
+
+        private final Notifier notifier = new Notifier(this::poll);
+        private final GenericHID hid;
+        private final int pov;
+        private final POVButton button0, button45, button90, button135, button180, button225, button270, button315;
+        private POVButton lastPressed = null;
+
+        public POVButtonPoller(GenericHID hid,
+                               int pov,
+                               POVButton button0,
+                               POVButton button45,
+                               POVButton button90,
+                               POVButton button135,
+                               POVButton button180,
+                               POVButton button225,
+                               POVButton button270,
+                               POVButton button315) {
+            this.hid = hid;
+            this.pov = pov;
+            this.button0 = button0;
+            this.button45 = button45;
+            this.button90 = button90;
+            this.button135 = button135;
+            this.button180 = button180;
+            this.button225 = button225;
+            this.button270 = button270;
+            this.button315 = button315;
+            notifier.startPeriodic((double) pollRateMs / 1000.0);
+        }
+
+        private void poll() {
+            POVButton pressedButton = angleToButton(hid.getPOV(pov));
+            if (pressedButton != lastPressed) {
+                if (lastPressed != null) {
+                    lastPressed.released = true;
+                }
+                if (pressedButton != null) {
+                    pressedButton.pressed = true;
+                }
+                lastPressed = pressedButton;
+            }
+        }
+
+        private POVButton angleToButton(int angle) {
+            switch (angle) {
+                case -1:
+                    return null;
+                case 0:
+                    return button0;
+                case 45:
+                    return button45;
+                case 90:
+                    return button90;
+                case 135:
+                    return button135;
+                case 180:
+                    return button180;
+                case 225:
+                    return button225;
+                case 270:
+                    return button270;
+                case 315:
+                    return button315;
+                default:
+                    throw new AssertionError();
+            }
+        }
+    }
+
     private final GenericHID hid;
     private final POVAngle angle;
     private boolean pressed = false;
     private boolean released = false;
-    private boolean pressedLastIter = false;
 
     public POVButton(GenericHID hid, POVAngle angle, Name name) {
         super(name);
         this.hid = hid;
         this.angle = angle;
-        notifier.startPeriodic((double) pollRateMs / 1000.0);
     }
 
     public POVButton(GenericHID hid, POVAngle angle) {
@@ -66,17 +133,6 @@ public class POVButton extends TriggerButton {
             return true;
         }
         return false;
-    }
-
-    // TODO: this is really inefficient! should poll only once for each pov and inform the appropriate POVButton if it's pressed or released
-    private void pollPOV() {
-        boolean isCurrentlyPressed = get();
-        if (isCurrentlyPressed && !pressedLastIter) {
-            pressed = true;
-        } else if (!isCurrentlyPressed && pressedLastIter) {
-            released = true;
-        }
-        pressedLastIter = isCurrentlyPressed;
     }
 
     public GenericHID getHid() {

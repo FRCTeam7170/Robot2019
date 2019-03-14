@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.subsystems.ClimbLegs;
 
+// TODO: not used
 public class CmdSynchronousLegsExtend extends Command {
 
     private static final ClimbLegs.LinearActuator leftLinearActuator = ClimbLegs.getInstance().getLeftLinearActuator();

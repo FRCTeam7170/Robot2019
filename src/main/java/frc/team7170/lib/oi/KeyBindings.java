@@ -4,10 +4,8 @@ import edu.wpi.first.wpilibj.Preferences;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 public final class KeyBindings implements Named {
@@ -18,9 +16,13 @@ public final class KeyBindings implements Named {
     private final Map<String, AxisAction> axisActionMap = new HashMap<>();
     private final Map<String, ButtonAction> buttonActionMap = new HashMap<>();
     private final Map<String, KeyMap> keyMapMap = new HashMap<>();
+    private final List<BiConsumer<KeyMap, KeyMap>> keyMapChangeCallbacks = new ArrayList<>(2);
     private KeyMap currKeyMap = new SerializableKeyMap.Builder(new Name("dummy")).build();
 
-    private KeyBindings() {}
+    private KeyBindings() {
+        onKeyMapChange((__, ___) -> ButtonPollHelper.refreshInstances());
+        onKeyMapChange((__, ___) -> AxisPollHelper.refreshInstances());
+    }
 
     private static final KeyBindings INSTANCE = new KeyBindings();
 
@@ -32,6 +34,7 @@ public final class KeyBindings implements Named {
         if (keyMap == null) {
             throw new NullPointerException();
         }
+        keyMapChangeCallbacks.forEach(callback -> callback.accept(currKeyMap, keyMap));
         currKeyMap = keyMap;
     }
 
@@ -41,6 +44,10 @@ public final class KeyBindings implements Named {
             throw new IllegalArgumentException("no keymap with the name '" + keyMapName + "' exists");
         }
         setCurrKeyMap(keyMap);
+    }
+
+    public void onKeyMapChange(BiConsumer<KeyMap, KeyMap> callback) {
+        keyMapChangeCallbacks.add(callback);
     }
 
     public void loadFromPrefs() {

@@ -38,6 +38,8 @@ public final class LE3DPJoystick extends HIDController {
     public final POVButton POV270;
     public final POVButton POV315;
 
+    private final POVButton.POVButtonPoller povButtonPoller;
+
     private final Map<String, Axis> axes = new HashMap<>();
     private final Map<String, Button> buttons = new HashMap<>();
 
@@ -70,6 +72,11 @@ public final class LE3DPJoystick extends HIDController {
         POV225 = new POVButton(hid, POVButton.POVAngle.A225);
         POV270 = new POVButton(hid, POVButton.POVAngle.A270);
         POV315 = new POVButton(hid, POVButton.POVAngle.A315);
+
+        povButtonPoller = new POVButton.POVButtonPoller(
+                hid, 0,
+                POV0, POV45, POV90, POV135, POV180, POV225, POV270, POV315
+        );
 
         for (Axis a : new Axis[] {A_X, A_Y, A_Z, A_THROTTLE}) {
             axes.put(a.getName(), a);

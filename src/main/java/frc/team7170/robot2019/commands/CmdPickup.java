@@ -2,12 +2,12 @@ package frc.team7170.robot2019.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team7170.lib.command.CmdRunnable;
-import frc.team7170.lib.oi.KeyBindings;
+import frc.team7170.lib.oi.Button;
+import frc.team7170.lib.oi.ButtonPollHelper;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.TeleopStateMachine;
 import frc.team7170.robot2019.actions.ButtonActions;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CmdPickup extends CommandGroup {
@@ -15,7 +15,8 @@ public class CmdPickup extends CommandGroup {
     private static final Logger LOGGER = Logger.getLogger(CmdPickup.class.getName());
     private static final TeleopStateMachine tsm = TeleopStateMachine.getInstance();
 
-    private boolean warned = false;
+    private static final Button pickupCancel = new ButtonPollHelper(ButtonActions.PICKUP_CANCEL, LOGGER::warning);
+
     private boolean pollCancel = true;
 
     public CmdPickup() {
@@ -30,16 +31,9 @@ public class CmdPickup extends CommandGroup {
     @Override
     protected void execute() {
         if (pollCancel) {
-            try {
-                if (KeyBindings.getInstance().actionToButton(ButtonActions.PICKUP_CANCEL).getPressed()) {
-                    cancel();
-                    tsm.pickupCancelTrigger.execute();
-                }
-            } catch (NullPointerException e) {
-                if (!warned) {
-                    LOGGER.log(Level.WARNING, "Unbound button for pickup command requested.", e);
-                    warned = true;
-                }
+            if (pickupCancel.getPressed()) {
+                cancel();
+                tsm.pickupCancelTrigger.execute();
             }
         }
     }

@@ -53,6 +53,8 @@ public final class LF310Gamepad extends RumbleController {
     public final POVButton POV270;
     public final POVButton POV315;
 
+    private final POVButton.POVButtonPoller povButtonPoller;
+
     private final Map<String, Axis> axes = new HashMap<>();
     private final Map<String, Button> buttons = new HashMap<>();
 
@@ -86,6 +88,11 @@ public final class LF310Gamepad extends RumbleController {
         POV270 = new POVButton(hid, POVButton.POVAngle.A270);
         POV315 = new POVButton(hid, POVButton.POVAngle.A315);
 
+        povButtonPoller = new POVButton.POVButtonPoller(
+                hid, 0,
+                POV0, POV45, POV90, POV135, POV180, POV225, POV270, POV315
+        );
+
         for (Axis a : new Axis[] {A_LX, A_LY, A_RX, A_RY, A_LTRIGGER, A_RTRIGGER}) {
             axes.put(a.getName(), a);
         }
@@ -103,23 +110,5 @@ public final class LF310Gamepad extends RumbleController {
     @Override
     public Map<String, Button> getButtonsNamesMap() {
         return new HashMap<>(buttons);
-    }
-
-    public void centerLeftTriggerRange() {
-        A_LTRIGGER.setScale(2.0);
-        A_LTRIGGER.setOffset(-1.0);
-    }
-
-    public void resetLeftTriggerRange() {
-        A_LTRIGGER.resetModifiers();
-    }
-
-    public void centerRightTriggerRange() {
-        A_RTRIGGER.setScale(2.0);
-        A_RTRIGGER.setOffset(-1.0);
-    }
-
-    public void resetRightTriggerRange() {
-        A_RTRIGGER.resetModifiers();
     }
 }

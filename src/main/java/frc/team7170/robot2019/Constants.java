@@ -103,15 +103,6 @@ public final class Constants {
         public static final double PIN_CYCLINDER_DIAMETER_METRES = 0.01559;
     }
 
-    public static final class State {
-        public static final double HOME_MULTIPLIER = 1.0;
-        public static final double LEVEL1_MULTIPLIER = 1.0;
-        public static final double LEVEL2_MULTIPLIER = 0.75;
-        public static final double LEVEL3_MULTIPLIER = 0.5;
-        public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
-        public static final double LOAD_PREPARE_MULTIPLIER = 1.0;
-    }
-
     public static final class Drive {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
@@ -152,6 +143,16 @@ public final class Constants {
         public static final double D_RIGHT = 200.0;  // throttle / differentiated error
         public static final double F_RIGHT = 0.0;  // multiplied directly by setpoint
         public static final int IZONE_RIGHT = 4096;
+
+        // Drive multipliers
+        public static final double HOME_MULTIPLIER = 1.0;
+        public static final double LEVEL1_MULTIPLIER = 1.0;
+        public static final double LEVEL2_MULTIPLIER = 0.75;
+        public static final double LEVEL3_MULTIPLIER = 0.5;
+        public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
+        public static final double LOAD_PREPARE_MULTIPLIER = 1.0;
+        public static final double RABBIT_MULTIPLIER = 1.0;
+        public static final double TURTLE_MULTIPLIER = 0.5;
     }
 
     public static final class FrontArms {

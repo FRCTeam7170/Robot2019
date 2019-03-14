@@ -2,6 +2,8 @@ package frc.team7170.robot2019.commands;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team7170.lib.command.CmdRunnable;
+import frc.team7170.lib.oi.Button;
+import frc.team7170.lib.oi.ButtonPollHelper;
 import frc.team7170.lib.oi.KeyBindings;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.TeleopStateMachine;
@@ -16,7 +18,7 @@ public class CmdEject extends CommandGroup {
     private static final Logger LOGGER = Logger.getLogger(CmdEject.class.getName());
     private static final TeleopStateMachine tsm = TeleopStateMachine.getInstance();
 
-    private boolean warned = false;
+    private static final Button ejectCancel = new ButtonPollHelper(ButtonActions.EJECT_CANCEL, LOGGER::warning);
 
     public CmdEject() {
         EndEffector.ReflectanceSensorArray.LineDeviation lineDeviation =
@@ -30,21 +32,14 @@ public class CmdEject extends CommandGroup {
                     Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2));
         }
         addSequential(new CmdRunnable(EndEffector.getInstance()::eject, EndEffector.getInstance()));
-        addParallel(new CmdRunnable(tsm.ejectFinishedTrigger::execute));  // TODO: this aint workin
+        addParallel(new CmdRunnable(tsm.ejectFinishedTrigger::execute));
     }
 
     @Override
     protected void execute() {
-        try {
-            if (KeyBindings.getInstance().actionToButton(ButtonActions.EJECT_CANCEL).getPressed()) {
-                cancel();
-                tsm.ejectFinishedTrigger.execute();
-            }
-        } catch (NullPointerException e) {
-            if (!warned) {
-                LOGGER.log(Level.WARNING, "Unbound button for eject command requested.", e);
-                warned = true;
-            }
+        if (ejectCancel.getPressed()) {
+            cancel();
+            tsm.ejectFinishedTrigger.execute();
         }
     }
 }

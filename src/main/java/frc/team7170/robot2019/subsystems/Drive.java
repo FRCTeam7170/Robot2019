@@ -35,6 +35,8 @@ public class Drive extends Subsystem implements Named {
     private boolean squareInputs = Constants.Drive.SQUARE_INPUTS;
     private boolean enableTankForwardAssist = Constants.Drive.ENABLE_TANK_FORWARD_ASSIST;
     private double tankForwardAssistThreshold = Constants.Drive.TANK_FORWARD_ASSIST_THRESHOLD;
+    private double multiplier = Constants.Drive.RABBIT_MULTIPLIER;
+    private boolean isTurtleMode = false;
 
     private Drive() {
         super("drive");
@@ -153,7 +155,6 @@ public class Drive extends Subsystem implements Named {
         left = CalcUtil.applyBounds(left, -1.0, 1.0);
         right = CalcUtil.applyBounds(right, -1.0, 1.0);
 
-        // TODO: forward assist can apply to arcade too -- not good
         if (enableTankForwardAssist && CalcUtil.inThreshold(left, right, tankForwardAssistThreshold)) {
             left = right = (left + right) / 2;
         }
@@ -163,14 +164,19 @@ public class Drive extends Subsystem implements Named {
             right = Math.copySign(right*right, right);
         }
 
-        setLeftPercent(left);
-        setRightPercent(right);
+        setLeftPercent(multiplier * left);
+        setRightPercent(multiplier * right);
     }
 
     public void arcadeDrive(double y, double z) {
         // The arcade to tank drive conversion here is copied from DifferentialDrive in WPILib.
         y = CalcUtil.applyBounds(y, -1.0, 1.0);
-        z = -CalcUtil.applyBounds(z, -1.0, 1.0);  // TODO: negated z
+        z = -CalcUtil.applyBounds(z, -1.0, 1.0);
+
+        if (squareInputs) {
+            y = Math.copySign(y*y, y);
+            z = Math.copySign(z*z, z);
+        }
 
         double l;
         double r;
@@ -197,7 +203,26 @@ public class Drive extends Subsystem implements Named {
             }
         }
 
-        tankDrive(l, -r);
+        setLeftPercent(multiplier * l);
+        setRightPercent(multiplier * -r);
+    }
+
+    public void toRabbitMode() {
+        multiplier = Constants.Drive.RABBIT_MULTIPLIER;
+        isTurtleMode = false;
+    }
+
+    public void toTurtleMode() {
+        multiplier = Constants.Drive.TURTLE_MULTIPLIER;
+        isTurtleMode = true;
+    }
+
+    public void toggleTurtleRabbitMode() {
+        if (isTurtleMode) {
+            toRabbitMode();
+        } else {
+            toTurtleMode();
+        }
     }
 
     public void zeroEncoders() {
@@ -267,7 +292,7 @@ public class Drive extends Subsystem implements Named {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new CmdDriveTeleop());
+        // setDefaultCommand(new CmdDriveTeleop());
     }
 
     private static double metresToTalonUnits(double value) {

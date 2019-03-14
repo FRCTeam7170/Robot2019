@@ -20,6 +20,10 @@ public enum ButtonActions implements ButtonAction {
     LATERAL_SLIDE_LEFT,
     LATERAL_SLIDE_RIGHT,
 
+    TURTLE_MODE,
+    RABBIT_MODE,
+    TURTLE_RABBIT_TOGGLE,
+
     TOGGLE_PIN,  // TODO: TEMP
     TEST_GENERIC_0,  // TODO: TEMP
     TEST_GENERIC_1,  // TODO: TEMP

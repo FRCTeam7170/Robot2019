@@ -147,11 +147,13 @@ public class Robot extends TimedRobot implements Named {
 //                EndEffector.LateralSlide.getInstance().wdc.getMean()));
     }
 
-    // private double lastCommandedPosition;
+//     private double lastCommandedPosition;
 
     // AKA: sandstormInit
     @Override
     public void autonomousInit() {
+        teleopInit();
+//        new CmdZeroSystems().start();
 //        new CommandGroup() {
 //            public CommandGroup initSubcommands() {
 //                addSequential(new CmdZeroLateralSlide());
@@ -175,60 +177,15 @@ public class Robot extends TimedRobot implements Named {
 //                return this;
 //            }
 //        }.initSubcommands().start();
-        teleopInit();
-//        new CmdZeroFrontArms().start();
-//        currLeftCommand = new CmdZeroLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator());
-//        currRightCommand = new CmdZeroLinearActuator(ClimbLegs.getInstance().getRightLinearActuator());
-//        currLeftCommand.start();
-//        currRightCommand.start();
-//        new CmdZeroSystems().start();
-    }
-
-    private static class CmdTest extends Command {
-
-        private final double sleepS;
-        private final String print;
-        private double  startS;
-
-        public CmdTest(String print, int sleepMs) {
-            this.print = print;
-            this.sleepS = (double) sleepMs / 1000.0;
-        }
-
-        @Override
-        protected void initialize() {
-            System.out.print("Running '" + print + "'...");
-            startS = Timer.getFPGATimestamp();
-        }
-
-        @Override
-        protected void end() {
-            System.out.println("Done.");
-        }
-
-        @Override
-        protected boolean isFinished() {
-            return Timer.getFPGATimestamp() >= (sleepS + startS);
-        }
     }
 
     @Override
     public void teleopInit() {
         // Set these as default cmd in subsystems.
-        // new CmdDriveTeleop().start();
-        // new CmdFrontArmsTeleop().start();
-        // new CmdElevatorTeleop().start();
-        // new CmdEndEffectorTeleop().start();
-//        System.out.println("STARTING CMD TEST");
-//        new CommandGroup() {
-//            public CommandGroup init() {
-//                addSequential(new CmdTest("1", 1000));
-//                addSequential(new CmdTest("2", 1000));
-//                addSequential(new CmdTest("3", 1000));
-//                addSequential(new CmdTest("4", 1000));
-//                return this;
-//            }
-//        }.init().start();
+        new CmdDriveTeleop().start();
+        new CmdFrontArmsTeleop().start();
+        new CmdElevatorTeleop().start();
+        new CmdEndEffectorTeleop().start();
     }
 
     @Override
@@ -238,112 +195,14 @@ public class Robot extends TimedRobot implements Named {
     public void robotPeriodic() {
         Scheduler.getInstance().run();
         matchTimeEntry.setDouble(DriverStation.getInstance().getMatchTime());
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.PRINT).get()) {
-//            System.out.println(String.format("%.03f, %.03f", EndEffector.LateralSlide.getInstance().getFeedback(), EndEffector.LateralSlide.getInstance().getFeedbackRaw()));
-//        }
     }
 
     @Override
     public void disabledPeriodic() {}
 
-//    private Command currLeftCommand = null;
-//    private Command currRightCommand = null;
-//    private Command currBothCommand = null;
-//    private Command currCommand;
-//    private double currSetpoint = 0.0;
-//    private int state = 0;
-
     // AKA: sandstormPeriodic
     @Override
     public void autonomousPeriodic() {
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.NEW_CMD).getPressed()) {
-//            if (currCommand != null) {
-//                currCommand.cancel();
-//            }
-//            System.out.println("STARTED NEW CMD");
-//            currCommand = new CmdDriveStraight(0.5);
-//            currCommand.start();
-//        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.CANCEL_CMD).getPressed()) {
-//            if (currCommand != null) {
-//                System.out.println("CANCELLED CMD");
-//                currCommand.cancel();
-//                currCommand = null;
-//            }
-//        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.RESET_ENC).getPressed()) {
-//            System.out.println("RESET ENCODERS");
-//            Drive.getInstance().zeroEncoders();
-//        }
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//            if (currCommand != null) {
-//                currCommand.cancel();
-//            }
-//            switch (state) {
-//                case 0:
-//                    currCommand = new CommandGroup() {
-//                        public CommandGroup init() {
-//                            addSequential(new CmdRotateFrontArms(Constants.FrontArms.HORIZONTAL_ANGLE_DEGREES, true));
-//                            addSequential(new CmdRunnable(EndEffector.getInstance()::deployPin));
-//                            return this;
-//                        }
-//                    }.init();
-//                    break;
-//                case 1:
-//                    currCommand = new CmdRotateFrontArms(Constants.FrontArms.PICKUP_ANGLE_DEGREES, true);
-//                    break;
-//                case 2:
-//                    currCommand = new CommandGroup() {
-//                        public CommandGroup init() {
-//                            addSequential(new CmdRotateFrontArms(Constants.FrontArms.VERTICAL_ANGLE_DEGREES, true));
-//                            addSequential(new CmdSleep(1000, EndEffector.getInstance()));
-//                            addSequential(new CmdRunnable(EndEffector.getInstance()::retractPin, EndEffector.getInstance()));
-//                            addSequential(new CmdRotateFrontArms(Constants.FrontArms.HOME_ANGLE_DEGREES, true));
-//                            return this;
-//                        }
-//                    }.init();
-//                    state = -1;
-//                    break;
-//                default:
-//                    throw new AssertionError();
-//            }
-//            currCommand.start();
-//            state++;
-//            System.out.println("STARTED FA CMD");
-//        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
-//            if (currCommand != null) {
-//                currCommand.cancel();
-//                System.out.println("CANCELLED FA CMD");
-//                currCommand = null;
-//            }
-//        }
-//        if (currLeftCommand.isCompleted() && currRightCommand.isCompleted() && currSetpoint < 0.3) {
-//            currSetpoint += 0.05;
-//            currLeftCommand = new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(), currSetpoint, true);
-//            currRightCommand = new CmdExtendLinearActuator(ClimbLegs.getInstance().getRightLinearActuator(), currSetpoint, true);
-//            currLeftCommand.start();
-//            currRightCommand.start();
-//            System.out.println("NEW SETPOINT");
-//        }
-//        if (currLeftCommand.isCompleted() && currRightCommand.isCompleted() && currBothCommand == null) {
-//            currBothCommand = new CmdSynchronousLegsExtend(0.3);
-//            currBothCommand.start();
-//        }
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.CLIMB).getPressed()) {
-//            new CmdClimb(ClimbLevel.LEVEL_3).start();
-//        }if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//            if (currCommand != null) {
-//                currCommand.cancel();
-//            }
-//            currCommand = new CmdMoveElevator(Constants.Elevator.LEVEL2_METRES, true);
-//            currCommand.start();
-//            System.out.println("STARTED ELEVATOR CMD");
-//        } else if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
-//            if (currCommand != null) {
-//                currCommand.cancel();
-//                System.out.println("CANCELLED ELEVATOR CMD");
-//                currCommand = null;
-//            }
-//        }
         teleopPeriodic();
     }
 
@@ -352,11 +211,6 @@ public class Robot extends TimedRobot implements Named {
 //        FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
 //        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
 //        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
-//        Elevator.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get());
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//            System.out.println("ZEROING ELEVATOR");
-//            Elevator.getInstance().zeroEncoder();
-//        }
         double elevatorReading = KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get();
         if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
             if (elevatorReading < 0) {
@@ -367,19 +221,8 @@ public class Robot extends TimedRobot implements Named {
         }
     }
 
-    // private TimedRunnable timedRunnable = new TimedRunnable(() -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance()), 3000);
-
-    // private TimedRunnable timedRunnable3 = new TimedRunnable(() -> System.out.println(EndEffector.LateralSlide.getInstance().getFeedbackVoltage()), 50);
-
     @Override
-    public void testPeriodic() {
-//        timedRunnable.run();
-//        timedRunnable3.run();
-//        EndEffector.LateralSlide.getInstance().set(KeyBindings.getInstance().actionToAxis(AxisActions.LATERAL_SLIDE).get());
-//        if (KeyBindings.getInstance().actionToButton(ButtonActions.RESET_SERVO).getPressed()) {
-//            EndEffector.LateralSlide.getInstance().resetFeedback();
-//        }
-    }
+    public void testPeriodic() { }
 
     @Override
     public String getName() {

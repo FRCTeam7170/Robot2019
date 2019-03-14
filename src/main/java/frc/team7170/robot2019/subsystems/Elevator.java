@@ -144,6 +144,6 @@ public class  Elevator extends Subsystem implements Named {
 
     @Override
     protected void initDefaultCommand() {
-        setDefaultCommand(new CmdElevatorTeleop());
+        // setDefaultCommand(new CmdElevatorTeleop());
     }
 }
