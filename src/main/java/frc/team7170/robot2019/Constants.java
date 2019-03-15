@@ -97,7 +97,7 @@ public final class Constants {
         public static final double FRONT_ARM_WHEEL_DIAMETER_INCHES = 2.0;
         public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.460375;
         public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.244475;
-        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.01;
+        public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.005;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
         public static final double END_EFFECTOR_INNER_WIDTH_METRES = 0.218;
         public static final double PIN_CYCLINDER_DIAMETER_METRES = 0.01559;
@@ -105,7 +105,7 @@ public final class Constants {
 
     public static final class Drive {
         public static final double RAMP_TIME = 0.1;  // seconds
-        public static final NeutralMode NEUTRAL_MODE = NeutralMode.Coast;
+        public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ENCODER_CPR = 1024;  // Talon Mag.
         public static final int POSITION_PROFILE = 0;
         public static final int ALLOWABLE_CLOSED_LOOP_POSITION_ERROR = 217;  // raw units (enc_ticks); +-1 in. on 6 in. wheels
@@ -225,14 +225,14 @@ public final class Constants {
         // Left PIDF parameters
         public static final double P_LEFT = 5.0;  // throttle / error
         public static final double I_LEFT = 0.001;  // throttle / integrated error
-        public static final double D_LEFT = 0.0;  // throttle / differentiated error
+        public static final double D_LEFT = 50.0;  // throttle / differentiated error
         public static final double F_LEFT = 0.0;  // multiplied directly by setpoint
         public static final int IZONE_LEFT = 500;  // max integrated error to permit I accumulation on
 
         // Right PIDF parameters
         public static final double P_RIGHT = 5.0;  // throttle / error
         public static final double I_RIGHT = 0.001;  // throttle / integrated error
-        public static final double D_RIGHT = 0.0;  // throttle / differentiated error
+        public static final double D_RIGHT = 50.0;  // throttle / differentiated error
         public static final double F_RIGHT = 0.0;  // multiplied directly by setpoint
         public static final int IZONE_RIGHT = 500;  // max integrated error to permit I accumulation on
     }

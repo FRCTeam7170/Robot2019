@@ -10,6 +10,8 @@ public interface Vector {
 
     Vector add(double value);
 
+    Vector subtract(Vector other) throws IllegalArgumentException;
+
     default Vector subtract(double value) {
         return add(-value);
     }
@@ -19,6 +21,8 @@ public interface Vector {
     default Vector inverse() {
         return scale(-1.0);
     }
+
+    Vector multiplyElementWise(Vector other) throws IllegalArgumentException;
 
     double dot(Vector other) throws IllegalArgumentException;
 
@@ -53,6 +57,12 @@ public interface Vector {
     default void mutate(VectorMutator visitor) {
         mutate(visitor, 0, length());
     }
+
+    // TODO: viewAs___Matrix
+
+    Matrix asRowMatrix();
+
+    Matrix asColMatrix();
 
     @FunctionalInterface
     interface VectorVisitor {

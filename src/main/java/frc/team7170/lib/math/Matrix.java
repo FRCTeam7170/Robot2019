@@ -38,24 +38,24 @@ public interface Matrix {
 
     double[][] toArray();
 
-    void setRow(int rowIdx, Vector row) throws IndexOutOfBoundsException;
+    void setRow(int rowIdx, Vector row) throws IndexOutOfBoundsException, IllegalArgumentException;
 
-    void setCol(int colIdx, Vector col) throws IndexOutOfBoundsException;
+    void setCol(int colIdx, Vector col) throws IndexOutOfBoundsException, IllegalArgumentException;
 
-    Matrix view(int lowerRow, int upperRow, int lowerCol, int upperCol);
+    Matrix view(int startRow, int startCol, int endRow, int endCol);
 
     Matrix view(int[] rows, int[] cols) throws IndexOutOfBoundsException;
 
-    Vector rowView(int row) throws IndexOutOfBoundsException;
+    Vector viewRow(int row) throws IndexOutOfBoundsException;
 
-    Vector colView(int col) throws IndexOutOfBoundsException;
+    Vector viewCol(int col) throws IndexOutOfBoundsException;
 
-    Matrix copy(int lowerRow, int upperRow, int lowerCol, int upperCol);
+    Matrix copy(int startRow, int startCol, int endRow, int endCol);
 
     Matrix copy(int[] rows, int[] cols) throws IndexOutOfBoundsException;
 
     default Matrix copy() {
-        return copy(0, nRows(), 0, nCols());
+        return copy(0, 0, nRows(), nCols());
     }
 
     Vector copyRow(int row) throws IndexOutOfBoundsException;

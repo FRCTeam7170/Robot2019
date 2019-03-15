@@ -5,6 +5,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -18,7 +19,6 @@ import frc.team7170.robot2019.commands.*;
 import frc.team7170.robot2019.subsystems.*;
 
 // TODO: spooky-console: NTBrowser needs ability to make new entry
-// TODO: make everything a singleton instead of static
 // TODO: "primitive-mode" option
 // TODO: make zeroable interface for all zeroable subsystems
 // TODO: replace logger statements with Shuffleboard events
@@ -32,7 +32,7 @@ public class Robot extends TimedRobot implements Named {
         Robot.startRobot(Robot::new);
     }
 
-    //private LE3DPJoystick joystick;
+//    private LE3DPJoystick joystick;
     private LF310Gamepad gamepad;
     private KeyMap defaultKeyMap;
 
@@ -100,16 +100,16 @@ public class Robot extends TimedRobot implements Named {
         ClimbDrive.getInstance();
 
         // Setup keybindings system
-        // KeyBindings.getInstance().registerController(joystick);
+//        KeyBindings.getInstance().registerController(joystick);
         KeyBindings.getInstance().registerController(gamepad);
         KeyBindings.getInstance().registerAxisActions(AxisActions.values());
         KeyBindings.getInstance().registerButtonActions(ButtonActions.values());
         defaultKeyMap = new SerializableKeyMap.Builder(new Name("default"))
-                .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
-                .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
+                // .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
+                // .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
-                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LTRIGGER)
-                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RTRIGGER)
+                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
+                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
@@ -124,10 +124,8 @@ public class Robot extends TimedRobot implements Named {
 //                .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.CLIMB, gamepad, gamepad.B_START)
                 .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
-                // .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
+                .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
                 // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
-                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
-                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
@@ -139,15 +137,25 @@ public class Robot extends TimedRobot implements Named {
 //        System.out.println(String.format("SD: %f; MEAN: %f",
 //                EndEffector.LateralSlide.getInstance().wdc.getStdDeviation(),
 //                EndEffector.LateralSlide.getInstance().wdc.getMean()));
+
+        // Put all subsystems into a safe state.
+        Drive.getInstance().killMotors();
+        EndEffector.LateralSlide.getInstance().kill();
+        FrontArms.getInstance().killMotors();
+        Elevator.getInstance().killMotor();
+        ClimbLegs.getInstance().getLeftLinearActuator().killMotor();
+        ClimbLegs.getInstance().getRightLinearActuator().killMotor();
+        ClimbDrive.getInstance().killMotors();
     }
 
-//     private double lastCommandedPosition;
+    private Command currCmd;
 
     // AKA: sandstormInit
     @Override
     public void autonomousInit() {
-        teleopInit();
-//        new CmdZeroSystems().start();
+//        teleopInit();
+        currCmd = new CmdZeroSystems();
+        currCmd.start();
 //        new CommandGroup() {
 //            public CommandGroup initSubcommands() {
 //                addSequential(new CmdZeroLateralSlide());
@@ -197,14 +205,18 @@ public class Robot extends TimedRobot implements Named {
     // AKA: sandstormPeriodic
     @Override
     public void autonomousPeriodic() {
-        teleopPeriodic();
+//        teleopPeriodic();
+        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+            currCmd.start();
+        }
     }
 
     @Override
     public void teleopPeriodic() {
 //        FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
-//        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
-//        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
+        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
+        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
         double elevatorReading = KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get();
         if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
             if (elevatorReading < 0) {

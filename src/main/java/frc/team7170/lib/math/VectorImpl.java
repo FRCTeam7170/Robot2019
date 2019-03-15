@@ -26,8 +26,9 @@ public class VectorImpl implements Vector {
     @Override
     public double norm() {
         double norm = 0.0;
-        for (double datum : data) {
-            norm += datum * datum;
+        for (int i = 0; i < length(); ++i) {
+            double val = get(i);
+            norm += val * val;
         }
         return Math.sqrt(norm);
     }
@@ -50,9 +51,29 @@ public class VectorImpl implements Vector {
     }
 
     @Override
+    public Vector subtract(Vector other) throws IllegalArgumentException {
+        if (!matchingSize(other)) {
+            throw new IllegalArgumentException("vector size must be identical for subtraction");
+        }
+        double[] newData = new double[length()];
+        visit((i, value) -> newData[i] = value - other.get(i));
+        return new VectorImpl(newData);
+    }
+
+    @Override
     public Vector scale(double value) {
         double[] newData = new double[length()];
         visit((i, thisValue) -> newData[i] = thisValue * value);
+        return new VectorImpl(newData);
+    }
+
+    @Override
+    public Vector multiplyElementWise(Vector other) throws IllegalArgumentException {
+        if (!matchingSize(other)) {
+            throw new IllegalArgumentException("vector size must be identical for element-wise multiplication");
+        }
+        double[] newData = new double[length()];
+        visit((i, value) -> newData[i] = value * other.get(i));
         return new VectorImpl(newData);
     }
 
@@ -77,11 +98,13 @@ public class VectorImpl implements Vector {
 
     @Override
     public double get(int idx) throws IndexOutOfBoundsException {
+        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
         return data[idx];
     }
 
     @Override
     public void set(int idx, double value) throws IndexOutOfBoundsException {
+        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
         data[idx] = value;
     }
 
@@ -117,9 +140,8 @@ public class VectorImpl implements Vector {
     @Override
     public Vector copy(int[] indices) throws IndexOutOfBoundsException {
         double[] result = new double[indices.length];
-        for (int idx : indices) {
-            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
-            result[idx] = get(idx);
+        for (int i = 0; i < indices.length; ++i) {
+            result[i] = get(CalcUtil.rectifyArrayIndexRestrictive(indices[i], length()));
         }
         return new VectorImpl(result);
     }
@@ -140,5 +162,17 @@ public class VectorImpl implements Vector {
         for (int i = startIdx; i < endIdx; ++i) {
             set(i, visitor.accept(i, get(i)));
         }
+    }
+
+    @Override
+    public Matrix asRowMatrix() {
+        double[][] newData = new double[1][];
+        newData[0] = Arrays.copyOf(data, length());
+        return new MatrixImpl(newData);
+    }
+
+    @Override
+    public Matrix asColMatrix() {
+        return asRowMatrix().transpose();
     }
 }

@@ -1,6 +1,8 @@
 package frc.team7170.lib.math;
 
 
+import java.util.stream.IntStream;
+
 /**
  * A collection of various calculations that might be done frequently enough throughout the robot code as to warrant a
  * unified location for all of them.
@@ -76,6 +78,8 @@ public final class CalcUtil {
         return val0 + (val1 - val0) * x;
     }
 
+    // TODO: some of these might be more appropriately placed in an ArrayUtil class
+
     public static int rectifyArrayIndex(int idx, int length) {
         if (length < 0) {
             throw new IllegalArgumentException("length must be greater than 0");
@@ -98,5 +102,9 @@ public final class CalcUtil {
             return idx + length;
         }
         return idx;
+    }
+
+    public static int[] rangeToIndices(int startIdx, int endIdx) {
+        return IntStream.range(startIdx, endIdx).toArray();
     }
 }

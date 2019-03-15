@@ -4,8 +4,7 @@ import edu.wpi.first.wpilibj.command.Command;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.subsystems.ClimbLegs;
 
-// TODO: not used
-public class CmdSynchronousLegsExtend extends Command {
+public class CmdSynchronousExtendLinearActuators extends Command {
 
     private static final ClimbLegs.LinearActuator leftLinearActuator = ClimbLegs.getInstance().getLeftLinearActuator();
     private static final ClimbLegs.LinearActuator rightLinearActuator = ClimbLegs.getInstance().getRightLinearActuator();
@@ -14,16 +13,15 @@ public class CmdSynchronousLegsExtend extends Command {
     private boolean reversed = false;
     private double speed;
 
-    public CmdSynchronousLegsExtend(double distanceMetres) {
-        distance = ClimbLegs.metresToTalonUnits(-distanceMetres);
-        System.out.println(String.format("DIST %f", distance));
+    public CmdSynchronousExtendLinearActuators(double distanceMetres) {
+        distance = ClimbLegs.metresToTalonUnits(distanceMetres);
         requires(leftLinearActuator);
         requires(rightLinearActuator);
     }
 
     @Override
     protected void initialize() {
-        System.out.println("INIT");
+        System.out.println("INIT SYNC EXTEND");
         if (distance < 0) {
             speed = Constants.ClimbLegs.SPEED;
         } else {
@@ -44,7 +42,7 @@ public class CmdSynchronousLegsExtend extends Command {
 
     @Override
     protected void end() {
-        System.out.println("END");
+        System.out.println("END SYNC EXTEND");
         leftLinearActuator.killMotor();
         rightLinearActuator.killMotor();
     }

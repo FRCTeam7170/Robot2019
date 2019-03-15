@@ -33,64 +33,96 @@ public class MatrixImpl implements Matrix {
         if (!matchingSize(other)) {
             throw new IllegalArgumentException("matrix size must be identical for addition");
         }
-        // TODO: move this to an ArrayUtil class
-        double[][] otherData = other.toArray();
         double[][] newData = new double[nRows()][nCols()];
-        for (int r = 0; r < nRows(); ++r) {
-            for (int c = 0; c < nCols(); ++c) {
-                newData[r][c] = data[r][c] + otherData[r][c];
-            }
-        }
+        visitRowWise((r, c, value) -> newData[r][c] = value + other.get(r, c));
         return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix add(double value) {
-        return null;
+        double[][] newData = new double[nRows()][nCols()];
+        visitRowWise((r, c, thisValue) -> newData[r][c] = thisValue + value);
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix subtract(Matrix other) throws IllegalArgumentException {
-        return null;
+        if (!matchingSize(other)) {
+            throw new IllegalArgumentException("matrix size must be identical for subtraction");
+        }
+        double[][] newData = new double[nRows()][nCols()];
+        visitRowWise((r, c, value) -> newData[r][c] = value - other.get(r, c));
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix multiply(Matrix other) throws IllegalArgumentException {
-        return null;
+        if (nCols() != other.nRows()) {
+            throw new IllegalArgumentException("invalid matrix size for matrix multiplication");
+        }
+        double[][] result = new double[nRows()][other.nCols()];
+        for (int r = 0; r < nRows(); ++r) {
+            Vector row = copyRow(r);
+            for (int c = 0; c < other.nCols(); ++c) {
+                result[r][c] = row.dot(other.copyCol(c));
+            }
+        }
+        return new MatrixImpl(result);
     }
 
     @Override
     public Matrix multiply(Vector other) throws IllegalArgumentException {
-        return null;
+        if (nCols() == other.length()) {
+            return multiply(other.asColMatrix());
+        } else if (nRows() != other.length()) {
+            return multiply(other.asRowMatrix());
+        } else {
+            throw new IllegalArgumentException("invalid vector length for matrix-vector multiplication");
+        }
     }
 
     @Override
     public Matrix multiplyElementWise(Matrix other) {
-        return null;
+        if (!matchingSize(other)) {
+            throw new IllegalArgumentException("matrix size must be identical for element-wise multiplication");
+        }
+        double[][] newData = new double[nRows()][nCols()];
+        visitRowWise((r, c, value) -> newData[r][c] = value * other.get(r, c));
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix multiply(double value) {
-        return null;
+        double[][] newData = new double[nRows()][nCols()];
+        visitRowWise((r, c, thisValue) -> newData[r][c] = thisValue * value);
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix power(double power) {
-        return null;
+        double[][] newData = new double[nRows()][nCols()];
+        visitRowWise((r, c, value) -> newData[r][c] = Math.pow(value, power));
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix transpose() {
-        return null;
+        double[][] result = new double[nCols()][nRows()];
+        visitRowWise((r, c, value) -> result[c][r] = value);
+        return new MatrixImpl(result);
     }
 
     @Override
     public double get(int row, int col) throws IndexOutOfBoundsException {
+        row = CalcUtil.rectifyArrayIndexRestrictive(row, nRows());
+        col = CalcUtil.rectifyArrayIndexRestrictive(col, nCols());
         return data[row][col];
     }
 
     @Override
     public void set(int row, int col, double value) throws IndexOutOfBoundsException {
+        row = CalcUtil.rectifyArrayIndexRestrictive(row, nRows());
+        col = CalcUtil.rectifyArrayIndexRestrictive(col, nCols());
         data[row][col] = value;
     }
 
@@ -104,47 +136,84 @@ public class MatrixImpl implements Matrix {
     }
 
     @Override
-    public void setRow(int rowIdx, Vector row) throws IndexOutOfBoundsException {
-
+    public void setRow(int rowIdx, Vector row) throws IndexOutOfBoundsException, IllegalArgumentException {
+        if (row.length() != nCols()) {
+            throw new IllegalArgumentException("row must be same width as matrix");
+        }
+        rowIdx = CalcUtil.rectifyArrayIndexRestrictive(rowIdx, nRows());
+        data[rowIdx] = row.toArray();
     }
 
     @Override
-    public void setCol(int colIdx, Vector col) throws IndexOutOfBoundsException {
-
+    public void setCol(int colIdx, Vector col) throws IndexOutOfBoundsException, IllegalArgumentException {
+        if (col.length() != nRows()) {
+            throw new IllegalArgumentException("col must be same height as matrix");
+        }
+        colIdx = CalcUtil.rectifyArrayIndexRestrictive(colIdx, nCols());
+        for (int r = 0; r < nRows(); ++r) {
+            set(r, colIdx, col.get(r));
+        }
     }
 
     @Override
-    public Matrix view(int lowerRow, int upperRow, int lowerCol, int upperCol) {
-        return null;
+    @SuppressWarnings("Duplicates")
+    public Matrix view(int startRow, int startCol, int endRow, int endCol) {
+        startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
+        endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
+        startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
+        endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
+        return new MatrixView(this, startRow, startCol, endRow, endCol);
     }
 
     @Override
     public Matrix view(int[] rows, int[] cols) throws IndexOutOfBoundsException {
-        return null;
+        for (int r = 0; r < rows.length; ++r) {
+            rows[r] = CalcUtil.rectifyArrayIndexRestrictive(rows[r], nRows());
+        }
+        for (int c = 0; c < cols.length; ++c) {
+            cols[c] = CalcUtil.rectifyArrayIndexRestrictive(cols[c], nCols());
+        }
+        return new MatrixView(this, rows, cols);
     }
 
     @Override
-    public Vector rowView(int row) throws IndexOutOfBoundsException {
-        return null;
+    public Vector viewRow(int row) throws IndexOutOfBoundsException {
+        return MatrixVectorView.newRowView(this, CalcUtil.rectifyArrayIndexRestrictive(row, nRows()));
     }
 
     @Override
-    public Vector colView(int col) throws IndexOutOfBoundsException {
-        return null;
+    public Vector viewCol(int col) throws IndexOutOfBoundsException {
+        return MatrixVectorView.newColView(this, CalcUtil.rectifyArrayIndexRestrictive(col, nCols()));
     }
 
     @Override
-    public Matrix copy(int lowerRow, int upperRow, int lowerCol, int upperCol) {
-        return null;
+    @SuppressWarnings("Duplicates")
+    public Matrix copy(int startRow, int startCol, int endRow, int endCol) {
+        startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
+        endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
+        startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
+        endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
+        int nRows = endRow - startRow;
+        double[][] newData = new double[nRows > 0 ? nRows : 0][];
+        if ((endCol - startCol) >= 0) {  // Arrays.copyOfRange(double[], int, int) errors otherwise
+            for (int r = startRow; r < endRow; ++r) {
+                newData[r - startRow] = Arrays.copyOfRange(data[r], startCol, endCol);
+            }
+        }
+        return new MatrixImpl(newData);
     }
 
     @Override
     public Matrix copy(int[] rows, int[] cols) throws IndexOutOfBoundsException {
-        double[][] newData = new double[rows.length][];
-        for (int i = 0; i < rows.length; ++i) {
-            // newData[i] = Arrays.copyOfRange(data[])
+        double[][] newData = new double[rows.length][cols.length];
+        for (int r = 0; r < rows.length; ++r) {
+            int row = CalcUtil.rectifyArrayIndexRestrictive(rows[r], nRows());
+            for (int c = 0; c < cols.length; ++c) {
+                int col = CalcUtil.rectifyArrayIndexRestrictive(cols[c], nCols());
+                newData[r][c] = get(row, col);
+            }
         }
-        return null;
+        return new MatrixImpl(newData);
     }
 
     @Override
@@ -152,13 +221,12 @@ public class MatrixImpl implements Matrix {
         return new VectorImpl(Arrays.copyOf(data[CalcUtil.rectifyArrayIndexRestrictive(row, nRows())], nCols()));
     }
 
-    // TODO: moderately expensive operation--cache result?
     @Override
     public Vector copyCol(int col) throws IndexOutOfBoundsException {
         col = CalcUtil.rectifyArrayIndexRestrictive(col, nCols());
         double[] colData = new double[nRows()];
         for (int r = 0; r < nRows(); ++r) {
-            colData[r] = data[r][col];
+            colData[r] = get(r, col);
         }
         return new VectorImpl(colData);
     }
@@ -242,7 +310,7 @@ public class MatrixImpl implements Matrix {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         for (int r = startRow; r < endRow; ++r) {
-            visitor.accept(r, rowView(r));
+            visitor.accept(r, viewRow(r));
         }
     }
 
@@ -251,7 +319,7 @@ public class MatrixImpl implements Matrix {
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
-            visitor.accept(c, colView(c));
+            visitor.accept(c, viewCol(c));
         }
     }
 }

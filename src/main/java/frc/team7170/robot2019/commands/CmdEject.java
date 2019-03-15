@@ -31,7 +31,7 @@ public class CmdEject extends CommandGroup {
             addSequential(new CmdMoveLateralSlide(lineDeviation.getValue() +
                     Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2));
         }
-        addSequential(new CmdRunnable(EndEffector.getInstance()::eject, EndEffector.getInstance()));
+        addParallel(new CmdRunnable(EndEffector.getInstance()::eject, EndEffector.getInstance()));
         addParallel(new CmdRunnable(tsm.ejectFinishedTrigger::execute));
     }
 

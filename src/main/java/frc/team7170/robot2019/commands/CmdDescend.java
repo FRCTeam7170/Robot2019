@@ -18,7 +18,7 @@ public class CmdDescend extends CommandGroup {
         addSequential(new CmdDriveStraight(Constants.Descent.PRE_EXTEND_DRIVE_FORWARD_METRES));
 
         // Extend both linear actuators to support the back of the bot.
-        addSequential(new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(),
+        addParallel(new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(),
                 Constants.Descent.LINEAR_ACTUATOR_EXTENSION_METRES, true));
         addParallel(new CmdExtendLinearActuator(ClimbLegs.getInstance().getRightLinearActuator(),
                 Constants.Descent.LINEAR_ACTUATOR_EXTENSION_METRES, true));

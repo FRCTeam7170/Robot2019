@@ -50,6 +50,8 @@ public final class KeyBindings implements Named {
         keyMapChangeCallbacks.add(callback);
     }
 
+    // TODO: add way to remove KM change callback (using the BiConsumer might be awkward--use integer ID instead?)
+
     public void loadFromPrefs() {
         getKMKeyStream().forEach(key -> {
             String value = Preferences.getInstance().getString(key, null);

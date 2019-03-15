@@ -31,6 +31,12 @@ public class CmdRotateFrontArms extends Command {
     }
 
     @Override
+    protected void interrupted() {
+        System.out.println("INTERRUPTED ROTATE");
+        super.interrupted();
+    }
+
+    @Override
     protected boolean isFinished() {
         return frontArms.isErrorTolerable();
     }
