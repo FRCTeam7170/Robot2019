@@ -15,10 +15,20 @@ public class CmdClimb extends CommandGroup {
                 Constants.Dimensions.LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES, false));
 
         // Raise the robot with the climb legs and front arms in sync.
-        addSequential(new CmdSynchronousVertical(
+//        addSequential(new CmdSynchronousVertical(
+//                climbLevel.getHeightMetres(),
+//                climbLevel.getHeightMetres() + Constants.Climb.FINAL_HEIGHT_EXTRA_METRES,
+//                Constants.Climb.DELTA_HEIGHT_METRES,
+//                0.0
+//        ));
+//        addSequential(new CmdDeployAppendages(
+//                130.0,
+//                climbLevel.getHeightMetres() + Constants.Climb.FINAL_HEIGHT_EXTRA_METRES,
+//                true)
+//        );
+        addSequential(new CmdSynchronousRaise(
                 climbLevel.getHeightMetres(),
                 climbLevel.getHeightMetres() + Constants.Climb.FINAL_HEIGHT_EXTRA_METRES,
-                Constants.Climb.DELTA_HEIGHT_METRES,
                 0.0
         ));
 
@@ -30,6 +40,6 @@ public class CmdClimb extends CommandGroup {
                 Constants.ClimbLegs.HOME_METRES, false));
 
         // Drive forward using base wheels.
-        addSequential(new CmdDriveStraight(Constants.Climb.POST_RETRACT_DRIVE_FORWARD_METRES));
+        // addSequential(new CmdDriveStraight(Constants.Climb.POST_RETRACT_DRIVE_FORWARD_METRES));
     }
 }

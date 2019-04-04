@@ -4,13 +4,11 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team7170.lib.command.CmdRunnable;
 import frc.team7170.lib.oi.Button;
 import frc.team7170.lib.oi.ButtonPollHelper;
-import frc.team7170.lib.oi.KeyBindings;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.TeleopStateMachine;
 import frc.team7170.robot2019.actions.ButtonActions;
 import frc.team7170.robot2019.subsystems.EndEffector;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CmdEject extends CommandGroup {

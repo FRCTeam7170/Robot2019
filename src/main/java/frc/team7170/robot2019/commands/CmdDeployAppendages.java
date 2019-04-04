@@ -4,10 +4,15 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 
 public class CmdDeployAppendages extends CommandGroup {
 
-    public CmdDeployAppendages(double armDegrees, double laHeight, boolean hold) {
-        addParallel(new CmdRotateFrontArms(armDegrees, hold));
+    // TODO: TEMP -- gross thingy
+    public CmdDeployAppendages(double armDegrees, double laHeight, boolean hold, boolean withRequire) {
+        addParallel(new CmdRotateFrontArms(armDegrees, hold, withRequire));
 //        addParallel(new CmdExtendLinearActuator(ClimbLegs.getInstance().getLeftLinearActuator(), laHeight, hold));
 //        addParallel(new CmdExtendLinearActuator(ClimbLegs.getInstance().getRightLinearActuator(), laHeight, hold));
-        addParallel(new CmdSynchronousExtendLinearActuators(laHeight));
+        addParallel(new CmdSynchronousExtendLinearActuators(laHeight, withRequire));
+    }
+
+    public CmdDeployAppendages(double armDegrees, double laHeight, boolean hold) {
+        this(armDegrees, laHeight, hold, true);
     }
 }

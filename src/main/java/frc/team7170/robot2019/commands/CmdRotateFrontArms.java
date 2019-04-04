@@ -1,6 +1,7 @@
 package frc.team7170.robot2019.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.subsystems.FrontArms;
 
 public class CmdRotateFrontArms extends Command {
@@ -10,30 +11,29 @@ public class CmdRotateFrontArms extends Command {
     private final double angleDegrees;
     private final boolean hold;
 
-    public CmdRotateFrontArms(double angleDegrees, boolean hold) {
-        this.angleDegrees = angleDegrees;
+    // TODO: TEMP -- gross thingy
+    public CmdRotateFrontArms(double angleDegrees, boolean hold, boolean withRequire) {
+        this.angleDegrees = angleDegrees + Constants.FrontArms.ANGLE_UNCERTAINTY_DEGREES;
         this.hold = hold;
-        requires(frontArms);
+        if (withRequire) {
+            requires(frontArms);
+        }
+    }
+
+    public CmdRotateFrontArms(double angleDegrees, boolean hold) {
+        this(angleDegrees, hold, true);
     }
 
     @Override
     protected void initialize() {
-        System.out.println("INIT ROTATE");
         frontArms.setAngle(angleDegrees);
     }
 
     @Override
     protected void end() {
-        System.out.println("END ROTATE");
         if (!hold) {
             frontArms.killMotors();
         }
-    }
-
-    @Override
-    protected void interrupted() {
-        System.out.println("INTERRUPTED ROTATE");
-        super.interrupted();
     }
 
     @Override

@@ -13,26 +13,32 @@ public class CmdSynchronousExtendLinearActuators extends Command {
     private boolean reversed = false;
     private double speed;
 
-    public CmdSynchronousExtendLinearActuators(double distanceMetres) {
+    // TODO: TEMP -- gross thingy
+    public CmdSynchronousExtendLinearActuators(double distanceMetres, boolean withRequire) {
         distance = ClimbLegs.metresToTalonUnits(distanceMetres);
-        requires(leftLinearActuator);
-        requires(rightLinearActuator);
+        if (withRequire) {
+            requires(leftLinearActuator);
+            requires(rightLinearActuator);
+        }
+    }
+
+    public CmdSynchronousExtendLinearActuators(double distanceMetres) {
+        this(distanceMetres, true);
     }
 
     @Override
     protected void initialize() {
-        System.out.println("INIT SYNC EXTEND");
-        if (distance < 0) {
-            speed = Constants.ClimbLegs.SPEED;
-        } else {
+        if (distance < Math.abs(leftLinearActuator.getEncoder())) {
             speed = -Constants.ClimbLegs.SPEED;
             reversed = true;
+        } else {
+            speed = Constants.ClimbLegs.SPEED;
         }
     }
 
     @Override
     protected void execute() {
-        double diff = leftLinearActuator.getEncoder() - rightLinearActuator.getEncoder();
+        double diff = rightLinearActuator.getEncoder() - leftLinearActuator.getEncoder();
         if (reversed) {
             diff = -diff;
         }
@@ -42,14 +48,22 @@ public class CmdSynchronousExtendLinearActuators extends Command {
 
     @Override
     protected void end() {
-        System.out.println("END SYNC EXTEND");
         leftLinearActuator.killMotor();
         rightLinearActuator.killMotor();
     }
 
     @Override
     protected boolean isFinished() {
-        return (Math.abs(leftLinearActuator.getEncoder()) >= Math.abs(distance)) &&
-                (Math.abs(rightLinearActuator.getEncoder()) >= Math.abs(distance));
+        if (reversed) {
+            return (leftLinearActuator.isLowerLimitSwitchTriggered() ||
+                    Math.abs(leftLinearActuator.getEncoder()) <= distance) &&
+                    (rightLinearActuator.isLowerLimitSwitchTriggered() ||
+                    Math.abs(rightLinearActuator.getEncoder()) <= distance);
+        } else {
+            return (leftLinearActuator.isUpperLimitSwitchTriggered() ||
+                    Math.abs(leftLinearActuator.getEncoder()) >= distance) &&
+                    (rightLinearActuator.isUpperLimitSwitchTriggered() ||
+                    Math.abs(rightLinearActuator.getEncoder()) >= distance);
+        }
     }
 }

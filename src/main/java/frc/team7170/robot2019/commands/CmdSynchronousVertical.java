@@ -19,23 +19,21 @@ public class CmdSynchronousVertical extends Command {
     private Command currCommand;
 
     public CmdSynchronousVertical(double platformHeightMetres, double targetHeightMetres,
-                                  double deltaHeightMetres, double initialHeight) {
+                                  double absDeltaHeightMetres, double initialHeight) {
         this.platformHeightMetres = platformHeightMetres;
         this.targetHeightMetres = targetHeightMetres;
-        this.deltaHeightMetres = deltaHeightMetres;
         this.raising = targetHeightMetres > initialHeight;
+        this.deltaHeightMetres = raising ? absDeltaHeightMetres : -absDeltaHeightMetres;
         this.currHeightMetres = initialHeight;
     }
 
     @Override
     protected void execute() {
-        if (currCommand == null || currCommand.isCompleted()) {
-            if (!targetHeightReached()) {
-                // TODO: this doesn't work if we're descending and deltaHeightMetres is absolute
-                currHeightMetres += deltaHeightMetres;
-                currCommand = new CmdDeployAppendages(calcNextTheta(currHeightMetres),
-                        currHeightMetres + laOffsetMetres, true);
-            }
+        if (!targetHeightReached() && (currCommand == null || currCommand.isCompleted())) {
+            currHeightMetres += deltaHeightMetres;
+            currCommand = new CmdDeployAppendages(calcNextTheta(currHeightMetres),
+                    currHeightMetres + laOffsetMetres, true, false);
+            currCommand.start();
         }
     }
 
@@ -66,6 +64,6 @@ public class CmdSynchronousVertical extends Command {
         double x = Constants.Dimensions.FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES;
         double psi = Constants.FrontArms.VERTICAL_ANGLE_DEGREES;
 
-        return Math.acos((H + r - y - h) / x) + psi;
+        return Math.toDegrees(Math.acos((H + r - y - h) / x)) + psi;
     }
 }

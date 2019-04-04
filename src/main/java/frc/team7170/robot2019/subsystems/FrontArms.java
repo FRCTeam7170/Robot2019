@@ -27,7 +27,10 @@ public class FrontArms extends Subsystem {
 
     private final NetworkTableEntry limitSwitchEntry;
     private final NetworkTableEntry encoderEntry;
-//    private final NetworkTableEntry outputEntry;
+    private final NetworkTableEntry totalCurrentDrawEntry;
+    private final NetworkTableEntry motorPowerPct;
+
+    private double setpoint;
 
     private FrontArms() {
         super("frontArms");
@@ -82,7 +85,8 @@ public class FrontArms extends Subsystem {
         );
         limitSwitchEntry = frontArmsTab.add("limitSwitch", isReverseLimitSwitchTriggered()).getEntry();
         encoderEntry = frontArmsTab.add("encoder", getEncoder()).getEntry();
-//        outputEntry = frontArmsTab.add("output", master.getMotorOutputPercent()).getEntry();
+        totalCurrentDrawEntry = frontArmsTab.add("totalCurrentDraw", 0.0).getEntry();
+        motorPowerPct = frontArmsTab.add("motorPowerPct", 0.0).getEntry();
     }
 
     private static final FrontArms INSTANCE = new FrontArms();
@@ -95,15 +99,17 @@ public class FrontArms extends Subsystem {
     public void periodic() {
         limitSwitchEntry.setBoolean(isReverseLimitSwitchTriggered());
         encoderEntry.setDouble(getEncoder());
-//        outputEntry.setDouble(master.getMotorOutputPercent());
+        totalCurrentDrawEntry.setDouble(master.getOutputCurrent() + follower.getOutputCurrent());
+        motorPowerPct.setDouble(master.getMotorOutputPercent());
     }
 
     public void setPercent(double percent) {
-        master.set(ControlMode.PercentOutput, -percent);
+        master.set(ControlMode.PercentOutput, percent);
     }
 
     public void setAngle(double degrees) {
-        master.set(ControlMode.Position, degreesToTalonUnits(degrees));
+        setpoint = degreesToTalonUnits(degrees);
+        master.set(ControlMode.Position, setpoint);
     }
 
     public void killMotors() {
@@ -118,12 +124,19 @@ public class FrontArms extends Subsystem {
         return master.getSelectedSensorPosition();
     }
 
+    public double getAngle() {
+        return talonUnitsToDegrees(getEncoder());
+    }
+
     public boolean isReverseLimitSwitchTriggered() {
         return !master.getSensorCollection().isRevLimitSwitchClosed();
     }
 
     public boolean isErrorTolerable() {
-        return CalcUtil.inThreshold(master.getClosedLoopError(), 0,
+        // TODO: why doesn't error from Talon API work? not updated quick enough after set? (probably)
+        // int error = master.getClosedLoopError();
+        double error = getEncoder() - setpoint;
+        return CalcUtil.inThreshold(error, 0,
                 Constants.FrontArms.ALLOWABLE_CLOSED_LOOP_ERROR);
     }
 
@@ -135,5 +148,9 @@ public class FrontArms extends Subsystem {
     private static double degreesToTalonUnits(double value) {
         // return Units.convertAndCheck(value, Units.DEGREES, ROTATION_UNIT);
         return value / 360.0 * Constants.FrontArms.TOTAL_REDUCTION * (Constants.FrontArms.ENCODER_CPR * 4);
+    }
+
+    private static double talonUnitsToDegrees(double value) {
+        return value * 360.0 / Constants.FrontArms.TOTAL_REDUCTION / (Constants.FrontArms.ENCODER_CPR * 4);
     }
 }

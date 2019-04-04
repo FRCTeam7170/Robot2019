@@ -30,6 +30,7 @@ public class ClimbLegs extends Subsystem implements Named {
         private final NetworkTableEntry lowerLimitSwitchEntry;
         private final NetworkTableEntry upperLimitSwitchEntry;
         private final NetworkTableEntry encoderEntry;
+        private final NetworkTableEntry currentDrawEntry;
 
         private LinearActuator(String name, int id, boolean invert, boolean sensorPhase,
                                double P, double I, double D, double F, int IZONE) {
@@ -87,6 +88,7 @@ public class ClimbLegs extends Subsystem implements Named {
             lowerLimitSwitchEntry = linearActuatorTab.add("lowerLimitSwitch", isLowerLimitSwitchTriggered()).getEntry();
             upperLimitSwitchEntry = linearActuatorTab.add("upperLimitSwitch", isUpperLimitSwitchTriggered()).getEntry();
             encoderEntry = linearActuatorTab.add("encoder", getEncoder()).getEntry();
+            currentDrawEntry = linearActuatorTab.add("currentDraw", 0.0).getEntry();
         }
 
         @Override
@@ -94,10 +96,11 @@ public class ClimbLegs extends Subsystem implements Named {
             lowerLimitSwitchEntry.setBoolean(isLowerLimitSwitchTriggered());
             upperLimitSwitchEntry.setBoolean(isUpperLimitSwitchTriggered());
             encoderEntry.setDouble(getEncoder());
+            currentDrawEntry.setDouble(talon.getOutputCurrent());
         }
 
         public void setPercent(double percent) {
-            talon.set(ControlMode.PercentOutput, percent);
+            talon.set(ControlMode.PercentOutput, -percent);
         }
 
         public void setPosition(double metres) {
@@ -127,6 +130,10 @@ public class ClimbLegs extends Subsystem implements Named {
 
         public double getEncoder() {
             return talon.getSelectedSensorPosition();
+        }
+
+        public double getDistance() {
+            return talonUnitsToMetres(-getEncoder());
         }
 
         @Override
@@ -181,5 +188,9 @@ public class ClimbLegs extends Subsystem implements Named {
     public static double metresToTalonUnits(double value) {
         // return Units.convertAndCheck(value, Units.METRE, DISTANCE_UNIT);
         return value / Constants.ClimbLegs.DISTANCE_FACTOR * (Constants.ClimbLegs.ENCODER_CPR * 4);
+    }
+
+    public static double talonUnitsToMetres(double value) {
+        return value * Constants.ClimbLegs.DISTANCE_FACTOR / (Constants.ClimbLegs.ENCODER_CPR * 4);
     }
 }

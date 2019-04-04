@@ -77,12 +77,13 @@ public class Robot extends TimedRobot implements Named {
             }
         });
 
-        compressor.start();
+        // compressor.start();
+        compressor.stop();
 
         ShuffleboardTab mainTab = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB);
 
         mainTab.add(Constants.Camera.CAMERA0_NAME, camera0);
-        mainTab.add("compressorEnabled", true).getEntry().addListener(notification -> {
+        mainTab.add("compressorEnabled", false).getEntry().addListener(notification -> {
             if (notification.value.getBoolean()) {
                 compressor.start();
             } else {
@@ -121,11 +122,11 @@ public class Robot extends TimedRobot implements Named {
                 // .addPair(ButtonActions.EJECT_CANCEL, gamepad, gamepad.B_A)
                 // .addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
                 // .addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
-//                .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
+                // .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.CLIMB, gamepad, gamepad.B_START)
                 .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
                 .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
-                // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
+                .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
@@ -209,6 +210,9 @@ public class Robot extends TimedRobot implements Named {
         if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
             currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
             currCmd.start();
+        } else if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
+            currCmd = new CmdClimbDrive(Constants.Climb.PRE_RETRACT_DRIVE_FORWARD_METRES);
+            currCmd.start();
         }
     }
 
@@ -228,7 +232,7 @@ public class Robot extends TimedRobot implements Named {
     }
 
     @Override
-    public void testPeriodic() { }
+    public void testPeriodic() {}
 
     @Override
     public String getName() {

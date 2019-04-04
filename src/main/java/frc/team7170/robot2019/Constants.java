@@ -62,6 +62,9 @@ public final class Constants {
         // Reflectance sensor array
         public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_0 = 4;
         public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_1 = 5;
+
+        public static final int CLIMB_ULTRASONIC_TRIG = 8;
+        public static final int CLIMB_ULTRASONIC_ECHO = 9;
     }
 
     public static final class PWM {
@@ -88,15 +91,15 @@ public final class Constants {
     }
 
     public static final class Field {
-        public static final double HAB_LEVEL_1_TO_3_INCHES = 19.0;
-        public static final double HAB_LEVEL_1_TO_2_INCHES = 6.0;
+        public static final double HAB_LEVEL_1_TO_3_METRES = 0.4826;
+        public static final double HAB_LEVEL_1_TO_2_METRES = 0.1524;
     }
 
     public static final class Dimensions {
         public static final double WHEEL_DIAMETER_INCHES = 6.0;
         public static final double FRONT_ARM_WHEEL_DIAMETER_INCHES = 2.0;
-        public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.460375;
-        public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.244475;
+        public static final double FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES = 0.473;  // 18 5/8 in.
+        public static final double FRONT_ARM_PIVOT_HEIGHT_METRES = 0.216;  // 8 1/2 in.
         public static final double LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES = 0.005;
         public static final double LINEAR_ACTUATOR_WHEEL_DIAMETER_INCHES = 4.0;
         public static final double END_EFFECTOR_INNER_WIDTH_METRES = 0.218;
@@ -160,9 +163,11 @@ public final class Constants {
         public static final double ZEROING_THROTTLE_PERCENT = 0.25;  // Non-negative.
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
-        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 50;  // 3 degrees
+        public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 25;  // 1.5 degrees
         public static final int ENCODER_CPR = 20;  // CIMCoder
-        public static final double MAX_ABSOLUTE_OUTPUT = 0.5;
+        public static final double MAX_ABSOLUTE_OUTPUT = 1.0;
+        public static final double ANGLE_UNCERTAINTY_DEGREES = 20.0;
+        public static final double SPEED = 0.5;
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
@@ -187,10 +192,10 @@ public final class Constants {
 
         // Left PIDF parameters
         public static final double P = 0.5;  // throttle / error
-        public static final double I = 0.001;  // throttle / integrated error
+        public static final double I = 0.01;  // throttle / integrated error
         public static final double D = 8;  // throttle / differentiated error
         public static final double F = 0.0;  // multiplied directly by setpoint
-        public static final int IZONE = 500;  // max integrated error to permit I accumulation on
+        public static final int IZONE = 1000;  // max integrated error to permit I accumulation on
     }
 
     public static final class ClimbLegs {
@@ -242,6 +247,7 @@ public final class Constants {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final double SPEED = 1.0;
+        public static final double SONIC_DISTANCE_THRESHOLD_MM = 300.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -359,8 +365,8 @@ public final class Constants {
         public static final double L2_CONTACT_ANGLE_DEGREES = 113.0;
         public static final double L3_CONTACT_ANGLE_DEGREES = 45.2;
         public static final double DELTA_HEIGHT_METRES = 0.05;
-        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0254;
-        public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.8128;
+        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
+        public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.7128 * 2.0;  // FIXME big t's silly "fix"
         public static final double POST_RETRACT_DRIVE_FORWARD_METRES = 0.508;
     }
 

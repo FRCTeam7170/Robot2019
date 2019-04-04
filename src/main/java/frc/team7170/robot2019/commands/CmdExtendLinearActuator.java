@@ -17,13 +17,11 @@ public class CmdExtendLinearActuator extends Command {
 
     @Override
     protected void initialize() {
-        System.out.println("INIT EXTEND");
         linearActuator.setPosition(distanceMetres);
     }
 
     @Override
     protected void end() {
-        System.out.println("END EXTEND");
         if (!hold) {
             linearActuator.killMotor();
         }

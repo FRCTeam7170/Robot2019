@@ -2,7 +2,11 @@ package frc.team7170.robot2019.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.SeatMotorDIO;
@@ -15,11 +19,19 @@ public class ClimbDrive extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbDrive.class.getName());
 
+    private final Ultrasonic sonic = new Ultrasonic(
+            Constants.DIO.CLIMB_ULTRASONIC_TRIG,
+            Constants.DIO.CLIMB_ULTRASONIC_ECHO
+    );
+
     public static class SeatMotor implements Named {
 
         private final Name name;
         private final SeatMotorDIO dio;
         private final VictorSPX victorSPX;
+
+        private final NetworkTableEntry dioEntry;
+        private final NetworkTableEntry dioDistanceEntry;
 
         private SeatMotor(Name name, int dio, int canID, boolean invert, boolean sensorInvert) {
             this.name = name;
@@ -35,6 +47,16 @@ public class ClimbDrive extends Subsystem implements Named {
             victorSPX.setNeutralMode(Constants.ClimbDrive.NEUTRAL_MODE);
             victorSPX.enableVoltageCompensation(Constants.ClimbDrive.ENABLE_VOLTAGE_COMPENSATION);
             victorSPX.configVoltageCompSaturation(Constants.ClimbDrive.VOLTAGE_COMPENSATION_SATURATION);
+
+            ShuffleboardTab seatMotorTab = Shuffleboard.getTab(name.getName());
+            dioEntry = seatMotorTab.add("dio", 0.0).getEntry();
+            dioDistanceEntry = seatMotorTab.add("dioDistance", 0.0).getEntry();
+        }
+
+        // TODO: TEMP
+        private void updateEntries() {
+            dioEntry.setDouble(dio.get());
+            dioDistanceEntry.setDouble(getDistanceMetres());
         }
 
         public void setPercent(double percent) {
@@ -83,12 +105,19 @@ public class ClimbDrive extends Subsystem implements Named {
 
     private ClimbDrive() {
         super("climbDrive");
+        sonic.setAutomaticMode(true);
     }
 
     private static final ClimbDrive INSTANCE = new ClimbDrive();
 
     public static ClimbDrive getInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public void periodic() {
+        leftSeatMotor.updateEntries();
+        rightSeatMotor.updateEntries();
     }
 
     @Override
@@ -100,6 +129,10 @@ public class ClimbDrive extends Subsystem implements Named {
 
     public SeatMotor getRightSeatMotor() {
         return rightSeatMotor;
+    }
+
+    public double getSonicDistance() {
+        return sonic.getRangeMM();
     }
 
     public void setPercent(double percent) {

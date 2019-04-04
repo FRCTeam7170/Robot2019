@@ -11,7 +11,6 @@ public class CmdMoveElevator extends Command {
     private final boolean hold;
 
     public CmdMoveElevator(double heightMetres, boolean hold) {
-        System.out.println("INIT ELEVATOR");
         this.heightMetres = heightMetres;
         this.hold = hold;
         requires(elevator);
@@ -24,7 +23,6 @@ public class CmdMoveElevator extends Command {
 
     @Override
     protected void end() {
-        System.out.println("END ELEVATOR");
         if (!hold) {
             elevator.killMotor();
         }

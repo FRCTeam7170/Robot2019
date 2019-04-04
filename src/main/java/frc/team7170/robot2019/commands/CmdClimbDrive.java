@@ -7,8 +7,12 @@ import frc.team7170.robot2019.subsystems.ClimbDrive;
 public class CmdClimbDrive extends Command {
 
     private static final ClimbDrive climbDrive = ClimbDrive.getInstance();
+//    private static final ClimbDrive.SeatMotor leftSeatMotor = climbDrive.getLeftSeatMotor();
+//    private static final ClimbDrive.SeatMotor rightSeatMotor = climbDrive.getRightSeatMotor();
 
-    private final double distanceMetres;
+    private final double distanceMetres;  // TODO: this is unused with sonic sensor
+//    private boolean leftStopped = false;
+//    private boolean rightStopped = false;
 
     public CmdClimbDrive(double distanceMetres) {
         this.distanceMetres = distanceMetres;
@@ -17,7 +21,6 @@ public class CmdClimbDrive extends Command {
 
     @Override
     protected void initialize() {
-        System.out.println("INIT CLIMB DRIVE");
         climbDrive.zeroDIOs();
         if (distanceMetres < 0) {
             climbDrive.setPercent(-Constants.ClimbDrive.SPEED);
@@ -27,13 +30,26 @@ public class CmdClimbDrive extends Command {
     }
 
     @Override
+    protected void execute() {
+//        if (!leftStopped && (Math.abs(leftSeatMotor.getDistanceMetres()) >= Math.abs(distanceMetres))) {
+//            leftSeatMotor.killMotor();
+//            leftStopped = true;
+//        }
+//        // TODO: TEMP doubled distance on right
+//        if (!rightStopped && (Math.abs(rightSeatMotor.getDistanceMetres()) >= Math.abs(distanceMetres) * 1.6)) {
+//            rightSeatMotor.killMotor();
+//            rightStopped = true;
+//        }
+    }
+
+    @Override
     protected void end() {
-        System.out.println("END CLIMB DRIVE");
         climbDrive.killMotors();
     }
 
     @Override
     protected boolean isFinished() {
-        return Math.abs(climbDrive.getAvgDistanceMetres()) >= Math.abs(distanceMetres);
+        // return leftStopped && rightStopped;
+        return climbDrive.getSonicDistance() <= Constants.ClimbDrive.SONIC_DISTANCE_THRESHOLD_MM;
     }
 }
