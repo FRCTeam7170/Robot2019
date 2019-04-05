@@ -457,7 +457,7 @@ public interface Matrix {
      *     <tr>{@code O O O O}</tr>
      *     <tr>{@code O O O O}</tr>
      * </table>
-     * the call {@code matrix.visitRowWise(..., 0, 1, 2, 2)} would iterate over these elements (marked 'X'):
+     * the call {@code matrix.mutateRowWise(..., 0, 1, 2, 2)} would iterate over these elements (marked 'X'):
      * <table>
      *     <tr>{@code O X X X}</tr>
      *     <tr>{@code X X X X}</tr>
@@ -466,13 +466,13 @@ public interface Matrix {
      * </table>
      * In order to achieve more complex iteration patterns, use this method in conjunction with the view methods. For
      * example, to iterate over those elements marked 'X' minus the first and last column, one might write
-     * {@code matrix.view(0, 1, 4, 3).visitRowWise(..., 0, 0, 2, 1)}.
+     * {@code matrix.view(0, 1, 4, 3).mutateRowWise(..., 0, 0, 2, 1)}.
      * </p>
      * <p>
      * This traverses the matrix along the rows, jumping to the next row once the last column in the current row is
      * reached.
      * </p>
-     * @param mutator the visitor.
+     * @param mutator the mutator.
      * @param startRow the row index of the top-left position in the matrix, zero-indexed and inclusive. A negative
      *                 index is interpreted as starting from the right.
      * @param startCol the column index of the top-left position in the matrix, zero-indexed and inclusive. A negative
@@ -483,45 +483,158 @@ public interface Matrix {
      */
     void mutateRowWise(MatrixEntryMutator mutator, int startRow, int startCol, int endRow, int endCol);
 
+    /**
+     * <p>
+     * For each element of the matrix between the given top-left index and the given bottom-right index,
+     * {@link MatrixEntryMutator#mutate(int, int, double) call the mutator}. Note the indices do not necessarily define
+     * a rectangular subsection to iterate over, as is the case with the copy and view methods with a similar signature.
+     * For example, given a matrix of the following shape:
+     * <table>
+     *     <tr>{@code O O O O}</tr>
+     *     <tr>{@code O O O O}</tr>
+     *     <tr>{@code O O O O}</tr>
+     *     <tr>{@code O O O O}</tr>
+     * </table>
+     * the call {@code matrix.mutateColWise(..., 1, 0, 2, 2)} would iterate over these elements (marked 'X'):
+     * <table>
+     *     <tr>{@code O X X O}</tr>
+     *     <tr>{@code X X X O}</tr>
+     *     <tr>{@code X X O O}</tr>
+     *     <tr>{@code X X O O}</tr>
+     * </table>
+     * In order to achieve more complex iteration patterns, use this method in conjunction with the view methods. For
+     * example, to iterate over those elements marked 'X' minus the first and last row, one might write
+     * {@code matrix.view(1, 0, 3, 4).mutateColWise(..., 0, 0, 1, 2)}.
+     * </p>
+     * <p>
+     * This traverses the matrix along the columns, jumping to the next column once the last row in the current column
+     * is reached.
+     * </p>
+     * @param mutator the mutator.
+     * @param startRow the row index of the top-left position in the matrix, zero-indexed and inclusive. A negative
+     *                 index is interpreted as starting from the right.
+     * @param startCol the column index of the top-left position in the matrix, zero-indexed and inclusive. A negative
+     *                 index is interpreted as starting from the bottom.
+     * @param endRow the row index of the bottom-right position in the matrix, zero-indexed and exclusive. A negative
+     *               index is interpreted as starting from the right.
+     * @param endCol the column index of the bottom-right position in the matrix, zero-indexed and exclusive. A negative
+     *               index is interpreted as starting from the bottom.
+     */
     void mutateColWise(MatrixEntryMutator mutator, int startRow, int startCol, int endRow, int endCol);
 
+    /**
+     * For each row of the given rows in the matrix,
+     * {@link MatrixVectorMutator#mutate(int, Vector)} call the mutator}.
+     * @param mutator the mutator.
+     * @param startRow the row index to start at, zero-indexed and inclusive. A negative index is interpreted as
+     *                 starting from the bottom.
+     * @param endRow the row index to end at, zero-indexed and exclusive. A negative index is interpreted as starting
+     *               from the bottom.
+     */
     void mutateRows(MatrixVectorMutator mutator, int startRow, int endRow);
 
+    /**
+     * For each column of the given columns in the matrix,
+     * {@link MatrixVectorMutator#mutate(int, Vector)} call the mutator}.
+     * @param mutator the mutator.
+     * @param startCol the column index to start at, zero-indexed and inclusive. A negative index is interpreted as
+     *                 starting from the right.
+     * @param endCol the column index to end at, zero-indexed and exclusive. A negative index is interpreted as starting
+     *               from the right.
+     */
     void mutateCols(MatrixVectorMutator mutator, int startCol, int endCol);
 
+    /**
+     * For each element of the matrix,
+     * {@link MatrixEntryMutator#mutate(int, int, double) call the mutator}. This traverses the matrix along the rows,
+     * jumping to the next row once the last column in the current row is reached.
+     * @param mutator the mutator.
+     */
     default void mutateRowWise(MatrixEntryMutator mutator) {
         mutateRowWise(mutator, 0, 0, nRows(), nCols());
     }
 
+    /**
+     * For each element of the matrix,
+     * {@link MatrixEntryMutator#mutate(int, int, double) call the mutator}. This traverses the matrix along the
+     * columns, jumping to the next column once the last row in the current column is reached.
+     * @param mutator the mutator.
+     */
     default void mutateColWise(MatrixEntryMutator mutator) {
         mutateColWise(mutator, 0, 0, nRows(), nCols());
     }
 
+    /**
+     * For each row in the matrix,
+     * {@link MatrixVectorMutator#mutate(int, Vector)} call the mutator}.
+     * @param mutator the mutator.
+     */
     default void mutateRows(MatrixVectorMutator mutator) {
         mutateRows(mutator, 0, nRows());
     }
 
+    /**
+     * For each column in the matrix,
+     * {@link MatrixVectorMutator#mutate(int, Vector)} call the mutator}.
+     * @param mutator the mutator.
+     */
     default void mutateCols(MatrixVectorMutator mutator) {
         mutateCols(mutator, 0, nCols());
     }
 
+    /**
+     * The functional interface used for all {@code matrix.visitXWise} methods (X is "Row" or "Col").
+     */
     @FunctionalInterface
     interface MatrixEntryVisitor {
+        /**
+         * Called for each element iterated over for scalar value visit methods.
+         * @param rowIdx the current row index.
+         * @param colIdx the current column index.
+         * @param value the value at the row and column indices.
+         */
         void visit(int rowIdx, int colIdx, double value);
     }
 
+    /**
+     * The functional interface used for all {@code matrix.mutateXWise} methods (X is "Row" or "Col").
+     */
     @FunctionalInterface
     interface MatrixEntryMutator {
+        /**
+         * Called for each element iterated over for scalar value mutate methods.
+         * @param rowIdx the current row index.
+         * @param colIdx the current column index.
+         * @param value the value at the row and column indices.
+         * @return the new value to assign at the row and column indices.
+         */
         double mutate(int rowIdx, int colIdx, double value);
     }
 
+    /**
+     * The functional interface used for all {@code matrix.visitX} methods (X is "Row" or "Col").
+     */
     @FunctionalInterface
     interface MatrixVectorVisitor {
+        /**
+         * Called for each element iterated over for vector value visit methods.
+         * @param idx the current row/column index.
+         * @param vector the row/column at the index.
+         */
         void visit(int idx, Vector vector);
     }
 
+    /**
+     * The functional interface used for all {@code matrix.mutateX} methods (X is "Row" or "Col").
+     */
     @FunctionalInterface
     interface MatrixVectorMutator {
+        /**
+         * Called for each element iterated over for vector value mutate methods.
+         * @param idx the current row/column index.
+         * @param vector the row/column at the index.
+         * @return the new vector to assign at the index.
+         */
         Vector mutate(int idx, Vector vector);
     }
 }
