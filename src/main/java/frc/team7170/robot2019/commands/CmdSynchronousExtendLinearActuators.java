@@ -8,6 +8,7 @@ public class CmdSynchronousExtendLinearActuators extends Command {
 
     private static final ClimbLegs.LinearActuator leftLinearActuator = ClimbLegs.getInstance().getLeftLinearActuator();
     private static final ClimbLegs.LinearActuator rightLinearActuator = ClimbLegs.getInstance().getRightLinearActuator();
+    private static final double MAX_DIFFERENTIAL_TALON_UNITS = ClimbLegs.metresToTalonUnits(Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES);
 
     private final double distance;
     private boolean reversed = false;
@@ -42,8 +43,8 @@ public class CmdSynchronousExtendLinearActuators extends Command {
         if (reversed) {
             diff = -diff;
         }
-        leftLinearActuator.setPercent(speed * (1 - diff/Constants.ClimbLegs.MAX_DIFFERENTIAL));
-        rightLinearActuator.setPercent(speed * (1 + diff/Constants.ClimbLegs.MAX_DIFFERENTIAL));
+        leftLinearActuator.setPercent(speed * (1 - diff/MAX_DIFFERENTIAL_TALON_UNITS));
+        rightLinearActuator.setPercent(speed * (1 + diff/MAX_DIFFERENTIAL_TALON_UNITS));
     }
 
     @Override

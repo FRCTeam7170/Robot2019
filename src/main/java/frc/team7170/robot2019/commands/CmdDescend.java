@@ -24,7 +24,8 @@ public class CmdDescend extends CommandGroup {
                 Constants.Descent.LINEAR_ACTUATOR_EXTENSION_METRES, true));
 
         // Drive forward until the rear bumper is clear of the edge of the hab.
-        addSequential(new CmdClimbDrive(Constants.Descent.POST_EXTEND_DRIVE_FORWARD_METRES));
+        // TODO: THIS DOES NOT WORK DUE TO CHANGES MADE DURING CLIMB TESTING
+        addSequential(new CmdClimbDrive());
 
         if (!Constants.Descent.HARD_DROP) {
             // Descend nice and synchronously if hard drop is disabled.

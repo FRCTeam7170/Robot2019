@@ -166,8 +166,7 @@ public final class Constants {
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 25;  // 1.5 degrees
         public static final int ENCODER_CPR = 20;  // CIMCoder
         public static final double MAX_ABSOLUTE_OUTPUT = 1.0;
-        public static final double ANGLE_UNCERTAINTY_DEGREES = 20.0;
-        public static final double SPEED = 0.5;
+        public static final double ANGLE_UNCERTAINTY_DEGREES = 15.0;
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
@@ -206,7 +205,7 @@ public final class Constants {
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 100;  // 2 mm
         public static final int ENCODER_CPR = 20;  // CIMCoder
         public static final double SPEED = 0.9;
-        public static final double MAX_DIFFERENTIAL = frc.team7170.robot2019.subsystems.ClimbLegs.metresToTalonUnits(0.01);
+        public static final double MAX_DIFFERENTIAL_METRES = 0.01;
 
         // Preset positions
         public static final double HOME_METRES = 0.0;
@@ -360,21 +359,18 @@ public final class Constants {
     }
 
     public static final class Climb {
-        public static final double L2_BUMPER_DISTANCE_METRES = 0.0;
-        public static final double L3_BUMPER_DISTANCE_METRES = 0.0; //0.1778;
-        public static final double L2_CONTACT_ANGLE_DEGREES = 113.0;
-        public static final double L3_CONTACT_ANGLE_DEGREES = 45.2;
-        public static final double DELTA_HEIGHT_METRES = 0.05;
+        public static final double L2_INITIAL_ANGLE_DEGREES = 113.0;
+        public static final double L3_INITIAL_ANGLE_DEGREES = 65.2;  // TODO: increased 20 degrees
+//        public static final double DELTA_HEIGHT_METRES = 0.05;
         public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
-        public static final double PRE_RETRACT_DRIVE_FORWARD_METRES = 0.7128 * 2.0;  // FIXME big t's silly "fix"
-        public static final double POST_RETRACT_DRIVE_FORWARD_METRES = 0.508;
+        public static final double TARGET_CLIMB_SPEED = 0.5;
+        public static final double MAXIMUM_CLIMB_SPEED = 0.6;
     }
 
     public static final class Descent {
         public static final double PRE_FRONT_ARM_DEPLOY_DRIVE_FORWARD_METRES = 0.2413;
         public static final double ARM_ANGLE_DEGREES = 143.0;
         public static final double PRE_EXTEND_DRIVE_FORWARD_METRES = 0.860425;
-        public static final double POST_EXTEND_DRIVE_FORWARD_METRES = 0.254;
         public static final double LINEAR_ACTUATOR_EXTENSION_METRES = 0.1778;
         public static final boolean HARD_DROP = false;
         public static final double DELTA_HEIGHT_METRES = 0.01;

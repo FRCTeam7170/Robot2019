@@ -82,7 +82,7 @@ public class MatrixImpl implements Matrix {
     }
 
     @Override
-    public Matrix multiplyElementWise(Matrix other) {
+    public Matrix multiplyElementWise(Matrix other) throws IllegalArgumentException {
         if (!matchingSize(other)) {
             throw new IllegalArgumentException("matrix size must be identical for element-wise multiplication");
         }
@@ -231,6 +231,7 @@ public class MatrixImpl implements Matrix {
         return new VectorImpl(colData);
     }
 
+    // TODO: WRONG IMPL! -- indices do not necessarily define a rectangular selection
     @Override
     @SuppressWarnings("Duplicates")
     public void visitRowWise(MatrixEntryVisitor visitor, int startRow, int startCol, int endRow, int endCol) {
@@ -240,7 +241,7 @@ public class MatrixImpl implements Matrix {
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int r = startRow; r < endRow; ++r) {
             for (int c = startCol; c < endCol; ++c) {
-                visitor.accept(r, c, get(r, c));
+                visitor.visit(r, c, get(r, c));
             }
         }
     }
@@ -254,7 +255,7 @@ public class MatrixImpl implements Matrix {
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
             for (int r = startRow; r < endRow; ++r) {
-                visitor.accept(r, c, get(r, c));
+                visitor.visit(r, c, get(r, c));
             }
         }
     }
@@ -264,7 +265,7 @@ public class MatrixImpl implements Matrix {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         for (int r = startRow; r < endRow; ++r) {
-            visitor.accept(r, copyRow(r));
+            visitor.visit(r, copyRow(r));
         }
     }
 
@@ -273,34 +274,34 @@ public class MatrixImpl implements Matrix {
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
-            visitor.accept(c, copyCol(c));
+            visitor.visit(c, copyCol(c));
         }
     }
 
     @Override
     @SuppressWarnings("Duplicates")
-    public void mutateRowWise(MatrixEntryMutator visitor, int startRow, int startCol, int endRow, int endCol) {
+    public void mutateRowWise(MatrixEntryMutator mutator, int startRow, int startCol, int endRow, int endCol) {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int r = startRow; r < endRow; ++r) {
             for (int c = startCol; c < endCol; ++c) {
-                set(r, c, visitor.accept(r, c, get(r, c)));
+                set(r, c, mutator.mutate(r, c, get(r, c)));
             }
         }
     }
 
     @Override
     @SuppressWarnings("Duplicates")
-    public void mutateColWise(MatrixEntryMutator visitor, int startRow, int startCol, int endRow, int endCol) {
+    public void mutateColWise(MatrixEntryMutator mutator, int startRow, int startCol, int endRow, int endCol) {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
             for (int r = startRow; r < endRow; ++r) {
-                set(r, c, visitor.accept(r, c, get(r, c)));
+                set(r, c, mutator.mutate(r, c, get(r, c)));
             }
         }
     }
@@ -310,7 +311,7 @@ public class MatrixImpl implements Matrix {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         for (int r = startRow; r < endRow; ++r) {
-            visitor.accept(r, viewRow(r));
+            visitor.visit(r, viewRow(r));
         }
     }
 
@@ -319,7 +320,7 @@ public class MatrixImpl implements Matrix {
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
-            visitor.accept(c, viewCol(c));
+            visitor.visit(c, viewCol(c));
         }
     }
 }

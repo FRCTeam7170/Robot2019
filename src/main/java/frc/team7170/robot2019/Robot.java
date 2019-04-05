@@ -210,9 +210,6 @@ public class Robot extends TimedRobot implements Named {
         if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
             currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
             currCmd.start();
-        } else if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
-            currCmd = new CmdClimbDrive(Constants.Climb.PRE_RETRACT_DRIVE_FORWARD_METRES);
-            currCmd.start();
         }
     }
 

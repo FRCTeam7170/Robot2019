@@ -1,6 +1,7 @@
 package frc.team7170.robot2019.commands;
 
 import edu.wpi.first.wpilibj.command.Command;
+import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.unit.Units;
 import frc.team7170.robot2019.Constants;
 import frc.team7170.robot2019.subsystems.ClimbLegs;
@@ -17,21 +18,24 @@ public class CmdSynchronousRaise extends Command {
 
     private final double distanceMetres;
     private final double platformHeightMetres;
+    private final double initialAngle;
     private final boolean reversed;
     private final double laSpeed;
     private final double faSpeed;
 
-    public CmdSynchronousRaise(double platformHeightMetres, double targetHeightMetres, double initialHeight) {
+    public CmdSynchronousRaise(double platformHeightMetres, double targetHeightMetres,
+                               double initialHeight, double initialAngle) {
         this.platformHeightMetres = platformHeightMetres;
         this.distanceMetres = targetHeightMetres;
+        this.initialAngle = initialAngle;
 
         if (distanceMetres < initialHeight) {
             laSpeed = -Constants.ClimbLegs.SPEED;
-            faSpeed = -Constants.FrontArms.SPEED;
+            faSpeed = -Constants.Climb.TARGET_CLIMB_SPEED;
             reversed = true;
         } else {
             laSpeed = Constants.ClimbLegs.SPEED;
-            faSpeed = Constants.FrontArms.SPEED;
+            faSpeed = Constants.Climb.TARGET_CLIMB_SPEED;
             reversed = false;
         }
 
@@ -43,16 +47,20 @@ public class CmdSynchronousRaise extends Command {
     @Override
     protected void execute() {
         double laDiff = rightLinearActuator.getDistance() - leftLinearActuator.getDistance();
-        double faDiff = heightToFrontArmAngle(
+        double targetAngle = heightToFrontArmAngle(
                 (rightLinearActuator.getDistance() + leftLinearActuator.getDistance()) / 2
-        ) - (frontArms.getAngle() - Constants.FrontArms.ANGLE_UNCERTAINTY_DEGREES);
+        );
+        double faDiff = targetAngle - (frontArms.getAngle() - Constants.FrontArms.ANGLE_UNCERTAINTY_DEGREES);
         if (reversed) {
             laDiff = -laDiff;
             faDiff = -faDiff;
         }
-        leftLinearActuator.setPercent(laSpeed * (1 + laDiff/0.01));
-        rightLinearActuator.setPercent(laSpeed * (1 - laDiff/0.01));
-        frontArms.setPercent(faSpeed * (1 + faDiff/5));
+        leftLinearActuator.setPercent(laSpeed * (1 + laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
+        rightLinearActuator.setPercent(laSpeed * (1 - laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
+        if ((!reversed && (targetAngle > initialAngle)) || (reversed && (targetAngle < initialAngle))) {
+            frontArms.setPercent(CalcUtil.applyBounds(faSpeed * (1 + faDiff / 5),
+                    0.0, Constants.Climb.MAXIMUM_CLIMB_SPEED));
+        }
     }
 
     @Override
