@@ -1,5 +1,6 @@
 package frc.team7170.lib.math;
 
+// This overrides all methods in MatrixImpl that reference data.
 class MatrixView extends MatrixImpl {
 
     private final Matrix parent;
@@ -62,6 +63,8 @@ class MatrixView extends MatrixImpl {
     @Override
     @SuppressWarnings("Duplicates")
     public Matrix copy(int startRow, int startCol, int endRow, int endCol) {
+        // This version of copy() is slightly optimized in MatrixImpl in that it copies whole rows at a time, but must
+        // directly access data to do so. We defer to the less optimal version of copy without the data reference here.
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());

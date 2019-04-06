@@ -1,11 +1,12 @@
 package frc.team7170.lib.math;
 
+// TODO: generalize for other data types (subclasses of Number)
 /**
  * <p>
  * A simple matrix interface. It provides basic operations on matrix objects, such as addition, matrix-matrix
  * multiplication, matrix-{@linkplain Vector vector} multiplication, element-wise multiplication, transposition,
- * etcetera. It also provides functionality for viewing and copying subsections of the matrix, and functionality for
- * iteratively viewing (with or without mutation) subsections of the matrix.
+ * etcetera. It also provides functionality for viewing and copying subsections of matrices, and functionality for
+ * iteratively viewing (with or without mutation) subsections of matrices.
  * </p>
  * <p>
  * No guarantees are made regarding how matrices are backed. Specific implementations must be consulted for those
@@ -30,7 +31,7 @@ public interface Matrix {
     int nCols();
 
     /**
-     * Add this matrix and the given matrix and return the result.
+     * Add this matrix and the given matrix and return the result. This matrix and the given matrix are unchanged.
      * @param other the matrix to add to this matrix.
      * @return the matrix whose elements are the sum of this matrix's and the given matrix's elements.
      * @throws IllegalArgumentException if the dimensions of the given matrix are not congruent with this matrix.
@@ -38,14 +39,14 @@ public interface Matrix {
     Matrix add(Matrix other) throws IllegalArgumentException;
 
     /**
-     * Add the given value to each element of this matrix.
+     * Add the given value to each element of this matrix and return the result. This matrix is unchanged.
      * @param value the value to add to each element of this matrix.
      * @return the matrix whose elements are this matrix's elements plus the given value.
      */
     Matrix add(double value);
 
     /**
-     * Subtract the given matrix from this matrix and return the result.
+     * Subtract the given matrix from this matrix and return the result. This matrix and the given matrix are unchanged.
      * @param other the matrix to subtract from this matrix.
      * @return the matrix whose elements are this matrix's elements less the given matrix's elements.
      * @throws IllegalArgumentException if the dimensions of the given matrix are not congruent with this matrix.
@@ -53,7 +54,7 @@ public interface Matrix {
     Matrix subtract(Matrix other) throws IllegalArgumentException;
 
     /**
-     * Subtract the given value from each element of this matrix.
+     * Subtract the given value from each element of this matrix and return the result. This matrix is unchanged.
      * @param value the value to subtract from each element of this matrix.
      * @return the matrix whose elements are this matrix's elements less the given value.
      */
@@ -63,7 +64,7 @@ public interface Matrix {
 
     /**
      * Multiply the given matrix and this matrix and return the result. This is matrix multiplication, <em>not</em>
-     * element-wise multiplication.
+     * element-wise multiplication. This matrix and the given matrix are unchanged.
      * @param other the matrix to multiply with this matrix.
      * @return this matrix times the given matrix.
      * @throws IllegalArgumentException if the dimensions of the given matrix are not congruent with this matrix.
@@ -72,7 +73,7 @@ public interface Matrix {
 
     /**
      * Multiply the given {@linkplain Vector vector} and this matrix and return the result. This is matrix-vector
-     * multiplication, <em>not</em> element-wise multiplication.
+     * multiplication, <em>not</em> element-wise multiplication. This matrix and the given vector are unchanged.
      * @param other the {@linkplain Vector vector} to multiply with this matrix.
      * @return this matrix times the given vector.
      * @throws IllegalArgumentException if the dimensions of the given vector are not congruent with this matrix.
@@ -81,7 +82,7 @@ public interface Matrix {
 
     /**
      * Multiply the given matrix and this matrix and return the result. This is element-wise multiplication,
-     * <em>not</em> matrix multiplication.
+     * <em>not</em> matrix multiplication. This matrix and the given matrix are unchanged.
      * @param other the matrix to multiply with this matrix.
      * @return the matrix whose elements are this matrix's elements times the given matrix's elements.
      * @throws IllegalArgumentException if the dimensions of the given matrix are not congruent with this matrix.
@@ -89,14 +90,14 @@ public interface Matrix {
     Matrix multiplyElementWise(Matrix other) throws IllegalArgumentException;
 
     /**
-     * Multiply each element of this matrix by the given value.
+     * Multiply each element of this matrix by the given value and return the result. This matrix is unchanged.
      * @param value the value to multiply each element of this matrix by.
      * @return the matrix whose elements are this matrix's elements times the given value.
      */
     Matrix multiply(double value);
 
     /**
-     * Divide each element of this matrix by the given value.
+     * Divide each element of this matrix by the given value and return the result. This matrix is unchanged.
      * @param value the value to divide each element of this matrix by.
      * @return the matrix whose elements are this matrix's elements divided by the given value.
      */
@@ -105,7 +106,7 @@ public interface Matrix {
     }
 
     /**
-     * Raise each element of this matrix to the given power.
+     * Raise each element of this matrix to the given power and return the result. This matrix is unchanged.
      * @param power the power to raise each element of this matrix to.
      * @return the matrix whose elements are this matrix's elements raised to the given power.
      */
@@ -113,7 +114,7 @@ public interface Matrix {
 
     /**
      * Determine and return the transpose of this matrix. This returns a matrix backed by new data, <em>not</em> a view
-     * into the old matrix.
+     * into the old matrix. This matrix is unchanged.
      * @return the transpose of this matrix.
      */
     Matrix transpose();
@@ -124,7 +125,7 @@ public interface Matrix {
      * @param col the column index, zero-indexed. A negative index is interpreted as starting from the bottom.
      * @return the element at the given indices.
      * @throws IndexOutOfBoundsException if either the row or column index are greater than or equal to the
-     * {@linkplain Matrix#nRows() height} or {@linkplain Matrix#nCols() width} of the matrix, respectively.
+     * {@linkplain Matrix#nRows() height} or {@linkplain Matrix#nCols() width} of this matrix, respectively.
      */
     double get(int row, int col) throws IndexOutOfBoundsException;
 
@@ -134,7 +135,7 @@ public interface Matrix {
      * @param col the column index, zero-indexed. A negative index is interpreted as starting from the bottom.
      * @param value the value to set at the given indices.
      * @throws IndexOutOfBoundsException if either the row or column index are greater than or equal to the
-     * {@linkplain Matrix#nRows() height} or {@linkplain Matrix#nCols() width} of the matrix, respectively.
+     * {@linkplain Matrix#nRows() height} or {@linkplain Matrix#nCols() width} of this matrix, respectively.
      */
     void set(int row, int col, double value) throws IndexOutOfBoundsException;
 

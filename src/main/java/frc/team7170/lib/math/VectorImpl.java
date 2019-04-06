@@ -151,16 +151,16 @@ public class VectorImpl implements Vector {
         startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
         endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
         for (int i = startIdx; i < endIdx; ++i) {
-            visitor.accept(i, get(i));
+            visitor.visit(i, get(i));
         }
     }
 
     @Override
-    public void mutate(VectorMutator visitor, int startIdx, int endIdx) {
+    public void mutate(VectorMutator mutator, int startIdx, int endIdx) {
         startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
         endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
         for (int i = startIdx; i < endIdx; ++i) {
-            set(i, visitor.accept(i, get(i)));
+            set(i, mutator.mutate(i, get(i)));
         }
     }
 
