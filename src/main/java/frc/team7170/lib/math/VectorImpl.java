@@ -2,15 +2,25 @@ package frc.team7170.lib.math;
 
 import java.util.Arrays;
 
+/**
+ * A simple vector implementation using an array as the backing data structure.
+ */
 public class VectorImpl implements Vector {
 
     private final double[] data;
 
+    /**
+     * @param length the length of the vector.
+     */
     public VectorImpl(int length) {
         data = new double[length];
     }
 
+    /**
+     * @param data the array to initialize the vector with.
+     */
     public VectorImpl(double[] data) {
+        // TODO: should this make a copy of the array?
         this.data = data;
     }
 
@@ -26,6 +36,7 @@ public class VectorImpl implements Vector {
     @Override
     public double norm() {
         double norm = 0.0;
+        // Can't use visit here because norm is not (effectively) final.
         for (int i = 0; i < length(); ++i) {
             double val = get(i);
             norm += val * val;
@@ -83,6 +94,7 @@ public class VectorImpl implements Vector {
             throw new IllegalArgumentException("vector size must be identical for dot product");
         }
         double dot = 0.0;
+        // Can't use visit here because dot is not (effectively) final.
         for (int i = 0; i < length(); ++i) {
             dot += get(i) * other.get(i);
         }

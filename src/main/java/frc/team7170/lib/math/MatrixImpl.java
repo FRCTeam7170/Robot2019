@@ -302,15 +302,15 @@ public class MatrixImpl implements Matrix {
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < nCols(); ++c) {
-            mutator.mutate(startRow, c, get(startRow, c));
+            set(startRow, c, mutator.mutate(startRow, c, get(startRow, c)));
         }
         for (int r = startRow + 1; r < endRow - 1; ++r) {
             for (int c = 0; c < nCols(); ++c) {
-                mutator.mutate(r, c, get(r, c));
+                set(r, c, mutator.mutate(r, c, get(r, c)));
             }
         }
         for (int c = 0; c < endCol; ++c) {
-            mutator.mutate(endRow - 1, c, get(endRow - 1, c));
+            set(endRow - 1, c, mutator.mutate(endRow - 1, c, get(endRow - 1, c)));
         }
     }
 
@@ -322,15 +322,15 @@ public class MatrixImpl implements Matrix {
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int r = startRow; r < nRows(); ++r) {
-            mutator.mutate(r, startCol, get(r, startCol));
+            set(r, startCol, mutator.mutate(r, startCol, get(r, startCol)));
         }
         for (int c = startCol + 1; c < endCol - 1; ++c) {
             for (int r = 0; r < nRows(); ++r) {
-                mutator.mutate(r, c, get(r, c));
+                set(r, c, mutator.mutate(r, c, get(r, c)));
             }
         }
         for (int r = 0; r < endRow; ++r) {
-            mutator.mutate(r, endCol - 1, get(r, endCol - 1));
+            set(r, endCol - 1, mutator.mutate(r, endCol - 1, get(r, endCol - 1)));
         }
     }
 
@@ -339,7 +339,7 @@ public class MatrixImpl implements Matrix {
         startRow = CalcUtil.rectifyArrayIndex(startRow, nRows());
         endRow = CalcUtil.rectifyArrayIndex(endRow, nRows());
         for (int r = startRow; r < endRow; ++r) {
-            mutator.mutate(r, copyRow(r));
+            setRow(r, mutator.mutate(r, copyRow(r)));
         }
     }
 
@@ -348,7 +348,7 @@ public class MatrixImpl implements Matrix {
         startCol = CalcUtil.rectifyArrayIndex(startCol, nCols());
         endCol = CalcUtil.rectifyArrayIndex(endCol, nCols());
         for (int c = startCol; c < endCol; ++c) {
-            mutator.mutate(c, copyCol(c));
+            setCol(c, mutator.mutate(c, copyCol(c)));
         }
     }
 }
