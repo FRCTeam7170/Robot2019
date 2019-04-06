@@ -187,4 +187,15 @@ public class VectorImpl implements Vector {
     public Matrix asColMatrix() {
         return asRowMatrix().transpose();
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < length() - 1; ++i) {
+            sb.append(get(i)).append(" ");
+        }
+        // So that there's not an extra space on the end
+        sb.append(get(length() - 1));
+        return sb.toString();
+    }
 }

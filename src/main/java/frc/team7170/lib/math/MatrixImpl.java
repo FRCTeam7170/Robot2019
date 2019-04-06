@@ -351,4 +351,20 @@ public class MatrixImpl implements Matrix {
             setCol(c, mutator.mutate(c, copyCol(c)));
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int r = 0; r < nRows(); ++r) {
+            for (int c = 0; c < nCols() - 1; ++c) {
+                sb.append(get(r, c)).append(" ");
+            }
+            // So that there's not an extra space on the end of each row
+            sb.append(get(r, nCols() - 1));
+            if (r != nRows() - 1) {
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
 }
