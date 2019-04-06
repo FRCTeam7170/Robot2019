@@ -16,13 +16,13 @@ class VectorView extends AbstractVectorView {
 
     @Override
     public double get(int idx) throws IndexOutOfBoundsException {
-        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+        idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
         return parent.get(indices[idx]);
     }
 
     @Override
     public void set(int idx, double value) throws IndexOutOfBoundsException {
-        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+        idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
         parent.set(indices[idx], value);
     }
 }

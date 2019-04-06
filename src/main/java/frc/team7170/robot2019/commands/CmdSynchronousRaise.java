@@ -58,7 +58,7 @@ public class CmdSynchronousRaise extends Command {
         leftLinearActuator.setPercent(laSpeed * (1 + laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
         rightLinearActuator.setPercent(laSpeed * (1 - laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
         if ((!reversed && (targetAngle > initialAngle)) || (reversed && (targetAngle < initialAngle))) {
-            frontArms.setPercent(CalcUtil.applyBounds(faSpeed * (1 + faDiff / 5),
+            frontArms.setPercent(CalcUtil.clamp(faSpeed * (1 + faDiff / 5),
                     0.0, Constants.Climb.MAXIMUM_CLIMB_SPEED));
         }
     }

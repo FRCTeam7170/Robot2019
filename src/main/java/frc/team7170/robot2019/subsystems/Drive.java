@@ -151,8 +151,8 @@ public class Drive extends Subsystem implements Named {
     }
 
     public void tankDrive(double left, double right) {
-        left = CalcUtil.applyBounds(left, -1.0, 1.0);
-        right = CalcUtil.applyBounds(right, -1.0, 1.0);
+        left = CalcUtil.clamp(left, -1.0, 1.0);
+        right = CalcUtil.clamp(right, -1.0, 1.0);
 
         if (enableTankForwardAssist && CalcUtil.inThreshold(left, right, tankForwardAssistThreshold)) {
             left = right = (left + right) / 2;
@@ -169,8 +169,8 @@ public class Drive extends Subsystem implements Named {
 
     public void arcadeDrive(double y, double z) {
         // The arcade to tank drive conversion here is copied from DifferentialDrive in WPILib.
-        y = CalcUtil.applyBounds(y, -1.0, 1.0);
-        z = -CalcUtil.applyBounds(z, -1.0, 1.0);
+        y = CalcUtil.clamp(y, -1.0, 1.0);
+        z = -CalcUtil.clamp(z, -1.0, 1.0);
 
         if (squareInputs) {
             y = Math.copySign(y*y, y);

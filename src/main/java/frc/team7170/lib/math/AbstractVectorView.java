@@ -34,8 +34,8 @@ abstract class AbstractVectorView extends VectorImpl {
 
     @Override
     public Vector copy(int startIdx, int endIdx) {
-        startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
-        endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
+        startIdx = CalcUtil.normalizeArrayIndex(startIdx, length());
+        endIdx = CalcUtil.normalizeArrayIndex(endIdx, length());
         // copy(int[]) is slower than copy(int, int), but uses get(int) rather than accessing data directly.
         return super.copy(CalcUtil.rangeToIndices(startIdx, endIdx));
     }

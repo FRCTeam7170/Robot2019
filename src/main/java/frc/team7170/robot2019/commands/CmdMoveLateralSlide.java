@@ -13,7 +13,7 @@ public class CmdMoveLateralSlide extends Command {
     private boolean reversed = false;
 
     public CmdMoveLateralSlide(double positionMetres) {
-        this.positionMetres = CalcUtil.applyBounds(positionMetres,
+        this.positionMetres = CalcUtil.clamp(positionMetres,
                 Constants.EndEffector.LATERAL_SLIDE_LEFT_METRES, Constants.EndEffector.LATERAL_SLIDE_RIGHT_METRES);
         requires(EndEffector.getInstance());
     }

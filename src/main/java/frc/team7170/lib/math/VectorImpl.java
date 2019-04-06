@@ -110,13 +110,13 @@ public class VectorImpl implements Vector {
 
     @Override
     public double get(int idx) throws IndexOutOfBoundsException {
-        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+        idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
         return data[idx];
     }
 
     @Override
     public void set(int idx, double value) throws IndexOutOfBoundsException {
-        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+        idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
         data[idx] = value;
     }
 
@@ -129,23 +129,23 @@ public class VectorImpl implements Vector {
     public Vector view(int startIdx, int endIdx) {
         return new VectorView(
                 this,
-                CalcUtil.rectifyArrayIndex(startIdx, length()),
-                CalcUtil.rectifyArrayIndex(endIdx, length())
+                CalcUtil.normalizeArrayIndex(startIdx, length()),
+                CalcUtil.normalizeArrayIndex(endIdx, length())
         );
     }
 
     @Override
     public Vector view(int[] indices) throws IndexOutOfBoundsException {
         for (int i = 0; i < indices.length; ++i) {
-            indices[i] = CalcUtil.rectifyArrayIndexRestrictive(indices[i], length());
+            indices[i] = CalcUtil.normalizeArrayIndexRestrictive(indices[i], length());
         }
         return new VectorView(this, indices);
     }
 
     @Override
     public Vector copy(int startIdx, int endIdx) {
-        startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
-        endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
+        startIdx = CalcUtil.normalizeArrayIndex(startIdx, length());
+        endIdx = CalcUtil.normalizeArrayIndex(endIdx, length());
         return new VectorImpl(Arrays.copyOfRange(data, startIdx, endIdx));
     }
 
@@ -153,15 +153,15 @@ public class VectorImpl implements Vector {
     public Vector copy(int[] indices) throws IndexOutOfBoundsException {
         double[] result = new double[indices.length];
         for (int i = 0; i < indices.length; ++i) {
-            result[i] = get(CalcUtil.rectifyArrayIndexRestrictive(indices[i], length()));
+            result[i] = get(CalcUtil.normalizeArrayIndexRestrictive(indices[i], length()));
         }
         return new VectorImpl(result);
     }
 
     @Override
     public void visit(VectorVisitor visitor, int startIdx, int endIdx) {
-        startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
-        endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
+        startIdx = CalcUtil.normalizeArrayIndex(startIdx, length());
+        endIdx = CalcUtil.normalizeArrayIndex(endIdx, length());
         for (int i = startIdx; i < endIdx; ++i) {
             visitor.visit(i, get(i));
         }
@@ -169,8 +169,8 @@ public class VectorImpl implements Vector {
 
     @Override
     public void mutate(VectorMutator mutator, int startIdx, int endIdx) {
-        startIdx = CalcUtil.rectifyArrayIndex(startIdx, length());
-        endIdx = CalcUtil.rectifyArrayIndex(endIdx, length());
+        startIdx = CalcUtil.normalizeArrayIndex(startIdx, length());
+        endIdx = CalcUtil.normalizeArrayIndex(endIdx, length());
         for (int i = startIdx; i < endIdx; ++i) {
             set(i, mutator.mutate(i, get(i)));
         }

@@ -10,13 +10,13 @@ abstract class MatrixVectorView extends AbstractVectorView {
 
         @Override
         public double get(int idx) throws IndexOutOfBoundsException {
-            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+            idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
             return parent.get(majorIdx, indices[idx]);
         }
 
         @Override
         public void set(int idx, double value) throws IndexOutOfBoundsException {
-            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+            idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
             parent.set(majorIdx, indices[idx], value);
         }
     }
@@ -29,13 +29,13 @@ abstract class MatrixVectorView extends AbstractVectorView {
 
         @Override
         public double get(int idx) throws IndexOutOfBoundsException {
-            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+            idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
             return parent.get(indices[idx], majorIdx);
         }
 
         @Override
         public void set(int idx, double value) throws IndexOutOfBoundsException {
-            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
+            idx = CalcUtil.normalizeArrayIndexRestrictive(idx, length());
             parent.set(indices[idx], majorIdx, value);
         }
     }
