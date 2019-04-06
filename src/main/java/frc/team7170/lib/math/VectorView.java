@@ -5,12 +5,12 @@ class VectorView extends AbstractVectorView {
     private final Vector parent;
 
     VectorView(Vector parent, int[] indices) {
-        super(parent.toArray(), indices);
+        super(indices);
         this.parent = parent;
     }
 
     VectorView(Vector parent, int startIdx, int endIdx) {
-        super(parent.toArray(), startIdx, endIdx);
+        super(startIdx, endIdx);
         this.parent = parent;
     }
 
@@ -21,7 +21,8 @@ class VectorView extends AbstractVectorView {
     }
 
     @Override
-    protected void setByParent(int idx, double value) throws IndexOutOfBoundsException {
+    public void set(int idx, double value) throws IndexOutOfBoundsException {
+        idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
         parent.set(indices[idx], value);
     }
 }

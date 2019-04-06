@@ -5,7 +5,7 @@ abstract class MatrixVectorView extends AbstractVectorView {
     private static class MatrixRowView extends MatrixVectorView {
 
         private MatrixRowView(Matrix parent, int row) {
-            super(parent, parent.copyRow(row).toArray(), row, parent.nCols());
+            super(parent, row, parent.nCols());
         }
 
         @Override
@@ -15,7 +15,8 @@ abstract class MatrixVectorView extends AbstractVectorView {
         }
 
         @Override
-        protected void setByParent(int idx, double value) throws IndexOutOfBoundsException {
+        public void set(int idx, double value) throws IndexOutOfBoundsException {
+            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
             parent.set(majorIdx, indices[idx], value);
         }
     }
@@ -23,7 +24,7 @@ abstract class MatrixVectorView extends AbstractVectorView {
     private static class MatrixColView extends MatrixVectorView {
 
         private MatrixColView(Matrix parent, int col) {
-            super(parent, parent.copyCol(col).toArray(), col, parent.nRows());
+            super(parent, col, parent.nRows());
         }
 
         @Override
@@ -33,7 +34,8 @@ abstract class MatrixVectorView extends AbstractVectorView {
         }
 
         @Override
-        protected void setByParent(int idx, double value) throws IndexOutOfBoundsException {
+        public void set(int idx, double value) throws IndexOutOfBoundsException {
+            idx = CalcUtil.rectifyArrayIndexRestrictive(idx, length());
             parent.set(indices[idx], majorIdx, value);
         }
     }
@@ -41,8 +43,8 @@ abstract class MatrixVectorView extends AbstractVectorView {
     protected final Matrix parent;
     protected final int majorIdx;
 
-    private MatrixVectorView(Matrix parent, double[] data, int majorIdx, int length) {
-        super(data, 0, length);
+    private MatrixVectorView(Matrix parent, int majorIdx, int length) {
+        super(0, length);
         this.parent = parent;
         this.majorIdx = majorIdx;
     }
