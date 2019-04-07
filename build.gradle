@@ -43,22 +43,22 @@ idea {
 }
 
 repositories {
-    // TODO: Will this be available at competition without internet access?
     mavenCentral()
 }
 
 // Defining my dependencies. In this case, WPILib (+ friends), and vendor libraries.
 // Also defines JUnit 4.
 dependencies {
-    compile group: 'org.msgpack', name: 'msgpack-core', version: '0.8.16'
-    compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    implementation group: 'org.msgpack', name: 'msgpack-core', version: '0.8.16'
+    implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.1'
+    testImplementation 'org.hamcrest:hamcrest:2.1'
 
-
-    compile wpi.deps.wpilib()
-    compile wpi.deps.vendor.java()
+    implementation wpi.deps.wpilib()
+    implementation wpi.deps.vendor.java()
     nativeZip wpi.deps.vendor.jni(wpi.platforms.roborio)
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
-    testCompile 'junit:junit:4.12'
+    // testCompile 'junit:junit:4.12'
 }
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')

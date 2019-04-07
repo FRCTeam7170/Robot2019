@@ -2,5 +2,5 @@ package frc.team7170.lib.math.geometry2d;
 
 public interface Geometry<G extends Geometry<G>> {
 
-    G transform(Transformation transformation);
+    G transform(AffineTransformation2D transformation);
 }
