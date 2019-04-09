@@ -5,7 +5,7 @@ import java.util.Arrays;
 /**
  * A simple matrix implementation using a row-major nested array as the backing data structure.
  */
-public class MatrixImpl implements Matrix {
+public class ArrayMatrix implements Matrix {
 
     private final double[][] data;
 
@@ -13,14 +13,14 @@ public class MatrixImpl implements Matrix {
      * @param nRows the number of rows in the matrix.
      * @param nCols the number of columns in the matrix.
      */
-    public MatrixImpl(int nRows, int nCols) {
+    public ArrayMatrix(int nRows, int nCols) {
         data = new double[nRows][nCols];
     }
 
     /**
      * @param data the nested array to initialize the matrix with.
      */
-    public MatrixImpl(double[][] data) {
+    public ArrayMatrix(double[][] data) {
         // TODO: should this make a copy of the array?
         this.data = data;
     }
@@ -46,14 +46,14 @@ public class MatrixImpl implements Matrix {
         }
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, value) -> newData[r][c] = value + other.get(r, c));
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
     public Matrix add(double value) {
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, thisValue) -> newData[r][c] = thisValue + value);
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
@@ -63,7 +63,7 @@ public class MatrixImpl implements Matrix {
         }
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, value) -> newData[r][c] = value - other.get(r, c));
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class MatrixImpl implements Matrix {
         }
         double[][] result = new double[nRows()][other.nCols()];
         visitRows((rowIdx, row) -> other.visitCols((colIdx, col) -> result[rowIdx][colIdx] = row.dot(col)));
-        return new MatrixImpl(result);
+        return new ArrayMatrix(result);
     }
 
     @Override
@@ -91,28 +91,28 @@ public class MatrixImpl implements Matrix {
         }
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, value) -> newData[r][c] = value * other.get(r, c));
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
     public Matrix multiply(double value) {
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, thisValue) -> newData[r][c] = thisValue * value);
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
     public Matrix power(double power) {
         double[][] newData = new double[nRows()][nCols()];
         visitRowWise((r, c, value) -> newData[r][c] = Math.pow(value, power));
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
     public Matrix transpose() {
         double[][] result = new double[nCols()][nRows()];
         visitRowWise((r, c, value) -> result[c][r] = value);
-        return new MatrixImpl(result);
+        return new ArrayMatrix(result);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class MatrixImpl implements Matrix {
                 newData[r - startRow] = Arrays.copyOfRange(data[r], startCol, endCol);
             }
         }
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
@@ -218,12 +218,12 @@ public class MatrixImpl implements Matrix {
                 newData[r][c] = get(row, col);
             }
         }
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override
     public Vector copyRow(int row) throws IndexOutOfBoundsException {
-        return new VectorImpl(Arrays.copyOf(data[CalcUtil.normalizeArrayIndexRestrictive(row, nRows())], nCols()));
+        return new ArrayVector(Arrays.copyOf(data[CalcUtil.normalizeArrayIndexRestrictive(row, nRows())], nCols()));
     }
 
     @Override
@@ -233,7 +233,7 @@ public class MatrixImpl implements Matrix {
         for (int r = 0; r < nRows(); ++r) {
             colData[r] = get(r, col);
         }
-        return new VectorImpl(colData);
+        return new ArrayVector(colData);
     }
 
     @Override

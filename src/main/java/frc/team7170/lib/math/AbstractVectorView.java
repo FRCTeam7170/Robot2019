@@ -1,7 +1,7 @@
 package frc.team7170.lib.math;
 
-// This overrides all methods in VectorImpl that reference data.
-abstract class AbstractVectorView extends VectorImpl {
+// This overrides all methods in ArrayVector that reference data.
+abstract class AbstractVectorView extends ArrayVector {
 
     protected final int[] indices;
 
@@ -44,6 +44,6 @@ abstract class AbstractVectorView extends VectorImpl {
     public Matrix asRowMatrix() {
         double[][] newData = new double[1][length()];
         visit((i, value) -> newData[0][i] = value);
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 }

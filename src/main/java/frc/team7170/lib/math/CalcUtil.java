@@ -98,8 +98,9 @@ public final class CalcUtil {
      * Linearly interpolate between {@code val0} and {@code val1} according to {@code x}.
      * </p>
      * <p>
-     * Strictly speaking, if {@code f(y) = ky, k} (i.e. is linear) with {@code f(a) = val0} and {@code f(b) = val1}, and
-     * function {@code g} linearly maps {@code [0, 1]} to {@code [a, b]}, then this function returns {@code f(g(x))}.
+     * Strictly speaking, if <code>f(y) = ky, k&#8712;&#8477;</code> (i.e. {@code f} is linear) with {@code f(a) = val0}
+     * and {@code f(b) = val1}, and function {@code g} linearly maps {@code [0, 1]} to {@code [a, b]}, then this
+     * function returns {@code f(g(x))}.
      * </p>
      * @param val0 The first value.
      * @param val1 The second value.

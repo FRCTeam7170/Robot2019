@@ -1,7 +1,7 @@
 package frc.team7170.lib.math;
 
-// This overrides all methods in MatrixImpl that reference data.
-class MatrixView extends MatrixImpl {
+// This overrides all methods in ArrayMatrix that reference data.
+class MatrixView extends ArrayMatrix {
 
     private final Matrix parent;
     private final int[] rows;
@@ -63,7 +63,7 @@ class MatrixView extends MatrixImpl {
     @Override
     @SuppressWarnings("Duplicates")
     public Matrix copy(int startRow, int startCol, int endRow, int endCol) {
-        // This version of copy() is slightly optimized in MatrixImpl in that it copies whole rows at a time, but must
+        // This version of copy() is slightly optimized in ArrayMatrix in that it copies whole rows at a time, but must
         // directly access data to do so. We defer to the less optimal version of copy without the data reference here.
         startRow = CalcUtil.normalizeArrayIndex(startRow, nRows());
         endRow = CalcUtil.normalizeArrayIndex(endRow, nRows());
@@ -79,6 +79,6 @@ class MatrixView extends MatrixImpl {
         for (int c = 0; c < nCols(); ++c) {
             rowData[c] = get(row, c);
         }
-        return new VectorImpl(rowData);
+        return new ArrayVector(rowData);
     }
 }

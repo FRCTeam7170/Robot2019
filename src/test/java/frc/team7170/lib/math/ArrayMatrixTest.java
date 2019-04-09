@@ -4,18 +4,17 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
-class MatrixImplTest {
+class ArrayMatrixTest {
 
     private static final double EPSILON = 1e-6;
 
     private Random random = new Random();
 
     private Matrix constructRandomMatrix() {
-        return new MatrixImpl(new double[][] {
+        return new ArrayMatrix(new double[][] {
                 new double[] {rand(), rand(), rand()},
                 new double[] {rand(), rand(), rand()},
                 new double[] {rand(), rand(), rand()}

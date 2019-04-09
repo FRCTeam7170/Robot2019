@@ -5,21 +5,21 @@ import java.util.Arrays;
 /**
  * A simple vector implementation using an array as the backing data structure.
  */
-public class VectorImpl implements Vector {
+public class ArrayVector implements Vector {
 
     private final double[] data;
 
     /**
      * @param length the length of the vector.
      */
-    public VectorImpl(int length) {
+    public ArrayVector(int length) {
         data = new double[length];
     }
 
     /**
      * @param data the array to initialize the vector with.
      */
-    public VectorImpl(double[] data) {
+    public ArrayVector(double[] data) {
         // TODO: should this make a copy of the array?
         this.data = data;
     }
@@ -51,14 +51,14 @@ public class VectorImpl implements Vector {
         }
         double[] newData = new double[length()];
         visit((i, value) -> newData[i] = value + other.get(i));
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
     public Vector add(double value) {
         double[] newData = new double[length()];
         visit((i, thisValue) -> newData[i] = thisValue + value);
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
@@ -68,14 +68,14 @@ public class VectorImpl implements Vector {
         }
         double[] newData = new double[length()];
         visit((i, value) -> newData[i] = value - other.get(i));
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
     public Vector scale(double value) {
         double[] newData = new double[length()];
         visit((i, thisValue) -> newData[i] = thisValue * value);
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
@@ -85,7 +85,7 @@ public class VectorImpl implements Vector {
         }
         double[] newData = new double[length()];
         visit((i, value) -> newData[i] = value * other.get(i));
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class VectorImpl implements Vector {
     public Vector power(double power) {
         double[] newData = new double[length()];
         visit((i, value) -> newData[i] = Math.pow(value, power));
-        return new VectorImpl(newData);
+        return new ArrayVector(newData);
     }
 
     @Override
@@ -146,7 +146,7 @@ public class VectorImpl implements Vector {
     public Vector copy(int startIdx, int endIdx) {
         startIdx = CalcUtil.normalizeArrayIndex(startIdx, length());
         endIdx = CalcUtil.normalizeArrayIndex(endIdx, length());
-        return new VectorImpl(Arrays.copyOfRange(data, startIdx, endIdx));
+        return new ArrayVector(Arrays.copyOfRange(data, startIdx, endIdx));
     }
 
     @Override
@@ -155,7 +155,7 @@ public class VectorImpl implements Vector {
         for (int i = 0; i < indices.length; ++i) {
             result[i] = get(CalcUtil.normalizeArrayIndexRestrictive(indices[i], length()));
         }
-        return new VectorImpl(result);
+        return new ArrayVector(result);
     }
 
     @Override
@@ -180,7 +180,7 @@ public class VectorImpl implements Vector {
     public Matrix asRowMatrix() {
         double[][] newData = new double[1][];
         newData[0] = Arrays.copyOf(data, length());
-        return new MatrixImpl(newData);
+        return new ArrayMatrix(newData);
     }
 
     @Override

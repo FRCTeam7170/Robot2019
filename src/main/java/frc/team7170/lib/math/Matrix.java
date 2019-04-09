@@ -1,6 +1,7 @@
 package frc.team7170.lib.math;
 
 // TODO: generalize for other data types (subclasses of Number)
+// TODO: add support for inplace operations
 /**
  * <p>
  * A simple matrix interface. It provides basic operations on matrix objects, such as addition, matrix-matrix

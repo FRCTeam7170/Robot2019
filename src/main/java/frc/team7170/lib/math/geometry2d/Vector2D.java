@@ -1,7 +1,7 @@
 package frc.team7170.lib.math.geometry2d;
 
+import frc.team7170.lib.math.ArrayVector;
 import frc.team7170.lib.math.Vector;
-import frc.team7170.lib.math.VectorImpl;
 
 /**
  * A vector of cardinality 2 for use in 2D geometry. As per convention, the two components are called {@code x} and
@@ -16,7 +16,7 @@ public class Vector2D implements Geometry<Vector2D> {
     private final Vector vector;
 
     public Vector2D(double x, double y) {
-        vector = new VectorImpl(new double[] {x, y});
+        vector = new ArrayVector(new double[] {x, y});
     }
 
     private Vector2D(Vector vector) {
