@@ -16,6 +16,7 @@ abstract class BaseRProperty extends BaseProperty implements RProperty {
      * @param type the type of the property.
      * @param pollPeriodMs the poll period of the property in milliseconds. (See
      * {@link RProperty#getPollPeriodMs() RProperty} for a description of precisely what this means.)
+     * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
      */
     BaseRProperty(String name, PropertyType type, int pollPeriodMs) {
         super(name, type);

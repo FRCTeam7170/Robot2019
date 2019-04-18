@@ -148,6 +148,7 @@ public interface RProperty extends Property {
      * Get the poll period of this readable property. If the poll period is greater than or equal to zero, it represents
      * the duration of inactivity between each poll of this readable property in milliseconds. If the poll period is
      * negative, it indicates that this readable property should not be periodically polled.
+     *
      * @return the poll period of this readable property.
      */
     int getPollPeriodMs();

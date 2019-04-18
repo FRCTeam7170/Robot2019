@@ -16,6 +16,7 @@ abstract class BaseRWProperty extends BaseRProperty implements RWProperty {
      * @param pollPeriodMs the poll period of the property in milliseconds. This is only for the readable "half" of the
      *                     property. (See {@link RProperty#getPollPeriodMs() RProperty} for a description of precisely
      *                     what this means.)
+     * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
      */
     BaseRWProperty(String name, PropertyType type, int pollPeriodMs) {
         super(name, type, pollPeriodMs);

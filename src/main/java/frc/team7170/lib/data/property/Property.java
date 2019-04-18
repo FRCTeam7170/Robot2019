@@ -28,6 +28,7 @@ public interface Property extends Named {
 
     /**
      * Get the type of this property.
+     *
      * @return the type of this property.
      */
     PropertyType getType();
