@@ -2,14 +2,15 @@ package frc.team7170.lib.command;
 
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import frc.team7170.lib.TimedRunnable;
+import frc.team7170.lib.PeriodicRunnable;
 
+// TODO: this and PeriodicRunnable named similar but don't behave the same...
 public class CmdTimedRunnable extends Command {
 
-    private final TimedRunnable timedRunnable;
+    private final PeriodicRunnable periodicRunnable;
 
     public CmdTimedRunnable(Runnable runnable, int delayMs, Subsystem... requirements) {
-        timedRunnable = new TimedRunnable(runnable, delayMs);
+        periodicRunnable = new PeriodicRunnable(runnable, delayMs);
         for (Subsystem requirement : requirements) {
             requires(requirement);
         }
@@ -17,7 +18,7 @@ public class CmdTimedRunnable extends Command {
 
     @Override
     protected void execute() {
-        timedRunnable.run();
+        periodicRunnable.run();
     }
 
     @Override

@@ -19,7 +19,7 @@ public class TeleopStateMachine {
     private final State pickupPrepareState = fsm.newState(new Name("pickupPrepare"));
     private final State pickupState = fsm.newState(new Name("pickup"));
     private final State ejectingState = fsm.newState(new Name("ejecting"));
-    private final State loadingState= fsm.newState(new Name("loading"));
+    private final State loadingState = fsm.newState(new Name("loading"));
 
     public final Trigger driveTrigger = fsm.newTrigger(new Name("drive"));
     public final Trigger elevateTrigger = fsm.newTrigger(new Name("elevate"));

@@ -224,7 +224,7 @@ public final class Communication implements Named {
         } else {
             keyComponents = decomposeKey(key);
             for (String kc : keyComponents) {
-                Name.assertValidName(kc);
+                Name.requireValidName(kc);
             }
         }
         NetworkTable table = baseTable;

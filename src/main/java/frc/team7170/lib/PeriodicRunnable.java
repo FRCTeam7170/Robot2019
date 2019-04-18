@@ -2,13 +2,13 @@ package frc.team7170.lib;
 
 import edu.wpi.first.wpilibj.Timer;
 
-public class TimedRunnable implements Runnable {
+public class PeriodicRunnable implements Runnable {
 
     private final Runnable runnable;
     private final double delaySec;
-    private double lastTime = 0.0;
+    private double lastTime = Timer.getFPGATimestamp();
 
-    public TimedRunnable(Runnable runnable, int delayMs) {
+    public PeriodicRunnable(Runnable runnable, int delayMs) {
         this.runnable = runnable;
         this.delaySec = (double) delayMs / 1000.0;
     }

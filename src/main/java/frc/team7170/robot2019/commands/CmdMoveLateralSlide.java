@@ -12,10 +12,19 @@ public class CmdMoveLateralSlide extends Command {
     private final double positionMetres;
     private boolean reversed = false;
 
+    public CmdMoveLateralSlide(double positionMetres, boolean withRequire) {
+        this.positionMetres = CalcUtil.clamp(
+                positionMetres,
+                Constants.EndEffector.LATERAL_SLIDE_LEFT_METRES,
+                Constants.EndEffector.LATERAL_SLIDE_RIGHT_METRES
+        );
+        if (withRequire) {
+            requires(EndEffector.getInstance());
+        }
+    }
+
     public CmdMoveLateralSlide(double positionMetres) {
-        this.positionMetres = CalcUtil.clamp(positionMetres,
-                Constants.EndEffector.LATERAL_SLIDE_LEFT_METRES, Constants.EndEffector.LATERAL_SLIDE_RIGHT_METRES);
-        requires(EndEffector.getInstance());
+        this(positionMetres, true);
     }
 
     @Override

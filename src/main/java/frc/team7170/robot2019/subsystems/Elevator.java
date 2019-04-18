@@ -96,7 +96,7 @@ public class  Elevator extends Subsystem implements Named {
     }
 
     private static void configSparkMax(CANSparkMax max) {
-        max.setRampRate(Constants.Elevator.RAMP_TIME);
+        max.setOpenLoopRampRate(Constants.Elevator.RAMP_TIME);
         max.setIdleMode(Constants.Elevator.IDLE_MODE);
         max.setSecondaryCurrentLimit(Constants.Elevator.CURRENT_LIMIT_AMPS);
     }

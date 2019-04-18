@@ -49,26 +49,27 @@ public final class Constants {
 
     public static final class DIO {
         // Elevator encoder
-        public static final int ELEVATOR_ENCODER_A = 2;
-        public static final int ELEVATOR_ENCODER_B = 3;
+        public static final int ELEVATOR_ENCODER_A = 3;
+        public static final int ELEVATOR_ENCODER_B = 4;
 
         // Seat motor DIOs
+        // TODO: NOT USED
         public static final int SEAT_MOTOR_DIO_LEFT = 0;
         public static final int SEAT_MOTOR_DIO_RIGHT = 1;
 
         // Lateral slide
-        public static final int LATERAL_SLIDE_LIMIT_SWITCH = 6;
+        public static final int LATERAL_SLIDE_LIMIT_SWITCH = 7;
 
         // Reflectance sensor array
-        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_0 = 4;
-        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_1 = 5;
+        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_0 = 8;
+        public static final int REFLECTANCE_SENSOR_ARRAY_SELECT_1 = 9;
 
-        public static final int CLIMB_ULTRASONIC_TRIG = 8;
-        public static final int CLIMB_ULTRASONIC_ECHO = 9;
+        public static final int CLIMB_ULTRASONIC_TRIG = 5;
+        public static final int CLIMB_ULTRASONIC_ECHO = 6;
     }
 
     public static final class PWM {
-        public static final int LATERAL_SLIDE_SERVO = 0;
+        public static final int LATERAL_SLIDE_SERVO = 9;
     }
 
     public static final class AIN {
@@ -349,10 +350,10 @@ public final class Constants {
 
     public static final class ReflectanceSensorArray {
         // public static final double MIN_DEVIATION_FROM_AVG_VOLTS = 1.5;
-        public static final double SENSOR_TRIGGER_THRESHOLD = 2.0;
+        public static final double SENSOR_TRIGGER_THRESHOLD = 1.5;
         public static final double SENSOR_SPACING_M = 0.02009902;
         public static final double SENSOR_WIDTH_M = 0.0075;
-        public static final double ARRAY_LENGTH_M = 0.2286;
+        public static final double ARRAY_LENGTH_M = 0.20955;
         // Physically impossible for more than 3 to be triggered on 2 in. tape and at least 2 must be triggered.
         public static final int MAX_TRIGGERED_SENSORS = 3;
         public static final int MIN_TRIGGERED_SENSORS = 2;  // (Unless line is partly out of view)

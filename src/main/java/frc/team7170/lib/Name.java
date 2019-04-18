@@ -1,18 +1,40 @@
 package frc.team7170.lib;
 
+import java.util.Objects;
+
+/**
+ * A container for a single {@code String} that represents a name. This places artificial restrictions on the form of a
+ * name and what characters a name can contain so that all names used throughout an application are force to be--to some
+ * degree--consistent.
+ * TODO: option to set global name options (must be done before any names instantiated...?)
+ * TODO: allow placing restrictions on form of name
+ *
+ * @author Robert Russell
+ * @see Named
+ */
 public class Name {
 
+    /**
+     * The empty name.
+     */
     public static final Name UNNAMED = new Name("");
 
     private final String name;
 
+    /**
+     * @param name the name as a string.
+     */
     public Name(String name) {
         if (!isValidName(name)) {
-            throw new RuntimeException(String.format("invalid name '%s'", name));
+            throw new IllegalArgumentException(String.format("invalid name '%s'", name));
         }
         this.name = name;
     }
 
+    /**
+     * Get the name as a string.
+     * @return the name.
+     */
     public String getName() {
         return name;
     }
@@ -25,10 +47,11 @@ public class Name {
         return !name.matches("[^a-zA-Z0-9_]");
     }
 
-    public static void assertValidName(String name) {
-        if (!isValidNameDefault(name)) {
-            throw new RuntimeException(String.format("invalid name '%s'", name));
+    public static String requireValidName(String name) {
+        if (!isValidNameDefault(Objects.requireNonNull(name, "name must be non-null"))) {
+            throw new IllegalArgumentException(String.format("invalid name '%s'", name));
         }
+        return name;
     }
 
     @Override

@@ -6,9 +6,11 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import frc.team7170.lib.PeriodicRunnable;
 import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
@@ -26,7 +28,7 @@ import frc.team7170.robot2019.subsystems.*;
 public class Robot extends TimedRobot implements Named {
 
     /**
-     * Entry point. ({@code main()} was removed from {@link edu.wpi.first.wpilibj.RobotBase} this year.)
+     * Entry point. ({@code main(...)} was removed from {@link edu.wpi.first.wpilibj.RobotBase} this year.)
      */
     public static void main(String[] args) {
         Robot.startRobot(Robot::new);
@@ -149,37 +151,54 @@ public class Robot extends TimedRobot implements Named {
         ClimbDrive.getInstance().killMotors();
     }
 
-    private Command currCmd;
+//    private Command currCmd;
+    private double lastCommandedPosition;
 
     // AKA: sandstormInit
     @Override
     public void autonomousInit() {
 //        teleopInit();
-        currCmd = new CmdZeroSystems();
-        currCmd.start();
-//        new CommandGroup() {
-//            public CommandGroup initSubcommands() {
-//                addSequential(new CmdZeroLateralSlide());
-//                addSequential(new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES));
-//                addSequential(new Command() {
-//                    @Override
-//                    protected void execute() {
-//                        EndEffector.ReflectanceSensorArray.LineDeviation lineDeviation =
-//                                EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine();
-//                        if (!lineDeviation.isError() && !CalcUtil.epsilonEquals(lastCommandedPosition, lineDeviation.getValue())) {
-//                            lastCommandedPosition = lineDeviation.getValue();
-//                            new CmdMoveLateralSlide(lastCommandedPosition + Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2).start();
-//                        }
-//                    }
-//
-//                    @Override
-//                    protected boolean isFinished() {
-//                        return false;
-//                    }
-//                });
-//                return this;
-//            }
-//        }.initSubcommands().start();
+//        currCmd = new CmdZeroSystems();
+//        currCmd.start();
+        new CommandGroup() {
+            public CommandGroup initSubcommands() {
+                addSequential(new CmdZeroLateralSlide());
+                addSequential(new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES));
+                addParallel(new Command() {
+                    @Override
+                    protected void execute() {
+                        EndEffector.ReflectanceSensorArray.LineDeviation lineDeviation =
+                                EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine();
+                        if (!lineDeviation.isError() && !CalcUtil.epsilonEquals(lastCommandedPosition, lineDeviation.getValue())) {
+                            lastCommandedPosition = lineDeviation.getValue();
+                            new CmdMoveLateralSlide(lastCommandedPosition + Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2, false).start();
+                        }
+                    }
+
+                    @Override
+                    protected boolean isFinished() {
+                        return false;
+                    }
+                });
+                addParallel(new Command() {
+                    private final Runnable runnable = new PeriodicRunnable(
+                            () -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance().toString()),
+                        1000
+                    );
+
+                    @Override
+                    protected void execute() {
+                        runnable.run();
+                    }
+
+                    @Override
+                    protected boolean isFinished() {
+                        return false;
+                    }
+                });
+                return this;
+            }
+        }.initSubcommands().start();
     }
 
     @Override
@@ -207,10 +226,10 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void autonomousPeriodic() {
 //        teleopPeriodic();
-        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
-            currCmd.start();
-        }
+//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+//            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+//            currCmd.start();
+//        }
     }
 
     @Override

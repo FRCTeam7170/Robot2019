@@ -5,6 +5,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.PIDBase;
 
 // TODO: major flaw: state isn't respected between different wrappers (i.e. PIDFController doesn't know about Encoder state)
+// TODO: for planned changes, we need a more general name than "wrappers" for this whole system
 public final class WrapperFactory {
 
     // Enforce non-instantiablilty.

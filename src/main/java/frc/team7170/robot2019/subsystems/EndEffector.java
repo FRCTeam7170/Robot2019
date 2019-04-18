@@ -111,7 +111,7 @@ public class EndEffector extends Subsystem {
         }
 
         private synchronized void pollFeedback() {
-            double value = feedback.getAverageVoltage() * 1000.0 - Constants.EndEffector.SERVO_FEEDBACK_MIN_POTENTIAL_mV;
+            double value = getFeedbackVoltage() - Constants.EndEffector.SERVO_FEEDBACK_MIN_POTENTIAL_mV;
             if (Constants.EndEffector.INVERT_SERVO_FEEDBACK) {
                 value = Constants.EndEffector.SERVO_FEEDBACK_POTENTIAL_RANGE_mV - value;
             }
@@ -189,6 +189,7 @@ public class EndEffector extends Subsystem {
                 WrapperFactory.wrapWPIAnalogInput(new AnalogInput(Constants.AIN.REFLECTANCE_SENSOR_ARRAY_2)), mux0
         );
 
+        // sensor11 disabled because the traces for it were broken on the PCB.
         private final frc.team7170.lib.wrappers.AnalogInput sensor0 = mux0.getAnalogInputFor(0);
         private final frc.team7170.lib.wrappers.AnalogInput sensor1 = mux0.getAnalogInputFor(2);
         private final frc.team7170.lib.wrappers.AnalogInput sensor2 = mux0.getAnalogInputFor(1);
@@ -200,11 +201,11 @@ public class EndEffector extends Subsystem {
         private final frc.team7170.lib.wrappers.AnalogInput sensor8 = mux2.getAnalogInputFor(0);
         private final frc.team7170.lib.wrappers.AnalogInput sensor9 = mux2.getAnalogInputFor(2);
         private final frc.team7170.lib.wrappers.AnalogInput sensor10 = mux2.getAnalogInputFor(1);
-        private final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
+        // private final frc.team7170.lib.wrappers.AnalogInput sensor11 = mux2.getAnalogInputFor(3);
         private final frc.team7170.lib.wrappers.AnalogInput[] sensors = {
                 sensor0, sensor1, sensor2, sensor3,
                 sensor4, sensor5, sensor6, sensor7,
-                sensor8, sensor9, sensor10, sensor11
+                sensor8, sensor9, sensor10, // sensor11
         };
 
         // Enforce non-instantiability.

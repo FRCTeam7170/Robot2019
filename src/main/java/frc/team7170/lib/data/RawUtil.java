@@ -1,4 +1,4 @@
-package frc.team7170.lib;
+package frc.team7170.lib.data;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 public final class RawUtil {
 
+    // Enforce non-instantiability.
     private RawUtil() {}
 
     public static byte[] toBytes(int val) {
