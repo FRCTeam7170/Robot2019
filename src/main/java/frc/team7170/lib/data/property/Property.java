@@ -13,9 +13,12 @@ import frc.team7170.lib.Named;
  * Every property object has a {@linkplain PropertyType data type} associated with it. The supported data types are
  * {@code boolean}, {@code double}, {@code String}, the array variants of the preceding, and raw ({@code byte[]}).
  * </p>
- * TODO: comment on Named
+ * <p>
+ * Properties are {@link Named Named} to facilitate the common use case in which the attribute they represent needs a
+ * string label to distinguish it from other properties.
+ * </p>
  *
- * @author Robert Russell.
+ * @author Robert Russell
  * @see RProperty
  * @see WProperty
  * @see RWProperty
