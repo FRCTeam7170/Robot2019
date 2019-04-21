@@ -1,6 +1,7 @@
 package frc.team7170.lib.data.property;
 
 import frc.team7170.lib.Named;
+import frc.team7170.lib.data.ValueType;
 
 /**
  * <p>
@@ -10,7 +11,7 @@ import frc.team7170.lib.Named;
  * logging service which periodically polls registered clients to save data the clients generate to a file.
  * </p>
  * <p>
- * Every property object has a {@linkplain PropertyType data type} associated with it. The supported data types are
+ * Every property object has a {@linkplain ValueType data type} associated with it. The supported data types are
  * {@code boolean}, {@code double}, {@code String}, the array variants of the preceding, and raw ({@code byte[]}).
  * </p>
  * <p>
@@ -31,7 +32,7 @@ public interface Property extends Named {
      *
      * @return the type of this property.
      */
-    PropertyType getType();
+    ValueType getType();
 
     /**
      * Get if this property is readable.

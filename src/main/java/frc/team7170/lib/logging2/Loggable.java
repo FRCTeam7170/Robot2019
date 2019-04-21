@@ -1,17 +1,16 @@
 package frc.team7170.lib.logging2;
 
 import frc.team7170.lib.Named;
+import frc.team7170.lib.data.DataFrame;
+import frc.team7170.lib.data.property.RProperty;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface Loggable extends Named {
 
-    default void registerDataFrames(DataFrameBuilder dataFrameBuilder) {
-        // Default to adding no data frames.
-    }
+    void registerDataFrames(DataFrame<RProperty> frame);
 
     default List<String> getTags() {
-        return new ArrayList<>(0);
+        return List.of();
     }
 }

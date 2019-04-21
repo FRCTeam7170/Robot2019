@@ -34,6 +34,26 @@ public interface DataFrame<P extends Property> extends Named, Iterable<Pair<Data
     DataFrame<P> newSubFrame(String name);
 
     /**
+     * Merge all the {@link Property properties} and sub-frames contained within the given {@code DataFrame} into this
+     * {@code DataFrame}. The given {@code DataFrame} and its sub-frames are not changed.
+     *
+     * @param frame the {@code DataFrame} to merge into this one.
+     * @throws NullPointerException if {@code frame} is null.
+     */
+    default void merge(DataFrame<P> frame) {
+        // Merge each property into this frame.
+        frame.getProperties().forEach(this::addProperty);
+        // Merge each sub-frame into this frame.
+        for (DataFrame<P> subframe : frame.getSubFrames()) {
+            // Note we create a new frame whose parent is this frame, then recursively populate it. We could not simply
+            // transfer ownership of each sub-frame of the given frame to this frame because the parent of frames is
+            // immutable and we specify that the given frames and its sub-frames will not change as a result of this
+            // operation.
+            newSubFrame(subframe.getName()).merge(subframe);
+        }
+    }
+
+    /**
      * Get the sub-frames contained within this {@code DataFrame}. This only includes the sub-frames of this
      * {@code DataFrame}, not those nested in child {@code DataFrame}s.
      *
@@ -45,20 +65,20 @@ public interface DataFrame<P extends Property> extends Named, Iterable<Pair<Data
     List<DataFrame<P>> getSubFrames();
 
     /**
+     * Remove the sub-frame with the given name from this {@code DataFrame}.
+     *
+     * @param name the name of the sub-frame to remove.
+     * @return whether or not a sub-frame of the given name was found and removed.
+     * @throws NullPointerException if {@code name} is null.
+     */
+    boolean removeSubFrame(String name);
+
+    /**
      * Get the parent {@code DataFrame} of this {@code DataFrame}, or null if this {@code DataFrame} has no parent.
      *
      * @return the parent {@code DataFrame} of this {@code DataFrame}, or null if this {@code DataFrame} has no parent.
      */
     DataFrame<P> getParentFrame();
-
-    /**
-     * Merge all the {@link Property properties} and sub-frames contained within the given {@code DataFrame} into this
-     * {@code DataFrame}. The given {@code DataFrame} is not changed.
-     *
-     * @param frame the {@code DataFrame} to merge into this one.
-     * @throws NullPointerException if {@code frame} is null.
-     */
-    void merge(DataFrame<P> frame);
 
     /**
      * Add a {@link Property Property} to this {@code DataFrame}.
@@ -80,8 +100,19 @@ public interface DataFrame<P extends Property> extends Named, Iterable<Pair<Data
     List<P> getProperties();
 
     /**
-     * @return an iterator over all the {@link Pair Pair}s of {@linkplain Property properties} contained in this
+     * Remove the {@link Property Property} with the given name from this {@code DataFrame}.
+     *
+     * @param name the name of the {@code Property} to remove.
+     * @return whether or not a {@code Property} of the given name was found and removed.
+     * @throws NullPointerException if {@code name} is null.
+     */
+    boolean removeProperty(String name);
+
+    /**
+     * Get an iterator over all the {@link Pair Pair}s of {@linkplain Property properties} contained in this
      * {@code DataFrame} and its sub {@code DataFrame}s and the parent {@code DataFrame} of each of those properties.
+     *
+     * @return an iterator.
      */
     @Override
     Iterator<Pair<DataFrame, P>> iterator();

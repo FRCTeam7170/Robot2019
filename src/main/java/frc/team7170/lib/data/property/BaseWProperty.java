@@ -1,5 +1,7 @@
 package frc.team7170.lib.data.property;
 
+import frc.team7170.lib.data.ValueType;
+
 /**
  * The abstract base class used for the writable properties returned in {@link PropertyFactory PropertyFactory}.
  *
@@ -14,7 +16,7 @@ abstract class BaseWProperty extends BaseProperty implements WProperty {
      * @param type the type of the property.
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
      */
-    BaseWProperty(String name, PropertyType type) {
+    BaseWProperty(String name, ValueType type) {
         super(name, type);
     }
 }

@@ -1,4 +1,6 @@
-package frc.team7170.lib.data.property;
+package frc.team7170.lib.data;
+
+import frc.team7170.lib.data.property.Property;
 
 /**
  * The types supported by {@linkplain Property properties}.
@@ -6,7 +8,7 @@ package frc.team7170.lib.data.property;
  * @author Robert Russell
  * @see Property
  */
-public enum PropertyType {
+public enum ValueType {
 
     BOOLEAN,
     DOUBLE,

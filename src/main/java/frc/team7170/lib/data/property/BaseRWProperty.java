@@ -1,5 +1,7 @@
 package frc.team7170.lib.data.property;
 
+import frc.team7170.lib.data.ValueType;
+
 /**
  * The abstract base class used for the readable and writable properties returned in
  * {@link PropertyFactory PropertyFactory}.
@@ -18,7 +20,7 @@ abstract class BaseRWProperty extends BaseRProperty implements RWProperty {
      *                     what this means.)
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
      */
-    BaseRWProperty(String name, PropertyType type, int pollPeriodMs) {
+    BaseRWProperty(String name, ValueType type, int pollPeriodMs) {
         super(name, type, pollPeriodMs);
     }
 }
