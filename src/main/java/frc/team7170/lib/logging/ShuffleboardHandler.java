@@ -1,8 +1,9 @@
-package frc.team7170.lib.logging2;
+package frc.team7170.lib.logging;
 
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 
+// TODO
 public class ShuffleboardHandler extends Handler {
 
     @Override

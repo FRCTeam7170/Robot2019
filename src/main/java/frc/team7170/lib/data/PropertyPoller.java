@@ -37,12 +37,12 @@ import java.util.stream.Collectors;
 public final class PropertyPoller {
 
     /**
-     * This {@code Map} maps the scheduled time for a group of properties to be polled to the group of properties. Note
-     * the group of properties is in turn stored as a map itself with the {@link List List} of each
-     * {@link RProperty RProperty}'s ancestors' names and its own name as the key. A {@link TreeMap TreeMap} (BST) is
-     * used so that finding the next group of readable properties to poll has time complexity O(log(n)).
+     * This {@link NavigableMap NavigableMap} maps the scheduled time for a group of properties to be polled to the
+     * group of properties. Note the group of properties is in turn stored as a map itself with the {@link List List} of
+     * each {@link RProperty RProperty}'s ancestors' names and its own name as the key. A {@link TreeMap TreeMap} (BST)
+     * is used so that finding the next group of readable properties to poll has time complexity O(log(n)).
      */
-    private final TreeMap<Double, Map<List<String>, RProperty>> timePropertyMap = new TreeMap<>();
+    private final NavigableMap<Double, Map<List<String>, RProperty>> timePropertyMap = new TreeMap<>();
 
     /**
      *
@@ -64,6 +64,11 @@ public final class PropertyPoller {
      */
     private double nextKey;
 
+    /**
+     *
+     */
+    private boolean started = false;
+
     public PropertyPoller(Consumer<Map<List<String>, Value>> callback, int consolidationThreshholdMs) {
         this.callback = callback;
         this.consolidationThresholdSec = (double) consolidationThreshholdMs / 1000.0;
@@ -76,15 +81,20 @@ public final class PropertyPoller {
     public void addProperty(List<String> ancestry, RProperty property) {
         List<String> names = new ArrayList<>(ancestry);
         names.add(property.getName());
-        addPropertyWithConsolidation(Timer.getFPGATimestamp(), names, property);
-        // TODO: start notifier
+        double nowSeconds = Timer.getFPGATimestamp();
+        addPropertyWithConsolidation(nowSeconds, names, property);
+        if (!started) {
+            started = true;
+            nextKey = nowSeconds;
+            run();
+        }
     }
 
     public void addProperties(PropertyGroup<RProperty> propertyGroup) {
         propertyGroup.forEach(pair -> addProperty(pair.getLeft().getLineage(), pair.getRight()));
     }
 
-    private synchronized void addPropertyWithConsolidation(double pollTime, List<String> ancestry, RProperty property) {
+    private synchronized void addPropertyWithConsolidation(double pollTime, List<String> lineage, RProperty property) {
         // Check if there is an entry scheduled before the new one and if there is and it is within the consolidation
         // threshold, consolidate them.
         // Note that this is not a optimal implementation in terms of maintaining a poll period as close as possible to
@@ -95,19 +105,19 @@ public final class PropertyPoller {
         // set.
         Map.Entry<Double, Map<List<String>, RProperty>> entry = timePropertyMap.floorEntry(pollTime);
         if (entry != null && (pollTime - entry.getKey()) <= consolidationThresholdSec) {
-            entry.getValue().put(ancestry, property);
+            entry.getValue().put(lineage, property);
         } else {
             // Check if there is an entry scheduled after the new one and if there is and it is within the consolidation
             // threshold, consolidate them.
             entry = timePropertyMap.ceilingEntry(pollTime);
             if (entry != null && (entry.getKey() - pollTime) <= consolidationThresholdSec) {
-                entry.getValue().put(ancestry, property);
+                entry.getValue().put(lineage, property);
             } else {
                 // Otherwise, just schedule a new entry.
                 // Note the initial capacity of 4 here is arbitrary, but the default of 16 seemed extreme if
                 // consolidation is infrequent.
                 Map<List<String>, RProperty> newMap = new HashMap<>(4);
-                newMap.put(ancestry, property);
+                newMap.put(lineage, property);
                 timePropertyMap.put(pollTime, newMap);
             }
         }

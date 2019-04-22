@@ -1,4 +1,4 @@
-package frc.team7170.lib.logging2;
+package frc.team7170.lib.logging;
 
 import frc.team7170.lib.Named;
 import frc.team7170.lib.data.PropertyGroup;
@@ -8,9 +8,11 @@ import java.util.List;
 
 public interface Loggable extends Named {
 
-    void registerDataFrames(PropertyGroup<RProperty> frame);
+    String ALL = "all";
+
+    void registerProperties(PropertyGroup<RProperty> frame);
 
     default List<String> getTags() {
-        return List.of();
+        return List.of(ALL);
     }
 }

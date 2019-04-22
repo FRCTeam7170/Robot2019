@@ -4,9 +4,7 @@ import frc.team7170.lib.Named;
 import frc.team7170.lib.Pair;
 import frc.team7170.lib.data.property.Property;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * A nestable container for {@linkplain Property properties}. {@code PropertyGroup}s are {@link Named Named} to
@@ -122,10 +120,19 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      * top-level ancestor--has name "A", then this returns the list {@code [A, B, C]}.
      * </p>
      *
-     * @returnthe {@link List List} of names of this {@code PropertyGroup}'s ancestors and this {@code PropertyGroup}
+     * @return the {@link List List} of names of this {@code PropertyGroup}'s ancestors and this {@code PropertyGroup}
      * itself in order.
      */
-    List<String> getLineage();
+    default List<String> getLineage() {
+        // Use LinkedList for fast head insertion.
+        LinkedList<String> lineage = new LinkedList<>();
+        PropertyGroup<P> propertyGroup = this;
+        while (propertyGroup != null) {
+            lineage.addFirst(propertyGroup.getName());
+            propertyGroup = propertyGroup.getParentGroup();
+        }
+        return lineage;
+    }
 
     /**
      * Get an iterator over all the {@link Pair Pair}s of {@linkplain Property properties} contained in this

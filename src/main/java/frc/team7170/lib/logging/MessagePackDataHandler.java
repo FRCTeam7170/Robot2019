@@ -1,20 +1,18 @@
-package frc.team7170.lib.logging2;
+package frc.team7170.lib.logging;
 
 import frc.team7170.lib.ResourceManager;
+import frc.team7170.lib.data.MsgPackUtil;
+import frc.team7170.lib.data.Value;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessagePacker;
 
 import java.io.*;
-import java.util.IllegalFormatException;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-// TODO: it might be work making a MsgPackUtils class or packing Maps, Lists, arrays, etc. easily (one call)
 // TODO: thread safety
 public class MessagePackDataHandler implements DataHandler {
 
@@ -47,6 +45,7 @@ public class MessagePackDataHandler implements DataHandler {
             }
             try {
                 // Make sure the format string works with a single string argument, as it should.
+                // This is a bit of a hack, but it works. ¯\_(ツ)_/¯
                 String.format(format, "0");
             } catch (IllegalFormatException e) {
                 throw new IllegalArgumentException(e);
@@ -66,52 +65,41 @@ public class MessagePackDataHandler implements DataHandler {
     }
 
     @Override
-    public void handle(double timestamp, String loggableName, Map<String, Value> values) {
+    public void handle(double timestamp, Map<List<String>, Value> values) {
         try {
             packer.packDouble(timestamp);
-            packer.packString(loggableName);
-            packer.packMapHeader(values.size());
-            Iterator<Map.Entry<String, Value>> iterator = values.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<String, Value> entry = iterator.next();
-                packer.packString(entry.getKey());
-                Value value = entry.getValue();
-                switch (value.getType()) {
-                    case BOOLEAN:
-                        packer.packBoolean(value.getBoolean());
-                        break;
-                    case DOUBLE:
-                        packer.packDouble(value.getDouble());
-                        break;
-                    case STRING:
-                        packer.packString(value.getString());
-                        break;
-                    case BOOLEAN_ARRAY:
-                        packArray(packer::packBoolean, value.getBooleanArray());
-                        break;
-                    case DOUBLE_ARRAY:
-                        packArray(packer::packDouble, value.getDoubleArray());
-                        break;
-                    case STRING_ARRAY:
-                        packArray(packer::packString, value.getStringArray());
-                        break;
-                }
-            }
+            MsgPackUtil.packMap(
+                    values,
+                    packer,
+                    strings -> MsgPackUtil.packArray((String[]) strings.toArray(), packer, packer::packString),
+                    value -> {
+                        switch (value.getType()) {
+                            case BOOLEAN:
+                                packer.packBoolean(value.getBoolean());
+                                break;
+                            case DOUBLE:
+                                packer.packDouble(value.getDouble());
+                                break;
+                            case STRING:
+                                packer.packString(value.getString());
+                                break;
+                            case BOOLEAN_ARRAY:
+                                MsgPackUtil.packArray(value.getBooleanArray(), packer, packer::packBoolean);
+                                break;
+                            case DOUBLE_ARRAY:
+                                MsgPackUtil.packArray(value.getDoubleArray(), packer, packer::packDouble);
+                                break;
+                            case STRING_ARRAY:
+                                MsgPackUtil.packArray(value.getStringArray(), packer, packer::packString);
+                                break;
+                            case RAW:
+                                MsgPackUtil.packArray(value.getRaw(), packer, packer::packByte);
+                                break;
+                        }
+                    }
+            );
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "failed to pack data", e);
-        }
-    }
-
-    @FunctionalInterface
-    private interface CheckedConsumer<T> {
-
-        void accept(T val) throws IOException;
-    }
-
-    private <T> void packArray(CheckedConsumer<T> packerFun, T[] vals) throws IOException {
-        packer.packArrayHeader(vals.length);
-        for (T val : vals) {
-            packerFun.accept(val);
         }
     }
 
@@ -120,19 +108,22 @@ public class MessagePackDataHandler implements DataHandler {
         packer.close();
     }
 
-    public static MessagePackDataHandler fromAbsoluteFile(File file) {
-        try {
-            return new MessagePackDataHandler(new FileOutputStream(file.getAbsoluteFile()));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public static MessagePackDataHandler fromAbsoluteFile(File file)
+            throws FileNotFoundException {
+        Objects.requireNonNull(file, "file must be non-null");
+        return new MessagePackDataHandler(new FileOutputStream(file.getAbsoluteFile()));
     }
 
-    public static MessagePackDataHandler fromFile(String fileName) {
+    public static MessagePackDataHandler fromRelativeFileName(String fileName)
+            throws FileNotFoundException {
+        // File does null pointer check on name for us.
         return fromAbsoluteFile(new File(DEFAULT_DIR, fileName));
     }
 
-    public static MessagePackDataHandler fromDirectory(File directory, FileCyclingScheme fcs) {
+    public static MessagePackDataHandler fromDirectory(File directory, FileCyclingScheme fcs)
+            throws FileNotFoundException {
+        Objects.requireNonNull(directory, "directory must be non-null");
+        Objects.requireNonNull(fcs, "file cycling scheme must be non-null");
         if (directory.exists()) {
             if (!directory.isDirectory()) {
                 throw new IllegalArgumentException("path exists, but is not a directory");
@@ -146,21 +137,32 @@ public class MessagePackDataHandler implements DataHandler {
         return fromAbsoluteFile(new File(directory, String.format(fcs.format, 0)));
     }
 
-    public static MessagePackDataHandler fromDirectory(File directory) {
+    public static MessagePackDataHandler fromDirectory(File directory)
+            throws FileNotFoundException {
         return fromDirectory(directory, FileCyclingScheme.DEFAULT);
     }
 
-    public static MessagePackDataHandler fromDirectory(String directoryName, FileCyclingScheme fcs) {
+    public static MessagePackDataHandler fromDirectory(String directoryName, FileCyclingScheme fcs)
+            throws FileNotFoundException {
+        // File does null pointer check on name for us.
         return fromDirectory(new File(directoryName), fcs);
     }
 
-    public static MessagePackDataHandler fromDirectory(String directoryName) {
+    public static MessagePackDataHandler fromDirectory(String directoryName)
+            throws FileNotFoundException{
         return fromDirectory(directoryName, FileCyclingScheme.DEFAULT);
     }
 
     public static MessagePackDataHandler getDefault() {
         if (DEFAULT == null) {
-            DEFAULT = fromDirectory(DEFAULT_DIR);
+            try {
+                DEFAULT = fromDirectory(DEFAULT_DIR);
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(
+                        String.format("default {} could not be initialized", MessagePackDataHandler.class.getName()),
+                        e
+                );
+            }
             ResourceManager.getInstance().addResource(MessagePackDataHandler.class.getSimpleName(), DEFAULT);
         }
         return DEFAULT;
