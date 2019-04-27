@@ -167,7 +167,7 @@ public final class Constants {
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 25;  // 1.5 degrees
         public static final int ENCODER_CPR = 20;  // CIMCoder
         public static final double MAX_ABSOLUTE_OUTPUT = 1.0;
-        public static final double ANGLE_UNCERTAINTY_DEGREES = 15.0;
+        public static final double ANGLE_UNCERTAINTY_DEGREES = 5.0;
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
@@ -361,9 +361,9 @@ public final class Constants {
 
     public static final class Climb {
         public static final double L2_INITIAL_ANGLE_DEGREES = 113.0;
-        public static final double L3_INITIAL_ANGLE_DEGREES = 65.2;  // TODO: increased 20 degrees
+        public static final double L3_INITIAL_ANGLE_DEGREES = 55.2;  // TODO: increased 10 degrees
 //        public static final double DELTA_HEIGHT_METRES = 0.05;
-        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
+        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.02;
         public static final double TARGET_CLIMB_SPEED = 0.5;
         public static final double MAXIMUM_CLIMB_SPEED = 0.6;
     }

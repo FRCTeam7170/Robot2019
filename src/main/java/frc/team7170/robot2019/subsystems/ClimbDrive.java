@@ -15,6 +15,7 @@ import frc.team7170.robot2019.Constants;
 
 import java.util.logging.Logger;
 
+// TODO: no longer using seat motor dios
 public class ClimbDrive extends Subsystem implements Named {
 
     private static final Logger LOGGER = Logger.getLogger(ClimbDrive.class.getName());

@@ -342,13 +342,22 @@ public class EndEffector extends Subsystem {
     }
 
     public boolean eject() {
-        if (!ejecting) {
+//        if (!ejecting) {
+//            ejecting = true;
+//            ejectDeploySolenoid.startPulse();
+//            ejectNotifier.startSingle(Constants.EndEffector.EJECT_PULSE_DURATION_SECONDS);
+//            return true;
+//        }
+//        return false;
+        // TODO: temp, Joel's thingy
+        if (ejecting) {
+            ejectDeploySolenoid.set(false);
+            ejecting = false;
+        } else {
+            ejectDeploySolenoid.set(true);
             ejecting = true;
-            ejectDeploySolenoid.startPulse();
-            ejectNotifier.startSingle(Constants.EndEffector.EJECT_PULSE_DURATION_SECONDS);
-            return true;
         }
-        return false;
+        return true;
     }
 
     private void ejectFinished() {

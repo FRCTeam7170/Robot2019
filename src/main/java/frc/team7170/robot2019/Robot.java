@@ -79,8 +79,8 @@ public class Robot extends TimedRobot implements Named {
             }
         });
 
-        // compressor.start();
-        compressor.stop();
+        compressor.start();
+//        compressor.stop();
 
         ShuffleboardTab mainTab = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB);
 
@@ -111,8 +111,8 @@ public class Robot extends TimedRobot implements Named {
                 // .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
-                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
-                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
+//                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
+//                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
@@ -151,54 +151,54 @@ public class Robot extends TimedRobot implements Named {
         ClimbDrive.getInstance().killMotors();
     }
 
-//    private Command currCmd;
-    private double lastCommandedPosition;
+    private Command currCmd;
+//    private double lastCommandedPosition;
 
     // AKA: sandstormInit
     @Override
     public void autonomousInit() {
 //        teleopInit();
-//        currCmd = new CmdZeroSystems();
-//        currCmd.start();
-        new CommandGroup() {
-            public CommandGroup initSubcommands() {
-                addSequential(new CmdZeroLateralSlide());
-                addSequential(new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES));
-                addParallel(new Command() {
-                    @Override
-                    protected void execute() {
-                        EndEffector.ReflectanceSensorArray.LineDeviation lineDeviation =
-                                EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine();
-                        if (!lineDeviation.isError() && !CalcUtil.epsilonEquals(lastCommandedPosition, lineDeviation.getValue())) {
-                            lastCommandedPosition = lineDeviation.getValue();
-                            new CmdMoveLateralSlide(lastCommandedPosition + Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2, false).start();
-                        }
-                    }
-
-                    @Override
-                    protected boolean isFinished() {
-                        return false;
-                    }
-                });
-                addParallel(new Command() {
-                    private final Runnable runnable = new PeriodicRunnable(
-                            () -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance().toString()),
-                        1000
-                    );
-
-                    @Override
-                    protected void execute() {
-                        runnable.run();
-                    }
-
-                    @Override
-                    protected boolean isFinished() {
-                        return false;
-                    }
-                });
-                return this;
-            }
-        }.initSubcommands().start();
+        currCmd = new CmdZeroSystems();
+        currCmd.start();
+//        new CommandGroup() {
+//            public CommandGroup initSubcommands() {
+//                addSequential(new CmdZeroLateralSlide());
+//                addSequential(new CmdMoveLateralSlide(Constants.EndEffector.LATERAL_SLIDE_CENTRE_METRES));
+//                addParallel(new Command() {
+//                    @Override
+//                    protected void execute() {
+//                        EndEffector.ReflectanceSensorArray.LineDeviation lineDeviation =
+//                                EndEffector.ReflectanceSensorArray.getInstance().getDeviationFromLine();
+//                        if (!lineDeviation.isError() && !CalcUtil.epsilonEquals(lastCommandedPosition, lineDeviation.getValue())) {
+//                            lastCommandedPosition = lineDeviation.getValue();
+//                            new CmdMoveLateralSlide(lastCommandedPosition + Constants.ReflectanceSensorArray.ARRAY_LENGTH_M / 2, false).start();
+//                        }
+//                    }
+//
+//                    @Override
+//                    protected boolean isFinished() {
+//                        return false;
+//                    }
+//                });
+//                addParallel(new Command() {
+//                    private final Runnable runnable = new PeriodicRunnable(
+//                            () -> System.out.println(EndEffector.ReflectanceSensorArray.getInstance().toString()),
+//                        1000
+//                    );
+//
+//                    @Override
+//                    protected void execute() {
+//                        runnable.run();
+//                    }
+//
+//                    @Override
+//                    protected boolean isFinished() {
+//                        return false;
+//                    }
+//                });
+//                return this;
+//            }
+//        }.initSubcommands().start();
     }
 
     @Override
@@ -226,17 +226,17 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void autonomousPeriodic() {
 //        teleopPeriodic();
-//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
-//            currCmd.start();
-//        }
+        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+            currCmd.start();
+        }
     }
 
     @Override
     public void teleopPeriodic() {
 //        FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
-        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
-        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
+//        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
+//        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
         double elevatorReading = KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get();
         if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
             if (elevatorReading < 0) {

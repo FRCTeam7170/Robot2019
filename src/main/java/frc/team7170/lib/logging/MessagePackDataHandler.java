@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 // TODO: thread safety
 public class MessagePackDataHandler implements DataHandler {
 
+    // TODO: this should be made a top-level class
     public static class FileCyclingScheme {
 
         public static final FileCyclingScheme DEFAULT = new FileCyclingScheme("log%s.msgpack");
