@@ -247,7 +247,7 @@ public final class Constants {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final double SPEED = 1.0;
-        public static final double SONIC_DISTANCE_THRESHOLD_MM = 300.0;
+        public static final double SONIC_DISTANCE_THRESHOLD_MM = 150.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -360,7 +360,7 @@ public final class Constants {
     }
 
     public static final class Climb {
-        public static final double L2_INITIAL_ANGLE_DEGREES = 113.0;
+        public static final double L2_INITIAL_ANGLE_DEGREES = 110.0;  // TODO: increased 10 degrees
         public static final double L3_INITIAL_ANGLE_DEGREES = 55.2;  // TODO: increased 10 degrees
 //        public static final double DELTA_HEIGHT_METRES = 0.05;
         public static final double FINAL_HEIGHT_EXTRA_METRES = 0.02;

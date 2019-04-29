@@ -70,6 +70,10 @@ public final class Name {
      */
     public static synchronized boolean isValidName(String name) {
         validNamePatternUsed = true;
+        if (validNamePattern == null) {
+            // TODO: why is this necessary?????
+            validNamePattern = Pattern.compile("^[a-zA-Z0-9_]*$");
+        }
         return validNamePattern.matcher(Objects.requireNonNull(name, "name must be non-null")).matches();
     }
 
@@ -86,7 +90,7 @@ public final class Name {
      * {@linkplain Name#validNamePattern global naming rules}.
      */
     public static String requireValidName(String name) {
-        if (!isValidName(Objects.requireNonNull(name, "name must be non-null"))) {
+        if (!isValidName(name)) {
             throw new IllegalArgumentException(String.format("invalid name '%s'", name));
         }
         return name;

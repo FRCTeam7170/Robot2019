@@ -79,8 +79,8 @@ public class Robot extends TimedRobot implements Named {
             }
         });
 
-        compressor.start();
-//        compressor.stop();
+//        compressor.start();
+        compressor.stop();
 
         ShuffleboardTab mainTab = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB);
 
@@ -227,7 +227,7 @@ public class Robot extends TimedRobot implements Named {
     public void autonomousPeriodic() {
 //        teleopPeriodic();
         if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+            currCmd = new CmdClimb(ClimbLevel.LEVEL_2);
             currCmd.start();
         }
     }
