@@ -19,6 +19,8 @@ abstract class BaseRWProperty extends BaseRProperty implements RWProperty {
      *                     property. (See {@link RProperty#getPollPeriodMs() RProperty} for a description of precisely
      *                     what this means.)
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     BaseRWProperty(String name, ValueType type, int pollPeriodMs) {
         super(name, type, pollPeriodMs);

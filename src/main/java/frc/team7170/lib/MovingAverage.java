@@ -19,7 +19,7 @@ public class MovingAverage {
         numbers.add(number);
     }
 
-    public void add(double... numbers) {
+    public void addAll(double... numbers) {
         for (double number : numbers) {
             add(number);
         }

@@ -6,6 +6,7 @@ import frc.team7170.lib.Name;
 import java.util.HashMap;
 import java.util.Map;
 
+// TODO: make name unique depending on port number so multiple of these can be used at once (do the same with gamepad)
 public final class LE3DPJoystick extends HIDController {
 
     public final HIDAxis A_X;

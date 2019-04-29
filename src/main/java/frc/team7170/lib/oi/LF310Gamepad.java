@@ -17,7 +17,7 @@ public final class LF310Gamepad extends RumbleController {
     public final HIDAxis A_RY;
     public final HIDAxis A_LTRIGGER;
     public final HIDAxis A_RTRIGGER;
-    public final ScaledAxis A_TRIGGERS = new ScaledAxis(new Name("TRIGGERS")) {
+    public final ScaledAxis A_TRIGGERS = new ScaledAxis("TRIGGERS") {
         @Override
         public double getRaw() {
             double left = A_LTRIGGER.get();

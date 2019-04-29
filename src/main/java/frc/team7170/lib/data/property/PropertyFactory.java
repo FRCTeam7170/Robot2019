@@ -50,6 +50,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newBooleanRProperty(String name, int pollPeriodMs, BooleanSupplier getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -68,6 +70,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newBooleanWProperty(String name, BooleanConsumer setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -88,6 +92,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newBooleanRWProperty(String name, int pollPeriodMs,
                                                   BooleanSupplier getter, BooleanConsumer setter) {
@@ -114,6 +120,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newDoubleRProperty(String name, int pollPeriodMs, DoubleSupplier getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -132,6 +140,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newDoubleWProperty(String name, DoubleConsumer setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -152,6 +162,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newDoubleRWProperty(String name, int pollPeriodMs,
                                                  DoubleSupplier getter, DoubleConsumer setter) {
@@ -178,6 +190,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newStringRProperty(String name, int pollPeriodMs, Supplier<String> getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -196,6 +210,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newStringWProperty(String name, Consumer<String> setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -216,6 +232,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newStringRWProperty(String name, int pollPeriodMs,
                                                  Supplier<String> getter, Consumer<String> setter) {
@@ -242,6 +260,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newBooleanArrayRProperty(String name, int pollPeriodMs, Supplier<boolean[]> getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -260,6 +280,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newBooleanArrayWProperty(String name, Consumer<boolean[]> setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -280,6 +302,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newBooleanArrayRWProperty(String name, int pollPeriodMs,
                                                        Supplier<boolean[]> getter, Consumer<boolean[]> setter) {
@@ -306,6 +330,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newDoubleArrayRProperty(String name, int pollPeriodMs, Supplier<double[]> getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -324,6 +350,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newDoubleArrayWProperty(String name, Consumer<double[]> setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -344,6 +372,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newDoubleArrayRWProperty(String name, int pollPeriodMs,
                                                       Supplier<double[]> getter, Consumer<double[]> setter) {
@@ -370,6 +400,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newStringArrayRProperty(String name, int pollPeriodMs, Supplier<String[]> getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -388,6 +420,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newStringArrayWProperty(String name, Consumer<String[]> setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -408,6 +442,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newStringArrayRWProperty(String name, int pollPeriodMs,
                                                       Supplier<String[]> getter, Consumer<String[]> setter) {
@@ -434,6 +470,8 @@ public final class PropertyFactory {
      * @param getter the underlying value supplier for this readable property.
      * @return the new readable property.
      * @throws NullPointerException if either of {@code name} or {@code getter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RProperty newRawRProperty(String name, int pollPeriodMs, Supplier<byte[]> getter) {
         Objects.requireNonNull(getter, "readable property getter must be non-null");
@@ -452,6 +490,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for this writable property.
      * @return the new writable property.
      * @throws NullPointerException if either of {@code name} or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static WProperty newRawWProperty(String name, Consumer<byte[]> setter) {
         Objects.requireNonNull(setter, "writable property setter must be non-null");
@@ -472,6 +512,8 @@ public final class PropertyFactory {
      * @param setter the underlying value consumer for the writable component of this property.
      * @return the new readable and writeable property.
      * @throws NullPointerException if either of {@code name}, {@code getter}, or {@code setter} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     public static RWProperty newRawRWProperty(String name, int pollPeriodMs,
                                               Supplier<byte[]> getter, Consumer<byte[]> setter) {

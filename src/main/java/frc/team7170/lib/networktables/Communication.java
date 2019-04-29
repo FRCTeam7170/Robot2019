@@ -24,7 +24,7 @@ public final class Communication implements Named {
     private static final String ENTRY_NAME_PREFIX_SEP = "_";
 
     // TODO: TEMP
-    // private final Commander commander = new Commander(NetworkTableInstance.getDefault(), getCheckedName());
+    // private final Commander commander = new Commander(NetworkTableInstance.getDefault(), getNameObject());
     private final Map<String, Transmitter> transmitterMap = new HashMap<>();
     private final Map<String, Receiver> receiverMap = new HashMap<>();
 
@@ -45,7 +45,7 @@ public final class Communication implements Named {
     }
 
     public void registerCommunicator(Named obj, NetworkTable table) {
-        findCommAnnotations(obj, obj.getClass(), obj.getCheckedName(), table);
+        findCommAnnotations(obj, obj.getClass(), obj.getNameObject(), table);
     }
 
     private void findCommAnnotations(Object obj, Class<?> cls, Name prefix, NetworkTable table) {

@@ -10,7 +10,7 @@ public interface Loggable extends Named {
 
     String ALL = "all";
 
-    void registerProperties(PropertyGroup<RProperty> frame);
+    void registerProperties(PropertyGroup<RProperty> propertyGroup);
 
     default List<String> getTags() {
         return List.of(ALL);

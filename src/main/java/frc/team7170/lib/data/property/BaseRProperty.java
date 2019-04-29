@@ -19,6 +19,8 @@ abstract class BaseRProperty extends BaseProperty implements RProperty {
      * @param pollPeriodMs the poll period of the property in milliseconds. (See
      * {@link RProperty#getPollPeriodMs() RProperty} for a description of precisely what this means.)
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     BaseRProperty(String name, ValueType type, int pollPeriodMs) {
         super(name, type);

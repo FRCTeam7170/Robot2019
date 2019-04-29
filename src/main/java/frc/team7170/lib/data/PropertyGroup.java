@@ -28,7 +28,9 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      *
      * @param name the name to apply to the new {@code PropertyGroup}.
      * @return the new {@code PropertyGroup}.
-     * @throws NullPointerException if {@code name} is null.
+     * @throws NullPointerException if the given name is {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     PropertyGroup<P> newSubGroup(String name);
 
@@ -37,7 +39,7 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      * this {@code PropertyGroup}. The given {@code PropertyGroup} and its sub-groups are not changed.
      *
      * @param group the {@code PropertyGroup} to merge into this one.
-     * @throws NullPointerException if {@code group} is null.
+     * @throws NullPointerException if the given {@code PropertyGroup} is {@code null}.
      */
     default void merge(PropertyGroup<P> group) {
         Objects.requireNonNull(group, "cannot merge in null group");
@@ -69,16 +71,16 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      *
      * @param name the name of the sub-group to remove.
      * @return whether or not a sub-group of the given name was found and removed.
-     * @throws NullPointerException if {@code name} is null.
+     * @throws NullPointerException if the given name is {@code null}.
      */
     boolean removeSubGroup(String name);
 
     /**
-     * Get the parent {@code PropertyGroup} of this {@code PropertyGroup}, or null if this {@code PropertyGroup} has no
-     * parent.
+     * Get the parent {@code PropertyGroup} of this {@code PropertyGroup}, or {@code null} if this {@code PropertyGroup}
+     * has no parent.
      *
-     * @return the parent {@code PropertyGroup} of this {@code PropertyGroup}, or null if this {@code PropertyGroup} has
-     * no parent.
+     * @return the parent {@code PropertyGroup} of this {@code PropertyGroup}, or {@code null} if this
+     * {@code PropertyGroup} has no parent.
      */
     PropertyGroup<P> getParentGroup();
 
@@ -86,7 +88,7 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      * Add a {@link Property Property} to this {@code PropertyGroup}.
      *
      * @param property the {@code Property} to add to this {@code PropertyGroup}.
-     * @throws NullPointerException if {@code property} is null.
+     * @throws NullPointerException if {@code property} is {@code null}.
      */
     void addProperty(P property);
 
@@ -106,7 +108,7 @@ public interface PropertyGroup<P extends Property> extends Named, Iterable<Pair<
      *
      * @param name the name of the {@code Property} to remove.
      * @return whether or not a {@code Property} of the given name was found and removed.
-     * @throws NullPointerException if {@code name} is null.
+     * @throws NullPointerException if the given name is {@code null}.
      */
     boolean removeProperty(String name);
 

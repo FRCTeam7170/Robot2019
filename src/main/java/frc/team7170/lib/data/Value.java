@@ -25,6 +25,7 @@ import java.util.Arrays;
  * @author Robert Russell
  * @see ValueType
  */
+// TODO: what if non-primitive Values are constructed with null?
 public abstract class Value {
 
     private final ValueType type;

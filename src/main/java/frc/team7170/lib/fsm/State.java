@@ -77,7 +77,7 @@ public class State implements Named {
     }
 
     @Override
-    public Name getCheckedName() {
+    public Name getNameObject() {
         return name;
     }
 

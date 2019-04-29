@@ -15,6 +15,8 @@ abstract class BaseWProperty extends BaseProperty implements WProperty {
      * @param name the name of the property.
      * @param type the type of the property.
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}.
      */
     BaseWProperty(String name, ValueType type) {
         super(name, type);

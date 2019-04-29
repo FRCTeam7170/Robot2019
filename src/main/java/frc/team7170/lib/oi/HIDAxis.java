@@ -9,7 +9,7 @@ public class HIDAxis extends ScaledAxis {
     private final GenericHID hid;
     private final int port;
 
-    public HIDAxis(GenericHID hid, int port, Name name) {
+    public HIDAxis(GenericHID hid, int port, String name) {
         super(name);
         /*
         if (port >= hid.getAxisCount()) {
@@ -21,7 +21,7 @@ public class HIDAxis extends ScaledAxis {
     }
 
     public HIDAxis(GenericHID hid, int port) {
-        this(hid, port, new Name(String.valueOf(port)));
+        this(hid, port, String.valueOf(port));
     }
 
     @Override

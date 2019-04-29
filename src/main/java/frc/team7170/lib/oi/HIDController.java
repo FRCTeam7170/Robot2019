@@ -27,7 +27,7 @@ public abstract class HIDController implements Controller {
     }
 
     @Override
-    public Name getCheckedName() {
+    public Name getNameObject() {
         return name;
     }
 }

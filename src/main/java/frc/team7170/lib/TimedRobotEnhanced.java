@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  * {@linkplain java.util.logging Java util logging}; otherwise exactly the same as TimedRobot.
  *
  * @author Robert Russell
+ * @see TimedRobot
  */
 public class TimedRobotEnhanced extends TimedRobot {
 

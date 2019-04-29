@@ -49,7 +49,7 @@ public class Trigger implements Named {
     }
 
     @Override
-    public Name getCheckedName() {
+    public Name getNameObject() {
         return name;
     }
 }

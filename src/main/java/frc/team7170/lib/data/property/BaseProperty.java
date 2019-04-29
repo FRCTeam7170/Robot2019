@@ -1,5 +1,6 @@
 package frc.team7170.lib.data.property;
 
+import frc.team7170.lib.Name;
 import frc.team7170.lib.data.ValueType;
 
 import java.util.Objects;
@@ -23,9 +24,11 @@ abstract class BaseProperty implements Property {
      * @param name the name of the property. Cannot be null.
      * @param type the type of the property. Cannot be null.
      * @throws NullPointerException if either of {@code name} or {@code type} are {@code null}.
+     * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
+     * {@link Name Name}.
      */
     BaseProperty(String name, ValueType type) {
-        this.name = Objects.requireNonNull(name, "properties' name must be non-null");
+        this.name = Name.requireValidName(name);
         this.type = Objects.requireNonNull(type, "properties' type must be non-null");
     }
 

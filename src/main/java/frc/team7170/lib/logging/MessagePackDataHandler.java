@@ -99,6 +99,7 @@ public class MessagePackDataHandler implements DataHandler {
                         }
                     }
             );
+            packer.flush();
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "failed to pack data", e);
         }

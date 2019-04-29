@@ -8,6 +8,9 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
+// TODO: this should only facilitate a global structure; using the OI system with dependency injection should be fully supported too
+// TODO: warn if multiple actions have same binding
+// TODO: get rid of need to bind with controller AND containing controller?
 public final class KeyBindings implements Named {
 
     private static final String PREF_KEY_PREFIX = "KM_";

@@ -60,7 +60,7 @@ public class SerializableKeyMap implements KeyMap {
     }
 
     @Override
-    public Name getCheckedName() {
+    public Name getNameObject() {
         return name;
     }
 

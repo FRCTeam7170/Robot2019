@@ -83,7 +83,7 @@ public class ClimbDrive extends Subsystem implements Named {
         }
 
         @Override
-        public Name getCheckedName() {
+        public Name getNameObject() {
             return name;
         }
     }
