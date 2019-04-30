@@ -95,6 +95,6 @@ public class CmdSynchronousRaise extends Command {
         double x = Constants.Dimensions.FRONT_ARM_PIVOT_TO_WHEEL_CENTRE_METRES;
         double psi = Constants.FrontArms.VERTICAL_ANGLE_DEGREES;
 
-        return Math.toDegrees(Math.acos((H + r - y - h) / x)) + psi;
+        return Math.toDegrees(Math.acos((H + r - y - h) / x)) + psi + 8;  // TODO: YUCK! added 8 deg arbitrarily
     }
 }

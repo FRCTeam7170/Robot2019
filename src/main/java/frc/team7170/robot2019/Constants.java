@@ -192,7 +192,7 @@ public final class Constants {
 
         // Left PIDF parameters
         public static final double P = 0.5;  // throttle / error
-        public static final double I = 0.01;  // throttle / integrated error
+        public static final double I = 0.001;  // throttle / integrated error
         public static final double D = 8;  // throttle / differentiated error
         public static final double F = 0.0;  // multiplied directly by setpoint
         public static final int IZONE = 1000;  // max integrated error to permit I accumulation on
@@ -363,7 +363,7 @@ public final class Constants {
         public static final double L2_INITIAL_ANGLE_DEGREES = 110.0;  // TODO: increased 10 degrees
         public static final double L3_INITIAL_ANGLE_DEGREES = 55.2;  // TODO: increased 10 degrees
 //        public static final double DELTA_HEIGHT_METRES = 0.05;
-        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.02;
+        public static final double FINAL_HEIGHT_EXTRA_METRES = 0.0;
         public static final double TARGET_CLIMB_SPEED = 0.5;
         public static final double MAXIMUM_CLIMB_SPEED = 0.6;
     }

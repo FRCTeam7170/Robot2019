@@ -95,3 +95,6 @@ fabric.properties
 # Custom
 *.iml
 *.ipr
+!/vendordeps/ADIS16448.json
+!/vendordeps/REVRobotics.json
+!/vendordeps/Phoenix.json

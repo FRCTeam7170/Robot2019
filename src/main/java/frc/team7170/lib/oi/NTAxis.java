@@ -37,7 +37,8 @@ public class NTAxis extends ScaledAxis {
      * @param entry the {@link NetworkTableEntry NetworkTableEntry} whose
      * {@linkplain NetworkTableEntry#getDouble(double) double value} is to be used as the value of this {@code NTAxis}.
      * @throws NullPointerException if the given {@code NetworkTableEntry} is {@code null}.
-     * @throws IllegalArgumentException if the given {@code NetworkTableEntry} has a type other than
+     * @throws IllegalArgumentException if the entry's name is not valid according to the global naming rules set out in
+     * {@link frc.team7170.lib.Name Name}, or if the given {@code NetworkTableEntry} has a type other than
      * {@link edu.wpi.first.networktables.NetworkTableType#kDouble kDouble} or
      * {@link edu.wpi.first.networktables.NetworkTableType#kUnassigned kUnassigned}.
      */
@@ -53,7 +54,7 @@ public class NTAxis extends ScaledAxis {
 
     /**
      * Require that the given {@link NetworkTableEntry NetworkTableEntry} be valid. A {@code NetworkTableEntry} is valid
-     * if and only if it is non-{@code null} and its {@link NetworkTableEntry#getType() type} is either
+     * if and only if it is non-{@code null} and its {@linkplain NetworkTableEntry#getType() type} is either
      * {@link edu.wpi.first.networktables.NetworkTableType#kDouble kDouble} or
      * {@link edu.wpi.first.networktables.NetworkTableType#kUnassigned kUnassigned}. If the {@code NetworkTableEntry}'s
      * type is {@code kUnassigned}, then the {@code NetworkTableEntry} will be assigned a type of {@code kDouble}.

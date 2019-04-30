@@ -12,6 +12,7 @@ package frc.team7170.lib;
  * @author Robert Russell
  * @see Name
  */
+// TODO: make BaseNamed class for Named base classes to inherit from
 public interface Named {
 
     /**

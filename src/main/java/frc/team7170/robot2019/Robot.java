@@ -227,9 +227,17 @@ public class Robot extends TimedRobot implements Named {
     public void autonomousPeriodic() {
 //        teleopPeriodic();
         if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-            currCmd = new CmdClimb(ClimbLevel.LEVEL_2);
+            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
             currCmd.start();
         }
+//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+//            currCmd = new CmdRotateFrontArms(Constants.FrontArms.VERTICAL_ANGLE_DEGREES, true);
+//            currCmd.start();
+//        }
+//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_1).getPressed()) {
+//            currCmd = new CmdRotateFrontArms(Constants.FrontArms.HORIZONTAL_ANGLE_DEGREES, true);
+//            currCmd.start();
+//        }
     }
 
     @Override
