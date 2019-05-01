@@ -16,11 +16,15 @@ public class NTButton extends TriggerButton {
 
     /**
      * Whether or not the entry got enabled since the last invocation of {@link NTButton#getPressed() getPressed}.
+     *
+     * @implNote Access is synchronized on {@code this}.
      */
     private boolean pressed = false;
 
     /**
      * Whether or not the entry got disabled since the last invocation of {@link NTButton#getReleased() getReleased}.
+     *
+     * @implNote Access is synchronized on {@code this}.
      */
     private boolean released = false;
 
@@ -41,10 +45,12 @@ public class NTButton extends TriggerButton {
         super(name);
         this.entry = requireValidEntry(entry);
         this.entry.addListener(entryNotification -> {
-            if (entryNotification.value.getBoolean()) {
-                pressed = true;
-            } else {
-                released = true;
+            synchronized (this) {
+                if (entryNotification.value.getBoolean()) {
+                    pressed = true;
+                } else {
+                    released = true;
+                }
             }
         }, EntryListenerFlags.kUpdate);
     }
@@ -73,7 +79,7 @@ public class NTButton extends TriggerButton {
     }
 
     @Override
-    public boolean getPressed() {
+    public synchronized boolean getPressed() {
         if (pressed) {
             pressed = false;
             return true;
@@ -82,7 +88,7 @@ public class NTButton extends TriggerButton {
     }
 
     @Override
-    public boolean getReleased() {
+    public synchronized boolean getReleased() {
         if (released) {
             released = false;
             return true;
