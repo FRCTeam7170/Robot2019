@@ -151,8 +151,8 @@ public final class Constants {
         // Drive multipliers
         public static final double HOME_MULTIPLIER = 1.0;
         public static final double LEVEL1_MULTIPLIER = 1.0;
-        public static final double LEVEL2_MULTIPLIER = 0.75;
-        public static final double LEVEL3_MULTIPLIER = 0.5;
+        public static final double LEVEL2_MULTIPLIER = 1.0;
+        public static final double LEVEL3_MULTIPLIER = 1.0;
         public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
         public static final double LOAD_PREPARE_MULTIPLIER = 1.0;
         public static final double RABBIT_MULTIPLIER = 1.0;

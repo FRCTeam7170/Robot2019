@@ -5,8 +5,11 @@ import frc.team7170.lib.command.CmdRunnable;
 import frc.team7170.lib.fsm.*;
 import frc.team7170.robot2019.commands.*;
 import frc.team7170.robot2019.subsystems.Drive;
+import frc.team7170.robot2019.subsystems.Elevator;
 import frc.team7170.robot2019.subsystems.EndEffector;
 
+// TODO: this whole class is a bit of a mess
+// TODO: no need to store references to states or transitions
 public class TeleopStateMachine {
 
     private static final Drive drive = Drive.getInstance();
@@ -20,9 +23,11 @@ public class TeleopStateMachine {
     private final State pickupState = fsm.newState(new Name("pickup"));
     private final State ejectingState = fsm.newState(new Name("ejecting"));
     private final State loadingState = fsm.newState(new Name("loading"));
+    private final State climbingState = fsm.newState(new Name("climbing"));
 
     public final Trigger driveTrigger = fsm.newTrigger(new Name("drive"));
-    public final Trigger elevateTrigger = fsm.newTrigger(new Name("elevate"));
+    public final Trigger elevateAutoTrigger = fsm.newTrigger(new Name("elevateAuto"));
+    public final Trigger elevateManualTrigger = fsm.newTrigger(new Name("elevateManual"));
     public final Trigger ejectTrigger = fsm.newTrigger(new Name("eject"));
     public final Trigger ejectFinishedTrigger = fsm.newTrigger(new Name("ejectFinished"));
     // For manual movement of lateral slide...
@@ -32,6 +37,7 @@ public class TeleopStateMachine {
     public final Trigger pickupCancelTrigger = fsm.newTrigger(new Name("pickupCancel"));
     public final Trigger pickupFinishedTrigger = fsm.newTrigger(new Name("pickupFinished"));
     public final Trigger loadTrigger = fsm.newTrigger(new Name("load"));
+    public final Trigger climbingTrigger = fsm.newTrigger(new Name("climb"));
 
     @SuppressWarnings("unchecked")
     private final Transition driveTransition = fsm.newTransition(
@@ -39,9 +45,14 @@ public class TeleopStateMachine {
                     .onStart(this::drive)
     );
     @SuppressWarnings("unchecked")
-    private final Transition elevateTransition = fsm.newTransition(
-            Transition.TransitionConfig.newInternal(normalState, elevateTrigger)
-                    .onStart(this::elevate)
+    private final Transition elevateAutoTransition = fsm.newTransition(
+            Transition.TransitionConfig.newInternal(normalState, elevateAutoTrigger)
+                    .onStart(this::elevateAuto)
+    );
+    @SuppressWarnings("unchecked")
+    private final Transition elevateManualTransition = fsm.newTransition(
+            Transition.TransitionConfig.newInternal(normalState, elevateManualTrigger)
+                    .onStart(this::elevateManual)
     );
     @SuppressWarnings("unchecked")
     private final Transition ejectTransition = fsm.newTransition(
@@ -74,14 +85,19 @@ public class TeleopStateMachine {
                     .onStart(this::pickupFinished)
     );
     @SuppressWarnings("unchecked")
-    private final Transition loadPrepareTransitiion = fsm.newTransition(
+    private final Transition loadPrepareTransition = fsm.newTransition(
             new Transition.TransitionConfig(normalState, loadingState, loadTrigger)
                     .onStart(this::loadPrepare)
     );
     @SuppressWarnings("unchecked")
-    private final Transition loadTransitiion = fsm.newTransition(
+    private final Transition loadTransition = fsm.newTransition(
             new Transition.TransitionConfig(loadingState, normalState, loadTrigger)
                     .onStart(this::load)
+    );
+    @SuppressWarnings("unchecked")
+    private final Transition climbTransition = fsm.newTransition(
+            new Transition.TransitionConfig(normalState, climbingState, climbingTrigger)
+                    .onStart(this::climb)
     );
 
     private TeleopStateMachine() {
@@ -108,11 +124,18 @@ public class TeleopStateMachine {
         }
     }
 
-    private void elevate(Event event) {
+    private void elevateAuto(Event event) {
         event.assertArgumentsTypes(ElevatorLevel.class);
         ElevatorLevel elevatorLevel = (ElevatorLevel) event.arguments[0];
         new CmdMoveElevator(elevatorLevel.getHeightMetres(), true).start();
         driveMultiplier = elevatorLevel.getDriveMultiplier();
+    }
+
+    private void elevateManual(Event event) {
+        event.assertArgumentsTypes(Double.class);
+        double elevatorPercent = (double) event.arguments[0];
+        Elevator.getInstance().setPercent(elevatorPercent);
+        driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
     }
 
     private void eject(Event event) {
@@ -162,5 +185,10 @@ public class TeleopStateMachine {
         new CmdRunnable(EndEffector.getInstance()::retractPin, EndEffector.getInstance()).start();
         new CmdMoveElevator(Constants.Elevator.LOAD_MOVE_UP_METRES, true).start();
         driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
+    }
+
+    private void climb(Event event) {
+        event.assertArgumentsTypes(ClimbLevel.class);
+        new CmdClimb((ClimbLevel) event.arguments[0]).start();
     }
 }

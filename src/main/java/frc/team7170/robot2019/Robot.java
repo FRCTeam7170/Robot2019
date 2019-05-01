@@ -6,11 +6,9 @@ import edu.wpi.first.networktables.EntryListenerFlags;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import frc.team7170.lib.PeriodicRunnable;
 import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.lib.Name;
 import frc.team7170.lib.Named;
@@ -34,6 +32,7 @@ public class Robot extends TimedRobot implements Named {
         Robot.startRobot(Robot::new);
     }
 
+    // TODO: no need to keep references here
 //    private LE3DPJoystick joystick;
     private LF310Gamepad gamepad;
     private KeyMap defaultKeyMap;
@@ -79,13 +78,13 @@ public class Robot extends TimedRobot implements Named {
             }
         });
 
-//        compressor.start();
-        compressor.stop();
+        compressor.start();
+//        compressor.stop();
 
         ShuffleboardTab mainTab = Shuffleboard.getTab(Constants.Shuffleboard.MAIN_TAB);
 
         mainTab.add(Constants.Camera.CAMERA0_NAME, camera0);
-        mainTab.add("compressorEnabled", false).getEntry().addListener(notification -> {
+        mainTab.add("compressorEnabled", true).getEntry().addListener(notification -> {
             if (notification.value.getBoolean()) {
                 compressor.start();
             } else {
@@ -112,11 +111,11 @@ public class Robot extends TimedRobot implements Named {
                 .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.TURTLE_RABBIT_TOGGLE, gamepad, gamepad.B_RJOY)
                 .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
-//                .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
-//                .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
+                // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
+                // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
-                .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
+                // .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_X)
                 // .addPair(ButtonActions.ELEVATOR_LEVEL3, gamepad, gamepad.B_Y)
                 // .addPair(ButtonActions.PICKUP, gamepad, gamepad.B_LBUMPER)
@@ -126,10 +125,11 @@ public class Robot extends TimedRobot implements Named {
                 // .addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
                 // .addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
                 // .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
-                // .addPair(ButtonActions.CLIMB, gamepad, gamepad.B_START)
+                .addPair(ButtonActions.CLIMB_LEVEL2, gamepad, gamepad.B_BACK)
+                .addPair(ButtonActions.CLIMB_LEVEL3, gamepad, gamepad.B_START)
                 .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
-                .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
-                .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
+                // .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
+                // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
@@ -204,7 +204,10 @@ public class Robot extends TimedRobot implements Named {
 
     @Override
     public void teleopInit() {
-        // Set these as default cmd in subsystems.
+        // If we're not connected to FMS which ensures autonomousInit is run at start of match, invoke it manually.
+        if (!DriverStation.getInstance().isFMSAttached()) {
+            autonomousInit();
+        }
         new CmdDriveTeleop().start();
         new CmdFrontArmsTeleop().start();
         new CmdElevatorTeleop().start();
@@ -227,10 +230,10 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void autonomousPeriodic() {
 //        teleopPeriodic();
-        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
-            currCmd.start();
-        }
+//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+//            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+//            currCmd.start();
+//        }
 //        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
 //            currCmd = new CmdRotateFrontArms(Constants.FrontArms.VERTICAL_ANGLE_DEGREES, true);
 //            currCmd.start();
@@ -241,18 +244,18 @@ public class Robot extends TimedRobot implements Named {
 //        }
     }
 
+    private Button climbLevel2Button = new ButtonPollHelper(ButtonActions.CLIMB_LEVEL2);
+    private Button climbLevel3Button = new ButtonPollHelper(ButtonActions.CLIMB_LEVEL3);
+
     @Override
     public void teleopPeriodic() {
 //        FrontArms.getInstance().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.FRONT_ARMS).get());
 //        ClimbLegs.getInstance().getLeftLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.LEFT_LINEAR_ACTUATOR).get());
 //        ClimbLegs.getInstance().getRightLinearActuator().setPercent(KeyBindings.getInstance().actionToAxis(AxisActions.RIGHT_LINEAR_ACTUATOR).get());
-        double elevatorReading = KeyBindings.getInstance().actionToAxis(AxisActions.ELEVATOR).get();
-        if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
-            if (elevatorReading < 0) {
-                Elevator.getInstance().setPercent(0.25 * elevatorReading);
-            } else {
-                Elevator.getInstance().setPercent(elevatorReading);
-            }
+        if (climbLevel2Button.getPressed()) {
+            TeleopStateMachine.getInstance().climbingTrigger.execute(ClimbLevel.LEVEL_2);
+        } else if (climbLevel3Button.getPressed()) {
+            TeleopStateMachine.getInstance().climbingTrigger.execute(ClimbLevel.LEVEL_3);
         }
     }
 

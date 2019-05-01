@@ -12,7 +12,8 @@ public enum ButtonActions implements ButtonAction {
     PICKUP_CANCEL,
 
     LOAD,
-    CLIMB,
+    CLIMB_LEVEL2,
+    CLIMB_LEVEL3,
 
     EJECT,
     EJECT_CANCEL,
