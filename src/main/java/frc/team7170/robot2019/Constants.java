@@ -117,7 +117,7 @@ public final class Constants {
 
         // Smart tank drive
         public static final boolean ENABLE_TANK_FORWARD_ASSIST = false;
-        public static final double TANK_FORWARD_ASSIST_THRESHOLD = 0.05;
+        public static final double TANK_FORWARD_ASSIST_THRESHOLD = 0.10;
 
         // Talon voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;

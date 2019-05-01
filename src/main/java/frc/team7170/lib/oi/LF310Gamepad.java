@@ -53,13 +53,11 @@ public final class LF310Gamepad extends RumbleController {
     public final POVButton POV270;
     public final POVButton POV315;
 
-    private final POVButton.POVButtonPoller povButtonPoller;
-
     private final Map<String, Axis> axes = new HashMap<>();
     private final Map<String, Button> buttons = new HashMap<>();
 
     public LF310Gamepad(GenericHID hid) {
-        super(hid, new Name("LF310Gamepad"));
+        super(hid, new Name(String.format("LF310Gamepad(%d)", hid.getPort())));
 
         A_LX = new HIDAxis(hid, 0);
         A_LY = new HIDAxis(hid, 1);
@@ -79,19 +77,15 @@ public final class LF310Gamepad extends RumbleController {
         B_LJOY = new HIDButton(hid, 9);
         B_RJOY = new HIDButton(hid, 10);
 
-        POV0 = new POVButton(hid, POVButton.POVAngle.A0);
-        POV45 = new POVButton(hid, POVButton.POVAngle.A45);
-        POV90 = new POVButton(hid, POVButton.POVAngle.A90);
-        POV135 = new POVButton(hid, POVButton.POVAngle.A135);
-        POV180 = new POVButton(hid, POVButton.POVAngle.A180);
-        POV225 = new POVButton(hid, POVButton.POVAngle.A225);
-        POV270 = new POVButton(hid, POVButton.POVAngle.A270);
-        POV315 = new POVButton(hid, POVButton.POVAngle.A315);
-
-        povButtonPoller = new POVButton.POVButtonPoller(
-                hid, 0,
-                POV0, POV45, POV90, POV135, POV180, POV225, POV270, POV315
-        );
+        Map<POVButton.POVAngle, POVButton> povButtonMap = POVButton.newButtonsWithPoller(hid, 0);
+        POV0 = povButtonMap.get(POVButton.POVAngle.A0);
+        POV45 = povButtonMap.get(POVButton.POVAngle.A45);
+        POV90 = povButtonMap.get(POVButton.POVAngle.A90);
+        POV135 = povButtonMap.get(POVButton.POVAngle.A135);
+        POV180 = povButtonMap.get(POVButton.POVAngle.A180);
+        POV225 = povButtonMap.get(POVButton.POVAngle.A225);
+        POV270 = povButtonMap.get(POVButton.POVAngle.A270);
+        POV315 = povButtonMap.get(POVButton.POVAngle.A315);
 
         for (Axis a : new Axis[] {A_LX, A_LY, A_RX, A_RY, A_LTRIGGER, A_RTRIGGER}) {
             axes.put(a.getName(), a);

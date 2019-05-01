@@ -142,6 +142,7 @@ public class Drive extends Subsystem implements Named {
             talon.setInverted(Constants.Drive.INVERT_RIGHT);
         }
         talon.setSensorPhase(Constants.Drive.SENSOR_PHASE);
+        talon.overrideLimitSwitchesEnable(false);
     }
 
     @Override

@@ -30,6 +30,7 @@ import java.util.Objects;
  *
  * @author Robert Russell
  */
+// TODO: impossible to give PolledPOVButtons a custom name
 public class POVButton extends TriggerButton {
 
     /**
@@ -58,6 +59,10 @@ public class POVButton extends TriggerButton {
 
         POVAngle(int angle) {
             this.angle = angle;
+        }
+
+        public int getIntegerAngle() {
+            return angle;
         }
     }
 
@@ -105,7 +110,7 @@ public class POVButton extends TriggerButton {
 
     @Override
     public boolean get() {
-        return hid.getPOV(pov) == angle.angle;
+        return hid.getPOV(pov) == angle.getIntegerAngle();
     }
 
     /**
@@ -164,8 +169,9 @@ public class POVButton extends TriggerButton {
     /**
      * <p>
      * An auxiliary class for repeatedly polling the {@linkplain GenericHID#getPOV(int) POV} on a
-     * {@link GenericHID GenericHID} to update the pressed and released states on a complete set (i.e. all eight angles)
-     * of {@code POVButton}s. This class enables the use of the {@link POVButton#getPressed() getPressed} and
+     * {@link GenericHID GenericHID} to update the {@link PolledPOVButton#pressed pressed} and
+     * {@link PolledPOVButton#released released} flags on a complete set (i.e. all eight angles) of {@code POVButton}s.
+     * This class enables the use of the {@link POVButton#getPressed() getPressed} and
      * {@link POVButton#getReleased() getReleased} functionality on {@code POVButton}s.
      * </p>
      * <p>
@@ -177,14 +183,34 @@ public class POVButton extends TriggerButton {
      */
     private static class POVButtonPoller {
 
+        /**
+         * The default poll period used when an explicit one is not provided
+         * (in {@link POVButton#newButtonsWithPoller(GenericHID, int)}).
+         */
         private static final int DEFAULT_POLL_PERIOD_MS = 10;
 
+        /**
+         * The {@link Notifier Notifier} used to repeatedly {@linkplain GenericHID#getPOV(int) poll the POV} and update
+         * the {@link PolledPOVButton#pressed pressed} and {@link PolledPOVButton#released released} flags on the
+         * appropriate {@link PolledPOVButton PolledPOVButton}.
+         */
         private final Notifier notifier = new Notifier(this::poll);
+
         private final GenericHID hid;
+
         private final int pov;
+
         private final PolledPOVButton
                 button0, button45, button90, button135,
                 button180, button225, button270, button315;
+
+        /**
+         * Stores a reference to the {@link PolledPOVButton PolledPOVButton} that was pressed on the last iteration so
+         * that it can be compared to the {@code PolledPOVButton} pressed on the current iteration and detect if a
+         * change occurred.
+         *
+         * @implNote Only the notifier thread accesses this, so no synchronization needed.
+         */
         private PolledPOVButton lastPressed = null;
 
         /**
@@ -234,16 +260,20 @@ public class POVButton extends TriggerButton {
         }
 
         /**
-         * TODO
+         * Run a single poll iteration. This is called by the {@link POVButtonPoller#notifier Notifier}.
          */
         private void poll() {
+            // Read the POV and decode the integer angle into its corresponding button.
             PolledPOVButton pressedButton = angleToButton(hid.getPOV(pov));
+            // Only act if a change has occurred.
             if (pressedButton != lastPressed) {
+                // Tell the last-pressed button (if there is one) that it has been released.
                 if (lastPressed != null) {
-                    lastPressed.released = true;
+                    lastPressed.released();
                 }
+                // Tell the currently-pressed button (if there is one) that is has been pressed.
                 if (pressedButton != null) {
-                    pressedButton.pressed = true;
+                    pressedButton.pressed();
                 }
                 lastPressed = pressedButton;
             }
@@ -282,35 +312,52 @@ public class POVButton extends TriggerButton {
     }
 
     /**
-     * TODO
+     * A {@code POVButton} that supports the use of {@link PolledPOVButton#getPressed() getPressed} and
+     * {@link PolledPOVButton#getReleased() getReleased} using a {@link POVButtonPoller POVButtonPoller}. Instances of
+     * this class are returned by the static factory methods on {@code POVButton}.
      *
      * @author Robert Russell
      */
     private static class PolledPOVButton extends POVButton {
 
         /**
-         *
+         * A reference to the {@link POVButtonPoller POVButtonPoller} polling this {@code PolledPOVButton}. This is not
+         * actually used anywhere, but it is important that every {@code PolledPOVButton} hold a strong reference to its
+         * {@code POVButtonPoller} so that the {@code POVButtonPoller} is not garbage collected until all eight
+         * {@code PolledPOVButton}s in a complete set are also garbage collected.
          */
         private POVButtonPoller poller;
 
         /**
          * Whether or not the POV angle got enabled since the last invocation of
          * {@link NTButton#getPressed() getPressed}.
+         *
+         * @implNote Access is synchronized on {@code this}.
          */
         private boolean pressed = false;
 
         /**
          * Whether or not the POV angle got disabled since the last invocation of
          * {@link NTButton#getReleased() getReleased}.
+         *
+         * @implNote Access is synchronized on {@code this}.
          */
         private boolean released = false;
 
+        /**
+         * @param hid the {@link GenericHID GenericHID} to get the {@linkplain GenericHID#getPOV(int) POV angle} from.
+         * @param pov the POV number.
+         * @param angle the {@link POVAngle POVAngle}.
+         * @throws NullPointerException if the given {@code GenericHID} or the given {@code POVAngle} is {@code null}.
+         * @throws IllegalArgumentException if the derived name is not valid according to the global naming rules set out in
+         * {@link frc.team7170.lib.Name Name}.
+         */
         private PolledPOVButton(GenericHID hid, int pov, POVAngle angle) {
             super(hid, pov, angle);
         }
 
         @Override
-        public boolean getPressed() {
+        public synchronized boolean getPressed() {
             if (pressed) {
                 pressed = false;
                 return true;
@@ -319,22 +366,50 @@ public class POVButton extends TriggerButton {
         }
 
         @Override
-        public boolean getReleased() {
+        public synchronized boolean getReleased() {
             if (released) {
                 released = false;
                 return true;
             }
             return false;
         }
+
+        /**
+         * Indicate to the {@code PolledPOVButton} that is has been pressed. Called by
+         * {@link POVButtonPoller POVButtonPoller}s.
+         */
+        private synchronized void pressed() {
+            pressed = true;
+        }
+
+        /**
+         * Indicate to the {@code PolledPOVButton} that is has been released. Called by
+         * {@link POVButtonPoller POVButtonPoller}s.
+         */
+        private synchronized void released() {
+            released = true;
+        }
     }
 
     /**
-     * TODO: comment on immutability of map
+     * Get an immutable {@link Map Map} mapping all eight {@link POVAngle POVAngle}s to a respective instance of
+     * {@code POVButton}. {@code POVButton}s returned here support the use of the
+     * {@link PolledPOVButton#getPressed() getPressed} and {@link PolledPOVButton#getReleased() getReleased}
+     * functionality.
      *
-     * @param hid
-     * @param pov
-     * @param pollPeriodMs
-     * @return
+     * @implNote This actually returns instances of {@link PolledPOVButton PolledPOVButton}.
+     *
+     * @param hid the {@link GenericHID GenericHID} to get the {@linkplain GenericHID#getPOV(int) POV angle} from.
+     * @param pov the POV number.
+     * @param pollPeriodMs the duration of the poll period for the POV in milliseconds.
+     * @return an immutable {@link Map Map} mapping all eight {@link POVAngle POVAngle}s to a respective instance of
+     * {@code POVButton}.
+     * @throws NullPointerException if the given {@code GenericHID} is {@code null}.
+     * @throws IllegalArgumentException if the {@linkplain POVAngle#name() derived names} for each {@code POVButton} is
+     * not valid according to the global naming rules set out in {@link frc.team7170.lib.Name Name}.
+     * @throws IllegalArgumentException if the given poll period is less than zero.
+     * @see PolledPOVButton
+     * @see POVButtonPoller
      */
     public static Map<POVAngle, POVButton> newButtonsWithPoller(GenericHID hid, int pov, int pollPeriodMs) {
         PolledPOVButton b0 = new PolledPOVButton(hid, pov, POVAngle.A0);
@@ -368,6 +443,30 @@ public class POVButton extends TriggerButton {
         );
     }
 
+    /**
+     * <p>
+     * Get an immutable {@link Map Map} mapping all eight {@link POVAngle POVAngle}s to a respective instance of
+     * {@code POVButton}. {@code POVButton}s returned here support the use of the
+     * {@link PolledPOVButton#getPressed() getPressed} and {@link PolledPOVButton#getReleased() getReleased}
+     * functionality.
+     * </p>
+     * <p>
+     * This uses the default poll period ({@value POVButtonPoller#DEFAULT_POLL_PERIOD_MS}).
+     * </p>
+     *
+     * @implNote This actually returns instances of {@link PolledPOVButton PolledPOVButton}.
+     *
+     * @param hid the {@link GenericHID GenericHID} to get the {@linkplain GenericHID#getPOV(int) POV angle} from.
+     * @param pov the POV number.
+     * @return an immutable {@link Map Map} mapping all eight {@link POVAngle POVAngle}s to a respective instance of
+     * {@code POVButton}.
+     * @throws NullPointerException if the given {@code GenericHID} is {@code null}.
+     * @throws IllegalArgumentException if the {@linkplain POVAngle#name() derived names} for each {@code POVButton} is
+     * not valid according to the global naming rules set out in {@link frc.team7170.lib.Name Name}.
+     * @throws IllegalArgumentException if the given poll period is less than zero.
+     * @see PolledPOVButton
+     * @see POVButtonPoller
+     */
     public static Map<POVAngle, POVButton> newButtonsWithPoller(GenericHID hid, int pov) {
         return newButtonsWithPoller(hid, pov, POVButtonPoller.DEFAULT_POLL_PERIOD_MS);
     }
