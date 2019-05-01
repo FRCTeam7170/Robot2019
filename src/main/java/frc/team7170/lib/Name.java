@@ -18,11 +18,6 @@ import java.util.regex.Pattern;
 public final class Name {
 
     /**
-     * The empty name.
-     */
-    public static final Name UNNAMED = new Name("");
-
-    /**
      * The global RegEx {@link Pattern Pattern} describing what constitutes a valid {@code Name}. By default, a valid
      * name is any alphanumeric (lowercase and uppercase characters, and numerals) sequence with or without underscores
      * and no whitespace. This definition can be customized through {@link Name#setValidNamePattern(Pattern)} or
@@ -36,6 +31,11 @@ public final class Name {
      * to verify one or more names already. Access is synchronized on {@code Name.class}.
      */
     private static boolean validNamePatternUsed = false;
+
+    /**
+     * The empty name.
+     */
+    public static final Name UNNAMED = new Name("");
 
     private final String name;
 
@@ -70,10 +70,6 @@ public final class Name {
      */
     public static synchronized boolean isValidName(String name) {
         validNamePatternUsed = true;
-        if (validNamePattern == null) {
-            // TODO: why is this necessary?????
-            validNamePattern = Pattern.compile("^[a-zA-Z0-9_]*$");
-        }
         return validNamePattern.matcher(Objects.requireNonNull(name, "name must be non-null")).matches();
     }
 
