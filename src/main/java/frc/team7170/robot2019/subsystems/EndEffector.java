@@ -351,10 +351,10 @@ public class EndEffector extends Subsystem {
 //        return false;
         // TODO: temp, Joel's thingy
         if (ejecting) {
-            ejectDeploySolenoid.set(false);
+            ejectRetractSolenoid.startPulse();
             ejecting = false;
         } else {
-            ejectDeploySolenoid.set(true);
+            ejectDeploySolenoid.startPulse();
             ejecting = true;
         }
         return true;
