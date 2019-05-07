@@ -1,6 +1,7 @@
 package frc.team7170.lib.looping;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public class BaseLooper implements Looper {
 
     @Override
     public void registerLoop(Loop loop) {
-        if (loops.contains(loop)) {
+        if (loops.contains(Objects.requireNonNull(loop, "cannot register null Loop"))) {
             throw new IllegalArgumentException("given Loop already registered");
         }
         loops.add(loop);
@@ -39,7 +40,7 @@ public class BaseLooper implements Looper {
 
     @Override
     public void removeLoop(Loop loop) {
-        if (!loops.remove(loop)) {
+        if (!loops.remove(Objects.requireNonNull(loop, "cannot remove null Loop"))) {
             throw new IllegalArgumentException("given Loop not in Looper");
         }
         if (running) {
