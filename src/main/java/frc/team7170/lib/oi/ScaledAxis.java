@@ -15,7 +15,8 @@ import frc.team7170.lib.Name;
  *
  * @author Robert Russell
  */
-public abstract class ScaledAxis implements Axis {
+// TODO: fix docs with controller arg
+public abstract class ScaledAxis extends BaseControllered implements Axis {
 
     private final String name;
     private double scale;
@@ -31,7 +32,8 @@ public abstract class ScaledAxis implements Axis {
      * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
      * {@link Name Name}.
      */
-    public ScaledAxis(String name, double scale, double offset) {
+    public ScaledAxis(Controller controller, String name, double scale, double offset) {
+        super(controller);
         this.name = Name.requireValidName(name);
         this.scale = scale;
         this.offset = offset;
@@ -45,8 +47,8 @@ public abstract class ScaledAxis implements Axis {
      * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
      * {@link frc.team7170.lib.Name Name}.
      */
-    public ScaledAxis(String name) {
-        this(name, 1.0, 0.0);
+    public ScaledAxis(Controller controller, String name) {
+        this(controller, name, 1.0, 0.0);
     }
 
     /**

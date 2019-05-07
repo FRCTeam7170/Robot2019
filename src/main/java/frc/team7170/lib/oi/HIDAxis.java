@@ -10,6 +10,7 @@ import java.util.Objects;
  *
  * @author Robert Russell
  */
+// TODO: fix docs with controller arg
 public class HIDAxis extends ScaledAxis {
 
     private final GenericHID hid;
@@ -25,8 +26,8 @@ public class HIDAxis extends ScaledAxis {
      * @throws IllegalArgumentException if the given name is not valid according to the global naming rules set out in
      * {@link frc.team7170.lib.Name Name}.
      */
-    public HIDAxis(GenericHID hid, int port, String name) {
-        super(name);
+    public HIDAxis(GenericHID hid, int port, Controller controller, String name) {
+        super(controller, name);
         /* This sanity check means a controller must be plugged in for the robot to be on, which is a bit silly.
         if (port >= hid.getAxisCount()) {
             throw new IllegalArgumentException("axis port number exceeds the number of axes on given HID");
@@ -45,8 +46,8 @@ public class HIDAxis extends ScaledAxis {
      * @throws IllegalArgumentException if the derived name is not valid according to the global naming rules set out in
      * {@link frc.team7170.lib.Name Name} (i.e. if the global naming rules disallow integer names).
      */
-    public HIDAxis(GenericHID hid, int port) {
-        this(hid, port, String.valueOf(port));
+    public HIDAxis(GenericHID hid, int port, Controller controller) {
+        this(hid, port, controller, String.valueOf(port));
     }
 
     @Override

@@ -20,7 +20,7 @@ import frc.team7170.lib.Named;
  * @see KeyMap
  * @see KeyBindings
  */
-public interface Button extends Named {
+public interface Button extends Named, Controllered {
 
     /**
      * Get the value of the {@code Button}; that is, get whether the {@code Button} is currently pressed.

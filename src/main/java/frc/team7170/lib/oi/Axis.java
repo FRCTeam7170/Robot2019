@@ -12,7 +12,7 @@ import frc.team7170.lib.Named;
  * @see KeyMap
  * @see KeyBindings
  */
-public interface Axis extends Named {
+public interface Axis extends Named, Controllered {
 
     /**
      * Get the value of the {@code Axis}. This is typically a number in the range {@code [-1, 1]}.

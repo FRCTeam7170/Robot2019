@@ -2,6 +2,8 @@ package frc.team7170.lib;
 
 import edu.wpi.first.wpilibj.Timer;
 
+import java.util.Objects;
+
 public class PeriodicRunnable implements Runnable {
 
     private final Runnable runnable;
@@ -9,7 +11,10 @@ public class PeriodicRunnable implements Runnable {
     private double lastTime = Timer.getFPGATimestamp();
 
     public PeriodicRunnable(Runnable runnable, int delayMs) {
-        this.runnable = runnable;
+        if (delayMs < 0) {
+            throw new IllegalArgumentException("negative delay");
+        }
+        this.runnable = Objects.requireNonNull(runnable, "runnable must be non-null");
         this.delaySec = (double) delayMs / 1000.0;
     }
 

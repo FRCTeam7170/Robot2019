@@ -109,6 +109,8 @@ public final class KeyBindings implements Named {
         return keyMapMap.values();
     }
 
+    // TODO: move decode functionality to SerializableKeyMap
+
     private SerializableKeyMap parseToKeymap(String value, Name name) {
         SerializableKeyMap.Builder kmBuilder = new SerializableKeyMap.Builder(name);
         Arrays.stream(value.split(SerializableKeyMap.ENTRY_SEP))

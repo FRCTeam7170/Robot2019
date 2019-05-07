@@ -9,6 +9,7 @@ import java.util.Objects;
  *
  * @author Robert Russell
  */
+// TODO: fix docs with controller arg
 public class NTAxis extends ScaledAxis {
 
     private final NetworkTableEntry entry;
@@ -25,8 +26,8 @@ public class NTAxis extends ScaledAxis {
      * {@link edu.wpi.first.networktables.NetworkTableType#kDouble kDouble} or
      * {@link edu.wpi.first.networktables.NetworkTableType#kUnassigned kUnassigned}.
      */
-    public NTAxis(NetworkTableEntry entry, String name) {
-        super(name);
+    public NTAxis(NetworkTableEntry entry, Controller controller, String name) {
+        super(controller, name);
         this.entry = requireValidEntry(entry);
     }
 
@@ -42,8 +43,8 @@ public class NTAxis extends ScaledAxis {
      * {@link edu.wpi.first.networktables.NetworkTableType#kDouble kDouble} or
      * {@link edu.wpi.first.networktables.NetworkTableType#kUnassigned kUnassigned}.
      */
-    public NTAxis(NetworkTableEntry entry) {
-        super(requireValidEntry(entry).getName());
+    public NTAxis(NetworkTableEntry entry, Controller controller) {
+        super(controller, requireValidEntry(entry).getName());
         this.entry = entry;
     }
 

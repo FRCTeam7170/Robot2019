@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
  * consistent. The exact restrictions placed on names can be customized through
  * {@link Name#setValidNamePattern(Pattern)} or {@link Name#setValidNamePattern(String)}.
  *
+ * TODO document default name rules here and what name rules are required for spooky lib to not fail at runtime
+ *
  * @author Robert Russell
  * @see Named
  */
@@ -19,11 +21,12 @@ public final class Name {
 
     /**
      * The global RegEx {@link Pattern Pattern} describing what constitutes a valid {@code Name}. By default, a valid
-     * name is any alphanumeric (lowercase and uppercase characters, and numerals) sequence with or without underscores
-     * and no whitespace. This definition can be customized through {@link Name#setValidNamePattern(Pattern)} or
-     * {@link Name#setValidNamePattern(String)}. Access is synchronized on {@code Name.class}.
+     * name is any sequence without any whitespace and without the following characters: TODO
+     * This definition can be
+     * customized through {@link Name#setValidNamePattern(Pattern)} or {@link Name#setValidNamePattern(String)}. Access
+     * is synchronized on {@code Name.class}.
      */
-    private static Pattern validNamePattern = Pattern.compile("^[a-zA-Z0-9_]*$");
+    private static Pattern validNamePattern = Pattern.compile("^(?:[^\\\\/,:;|'\"](?!\\s))*$");
 
     /**
      * Whether the {@link Name#validNamePattern validNamePattern} has been used already or not. This flag is used to
