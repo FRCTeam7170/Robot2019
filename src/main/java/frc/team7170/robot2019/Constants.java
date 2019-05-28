@@ -39,8 +39,8 @@ public final class Constants {
         public static final int CLIMB_LEGS_TALON_RIGHT = 17;
 
         // Elevator victors
-        public static final int ELEVATOR_SPARK_MAX_MASTER = 20;  // Left
-        public static final int ELEVATOR_SPARK_MAX_FOLLOWER = 21;  // Right
+        public static final int ELEVATOR_SPARK_MAX_MASTER = 20;  // Right
+        public static final int ELEVATOR_SPARK_MAX_FOLLOWER = 21;  // Left
 
         // Climb drive spark maxes
         public static final int CLIMB_DRIVE_VICTOR_LEFT = 18;
