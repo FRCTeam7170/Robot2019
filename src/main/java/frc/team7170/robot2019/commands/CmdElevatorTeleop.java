@@ -41,14 +41,15 @@ public class CmdElevatorTeleop extends Command {
         } else if (load.getPressed()) {
             tsm.loadTrigger.execute();
         }
-        double elevatorReading = elevatorAxis.get();
-        if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
-            if (elevatorReading < 0) {
-                Elevator.getInstance().setPercent(0.25 * elevatorReading);
-            } else {
-                Elevator.getInstance().setPercent(elevatorReading);
-            }
-        }
+        // This is causing pid controllers to be disabled even when hold is passed as true to CmdMoveElevator
+//        double elevatorReading = elevatorAxis.get();
+//        if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
+//            if (elevatorReading < 0) {
+//                Elevator.getInstance().setPercent(0.25 * elevatorReading);
+//            } else {
+//                Elevator.getInstance().setPercent(elevatorReading);
+//            }
+//        }
     }
 
     @Override

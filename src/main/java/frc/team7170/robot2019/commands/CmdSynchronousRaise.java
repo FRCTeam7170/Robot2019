@@ -57,7 +57,10 @@ public class CmdSynchronousRaise extends Command {
         }
         leftLinearActuator.setPercent(laSpeed * (1 + laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
         rightLinearActuator.setPercent(laSpeed * (1 - laDiff/Constants.ClimbLegs.MAX_DIFFERENTIAL_METRES));
+        // The condition here is to assure the front arms do not activate and stop "holding" if the target angle has not
+        // yet passed the initial angle (I think... it sure would be nice if I left a comment here when I wrote this).
         if ((!reversed && (targetAngle > initialAngle)) || (reversed && (targetAngle < initialAngle))) {
+            // The divide by five here is the max differential I think... should probably make this a constant.
             frontArms.setPercent(CalcUtil.clamp(faSpeed * (1 + faDiff / 5),
                     0.0, Constants.Climb.MAXIMUM_CLIMB_SPEED));
         }
@@ -67,7 +70,7 @@ public class CmdSynchronousRaise extends Command {
     protected void end() {
         leftLinearActuator.killMotor();
         rightLinearActuator.killMotor();
-        frontArms.setAngle(frontArms.getAngle());
+        frontArms.setAngle(heightToFrontArmAngle(distanceMetres));
     }
 
     @Override
@@ -89,6 +92,7 @@ public class CmdSynchronousRaise extends Command {
      *
      * theta(h) = arccos((H + r - y - h) / x) + psi
      */
+    @SuppressWarnings("UnnecessaryLocalVariable")
     private double heightToFrontArmAngle(double h) {
         double H = platformHeightMetres;
         double y = Constants.Dimensions.FRONT_ARM_PIVOT_HEIGHT_METRES;

@@ -11,7 +11,7 @@ public class CmdClimb extends CommandGroup {
         addSequential(new CmdDeployAppendages(
                 climbLevel.getInitialAngleDegrees(),
                 Constants.Dimensions.LINEAR_ACTUATOR_CONTACT_DISTANCE_METRES,
-                false)
+                false)  // TODO: try setting hold to true...
         );
 
         // Raise the robot with the climb legs and front arms in sync.

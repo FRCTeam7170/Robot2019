@@ -7,24 +7,24 @@ import frc.team7170.lib.looping.Looper;
 import java.util.*;
 import java.util.logging.Logger;
 
-public final class Scheduler {
+public final class RoutineScheduler {
 
-    private static final Logger LOGGER = Logger.getLogger(Scheduler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RoutineScheduler.class.getName());
 
     private final Looper looper;
     private final Map<Subsystem, Integer> subsystemClaimsMap = new HashMap<>();
     private final Set<Routine> currentlyRunning = new HashSet<>();
 
-    public Scheduler(Looper looper) {
+    public RoutineScheduler(Looper looper) {
         this.looper = looper;
     }
 
-    private static Scheduler DEFAULT_SCHEDULER;
+    private static RoutineScheduler DEFAULT_SCHEDULER;
 
-    public static Scheduler getDefault() {
+    public static RoutineScheduler getDefault() {
         if (DEFAULT_SCHEDULER == null) {
             Looper looper = new IterativeLooper(20);
-            DEFAULT_SCHEDULER = new Scheduler(looper);
+            DEFAULT_SCHEDULER = new RoutineScheduler(looper);
             looper.startLoops();
         }
         return DEFAULT_SCHEDULER;
@@ -53,11 +53,10 @@ public final class Scheduler {
     }
 
     public boolean trySchedule(Routine routine) {
-        return tryScheduleInContext(routine, Set.of());
+        return tryScheduleInContext(routine, Collections.emptySet());
     }
 
     boolean tryScheduleInContext(Routine routine, Set<Subsystem> context) {
-        // TODO: make sure routine is new
         if (canRun(routine, context)) {
             claimRequirements(routine, context);
             startRoutine(routine);
@@ -78,7 +77,7 @@ public final class Scheduler {
         for (Subsystem requirement : routine.requirements) {
             if (!subsystemClaimsMap.containsKey(requirement)) {
                 throw new IllegalArgumentException(
-                        String.format("cannot require Subsystem '%s': not registered with this Scheduler", requirement)
+                        String.format("cannot require Subsystem '%s': not registered with this RoutineScheduler", requirement)
                 );
             }
             // Less than zero in subsystemClaimsMap means not interruptable.
@@ -155,6 +154,7 @@ public final class Scheduler {
         if (defaultRoutine == null) {
             return;
         }
+        defaultRoutine.checkIfCanRun();
         if (!defaultRoutine.requires(subsystem)) {
             throw new RuntimeException(
                     String.format("the default Routine for Subsystem '%s' does not require that Subsystem", subsystem)

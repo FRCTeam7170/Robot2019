@@ -6,6 +6,7 @@ public interface Subsystem extends Named {
 
     default void onLoop() {}
 
+    // TODO: comment on how this is different from WPI lib version
     default Routine getDefaultRoutine() {
         return null;
     }

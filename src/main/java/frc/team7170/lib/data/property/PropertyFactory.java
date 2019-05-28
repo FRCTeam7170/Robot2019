@@ -1,5 +1,6 @@
 package frc.team7170.lib.data.property;
 
+import frc.team7170.lib.BooleanConsumer;
 import frc.team7170.lib.data.ValueType;
 
 import java.util.Objects;
@@ -21,26 +22,6 @@ public final class PropertyFactory {
 
     // Enforce non-instantiability.
     private PropertyFactory() {}
-
-    /**
-     * A {@link FunctionalInterface FunctionalInterface} that returns {@code void} and accepts a single primitive
-     * {@code boolean} value.
-     *
-     * @apiNote For some reason, no equivalent interface is provided in the standard Java libraries even though a
-     * complementary {@link BooleanSupplier BooleanSupplier} functional interface is.
-     *
-     * @author Robert Russell
-     */
-    @FunctionalInterface
-    public interface BooleanConsumer {
-
-        /**
-         * Accepts a value.
-         *
-         * @param value the value to accept.
-         */
-        void accept(boolean value);
-    }
 
     /**
      * Construct a new {@link RProperty RProperty} of type {@link ValueType#BOOLEAN boolean}.
