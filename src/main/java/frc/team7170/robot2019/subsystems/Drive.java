@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.team7170.lib.Named;
 import frc.team7170.lib.math.CalcUtil;
 import frc.team7170.robot2019.Constants;
+import frc.team7170.robot2019.commands.CmdDriveTeleop;
 
 import java.util.logging.Logger;
 
@@ -34,8 +35,8 @@ public class Drive extends Subsystem implements Named {
     private boolean squareInputs = Constants.Drive.SQUARE_INPUTS;
     private boolean enableTankForwardAssist = Constants.Drive.ENABLE_TANK_FORWARD_ASSIST;
     private double tankForwardAssistThreshold = Constants.Drive.TANK_FORWARD_ASSIST_THRESHOLD;
-    private double multiplier = Constants.Drive.RABBIT_MULTIPLIER;
-    private boolean isTurtleMode = false;
+    private double multiplier = Constants.Drive.TURTLE_MULTIPLIER;
+    private boolean isTurtleMode = true;
 
     private Drive() {
         super("drive");
@@ -292,7 +293,7 @@ public class Drive extends Subsystem implements Named {
 
     @Override
     protected void initDefaultCommand() {
-        // setDefaultCommand(new CmdDriveTeleop());
+        setDefaultCommand(new CmdDriveTeleop());
     }
 
     private static double metresToTalonUnits(double value) {

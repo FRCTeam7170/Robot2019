@@ -21,8 +21,9 @@ public class CmdPickup extends CommandGroup {
 
     public CmdPickup() {
         addSequential(new CmdRotateFrontArms(Constants.FrontArms.PICKUP_ANGLE_DEGREES, false));
-        addParallel(new CmdRotateFrontArms(Constants.FrontArms.HOME_ANGLE_DEGREES, true));
-        addParallel(new CmdRunnable(() -> {
+        addSequential(new CmdRotateFrontArms(Constants.FrontArms.HOME_ANGLE_DEGREES, true));
+        addSequential(new CmdZeroFrontArms());
+        addSequential(new CmdRunnable(() -> {
             pollCancel = false;
             tsm.pickupFinishedTrigger.execute();
         }));

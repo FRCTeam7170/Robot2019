@@ -41,14 +41,12 @@ public class CmdElevatorTeleop extends Command {
         } else if (load.getPressed()) {
             tsm.loadTrigger.execute();
         }
-        double elevatorReading = elevatorAxis.get();
-        if (!CalcUtil.inThreshold(elevatorReading, 0, Constants.Elevator.MANUAL_THRESH)) {
-            if (elevatorReading < 0) {
-                Elevator.getInstance().setPercent(0.25 * elevatorReading);
-            } else {
-                Elevator.getInstance().setPercent(elevatorReading);
-            }
-        }
+//        double elevatorReading = elevatorAxis.get();
+//        if (elevatorReading < 0) {
+//            tsm.elevateManualTrigger.execute(0.25 * elevatorReading);
+//        } else {
+//            tsm.elevateManualTrigger.execute(elevatorReading);
+//        }
     }
 
     @Override

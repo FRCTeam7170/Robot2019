@@ -406,6 +406,6 @@ public class EndEffector extends Subsystem {
 
     @Override
     protected void initDefaultCommand() {
-        // setDefaultCommand(new CmdEndEffectorTeleop());
+        setDefaultCommand(new CmdEndEffectorTeleop());
     }
 }

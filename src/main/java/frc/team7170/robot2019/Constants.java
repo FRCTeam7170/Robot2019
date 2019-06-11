@@ -82,8 +82,8 @@ public final class Constants {
     public static final class PCM {
         public static final int EJECT_DEPLOY_SOLENOID = 2;
         public static final int EJECT_RETRACT_SOLENOID = 0;
-        public static final int PIN_DEPLOY_SOLENOID = 1;
-        public static final int PIN_RETRACT_SOLENOID = 3;
+        public static final int PIN_DEPLOY_SOLENOID = 3;
+        public static final int PIN_RETRACT_SOLENOID = 1;
     }
 
     public static final class Camera {
@@ -153,7 +153,7 @@ public final class Constants {
         public static final double LEVEL1_MULTIPLIER = 1.0;
         public static final double LEVEL2_MULTIPLIER = 1.0;
         public static final double LEVEL3_MULTIPLIER = 1.0;
-        public static final double PICKUP_PREPARE_MULTIPLIER = 0.5;
+        public static final double PICKUP_PREPARE_MULTIPLIER = 1.0;
         public static final double LOAD_PREPARE_MULTIPLIER = 1.0;
         public static final double RABBIT_MULTIPLIER = 1.0;
         public static final double TURTLE_MULTIPLIER = 0.5;
@@ -166,14 +166,17 @@ public final class Constants {
         public static final NeutralMode NEUTRAL_MODE = NeutralMode.Brake;
         public static final int ALLOWABLE_CLOSED_LOOP_ERROR = 25;  // 1.5 degrees
         public static final int ENCODER_CPR = 20;  // CIMCoder
-        public static final double MAX_ABSOLUTE_OUTPUT = 1.0;
+        //TODO
+        //MAX_ABSOLUTE_OUTPUT controls base?
+        public static final double MAX_ABSOLUTE_OUTPUT = 0.5;
+        public static final double MAX_ABSOLUTE_OUTPUT2 = 1;
         public static final double ANGLE_UNCERTAINTY_DEGREES = 5.0;
 
         // Preset positions
         public static final double HOME_ANGLE_DEGREES = 0.0;
         public static final double VERTICAL_ANGLE_DEGREES = 13.7;
         public static final double HORIZONTAL_ANGLE_DEGREES = VERTICAL_ANGLE_DEGREES + 90.0;
-        public static final double PICKUP_ANGLE_DEGREES = 125.0;
+        public static final double PICKUP_ANGLE_DEGREES = 116.0;
 
         // Voltage compensation
         public static final boolean ENABLE_VOLTAGE_COMPENSATION = false;
@@ -191,8 +194,8 @@ public final class Constants {
         public static final boolean SENSOR_PHASE = false;
 
         // Left PIDF parameters
-        public static final double P = 0.5;  // throttle / error
-        public static final double I = 0.001;  // throttle / integrated error
+        public static final double P = 3.0;  // throttle / error
+        public static final double I = 0.002;  // throttle / integrated error
         public static final double D = 8;  // throttle / differentiated error
         public static final double F = 0.0;  // multiplied directly by setpoint
         public static final int IZONE = 1000;  // max integrated error to permit I accumulation on
@@ -280,29 +283,32 @@ public final class Constants {
         public static final double RAMP_TIME = 0.1;  // seconds
         public static final CANSparkMax.IdleMode IDLE_MODE = CANSparkMax.IdleMode.kBrake;
         public static final int CURRENT_LIMIT_AMPS = 40;  // per motor
-        public static final double TOLERANCE_METRES = 0.01;
+        public static final double TOLERANCE_METRES = 0.02;
         public static final double MANUAL_THRESH = 0.05;
 
         // Preset positions
         public static final double HOME_METRES = 0.0;
-        public static final double RECEIVE_HATCH_PANEL_METRES = 0.0;
+        public static final double RECEIVE_HATCH_PANEL_METRES = 0.25;
         public static final double LEVEL1_METRES = HOME_METRES;
         public static final double LEVEL2_METRES = 0.65;
-        public static final double LEVEL3_METRES = 0.0;
+        public static final double LEVEL3_METRES = 1.0;
         public static final double LOAD_INIT_METRES = 0.0;
-        public static final double LOAD_MOVE_UP_METRES = 0.07;
+        public static final double LOAD_MOVE_UP_METRES = 0.20;
 
         // Inversion
-        public static final boolean INVERT_LEFT = false;
-        public static final boolean INVERT_RIGHT = false;
+        public static final boolean INVERT_LEFT = true;
+        public static final boolean INVERT_RIGHT = true;
         public static final boolean INVERT_ENCODER = false;
 
         // PIDF parameters
-        public static final double P = 5.0;
-        public static final double I = 0.02;
-        public static final double D = 0.0;
-        public static final double F = 0.0;
-        // public static final double IZONE = 0.0;
+        public static final double P_UP = 5.0;
+        public static final double I_UP = 0.008;
+        public static final double D_UP = 0.0;
+        public static final double F_UP = 0.0;
+        public static final double P_DOWN = 1.2;
+        public static final double I_DOWN = 0.012;
+        public static final double D_DOWN = 0.0;
+        public static final double F_DOWN = 0.0;
     }
 
     public static final class EndEffector {

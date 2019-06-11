@@ -3,9 +3,12 @@ package frc.team7170.robot2019;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.EntryListenerFlags;
+import edu.wpi.first.networktables.EntryNotification;
 import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -17,6 +20,9 @@ import frc.team7170.robot2019.actions.AxisActions;
 import frc.team7170.robot2019.actions.ButtonActions;
 import frc.team7170.robot2019.commands.*;
 import frc.team7170.robot2019.subsystems.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // TODO: spooky-console: NTBrowser needs ability to make new entry
 // TODO: "primitive-mode" option
@@ -43,6 +49,10 @@ public class Robot extends TimedRobot implements Named {
     // private final UsbCamera camera1 = CameraServer.getInstance().startAutomaticCapture(Constants.Camera.CAMERA1_NAME, 1);
 
     private NetworkTableEntry matchTimeEntry;
+
+    // For button board
+    private NetworkTableEntry pressedEntry;
+    private NetworkTableEntry releasedEntry;
 
     @Override
     public void robotInit() {
@@ -110,29 +120,35 @@ public class Robot extends TimedRobot implements Named {
                 .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
                 .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.TURTLE_RABBIT_TOGGLE, gamepad, gamepad.B_RJOY)
-                .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
+//                .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
                 // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.CLIMB_DRIVE, gamepad, gamepad.A_RY)
-                // .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
-                // .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_X)
-                // .addPair(ButtonActions.ELEVATOR_LEVEL3, gamepad, gamepad.B_Y)
-                // .addPair(ButtonActions.PICKUP, gamepad, gamepad.B_LBUMPER)
-                // .addPair(ButtonActions.PICKUP_CANCEL, gamepad, gamepad.B_X)
+                .addPair(ButtonActions.ELEVATOR_LEVEL1, gamepad, gamepad.B_B)
+                .addPair(ButtonActions.ELEVATOR_LEVEL2, gamepad, gamepad.B_X)
+                 .addPair(ButtonActions.ELEVATOR_LEVEL3, gamepad, gamepad.B_Y)
+                 .addPair(ButtonActions.PICKUP, gamepad, gamepad.B_LBUMPER)
+                 .addPair(ButtonActions.PICKUP_CANCEL, gamepad, gamepad.B_X)
                 .addPair(ButtonActions.EJECT, gamepad, gamepad.B_RBUMPER)
                 // .addPair(ButtonActions.EJECT_CANCEL, gamepad, gamepad.B_A)
-                // .addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
-                // .addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
-                // .addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
-                .addPair(ButtonActions.CLIMB_LEVEL2, gamepad, gamepad.B_BACK)
-                .addPair(ButtonActions.CLIMB_LEVEL3, gamepad, gamepad.B_START)
+                 //.addPair(ButtonActions.LATERAL_SLIDE_LEFT, gamepad, gamepad.POV270)
+                 //.addPair(ButtonActions.LATERAL_SLIDE_RIGHT, gamepad, gamepad.POV90)
+                //.addPair(ButtonActions.LOAD, gamepad, gamepad.B_Y)
+                // .addPair(ButtonActions.CLIMB_LEVEL2, gamepad, gamepad.B_BACK)
+//                 .addPair(ButtonActions.CLIMB_LEVEL3, gamepad, gamepad.B_START)
                 .addPair(ButtonActions.TOGGLE_PIN, gamepad, gamepad.B_A)
-                // .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
-                // .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
+                 .addPair(ButtonActions.TEST_GENERIC_0, gamepad, gamepad.B_START)
+//                 .addPair(ButtonActions.TEST_GENERIC_1, gamepad, gamepad.B_BACK)
                 .build();
         KeyBindings.getInstance().registerKeyMap(defaultKeyMap);
         KeyBindings.getInstance().setCurrKeyMap(defaultKeyMap);
+
+        NetworkTableInstance instance = NetworkTableInstance.getDefault();
+        pressedEntry = instance.getEntry("buttonBoardPressed");
+        releasedEntry = instance.getEntry("buttonBoardReleased");
+        pressedEntry.addListener(this::buttonPressed, EntryListenerFlags.kUpdate);
+        releasedEntry.addListener(this::buttonRealeased, EntryListenerFlags.kUpdate);
     }
 
     @Override
@@ -150,6 +166,7 @@ public class Robot extends TimedRobot implements Named {
         ClimbLegs.getInstance().getLeftLinearActuator().killMotor();
         ClimbLegs.getInstance().getRightLinearActuator().killMotor();
         ClimbDrive.getInstance().killMotors();
+        TeleopStateMachine.getInstance().reset();
     }
 
     private Command currCmd;
@@ -208,10 +225,6 @@ public class Robot extends TimedRobot implements Named {
         if (!DriverStation.getInstance().isFMSAttached()) {
             autonomousInit();
         }
-        new CmdDriveTeleop().start();
-        new CmdFrontArmsTeleop().start();
-        new CmdElevatorTeleop().start();
-        new CmdEndEffectorTeleop().start();
     }
 
     @Override
@@ -230,10 +243,10 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public void autonomousPeriodic() {
 //        teleopPeriodic();
-//        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
-//            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
-//            currCmd.start();
-//        }
+        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
+            currCmd = new CmdClimb(ClimbLevel.LEVEL_3);
+            currCmd.start();
+        }
 //        if (currCmd.isCompleted() && KeyBindings.getInstance().actionToButton(ButtonActions.TEST_GENERIC_0).getPressed()) {
 //            currCmd = new CmdRotateFrontArms(Constants.FrontArms.VERTICAL_ANGLE_DEGREES, true);
 //            currCmd.start();
@@ -265,5 +278,97 @@ public class Robot extends TimedRobot implements Named {
     @Override
     public String getName() {
         return "robot";
+    }
+
+    private void buttonPressed(EntryNotification notification) {
+        for (String command : notification.value.getStringArray()) {
+            handlePress(command);
+        }
+    }
+
+    private void handlePress(String command) {
+        if (isEnabled()) {
+            switch (command) {
+                case "ELEVATOR_LEVEL_1":
+                    new CmdMoveElevator(ElevatorLevel.LEVEL1.getHeightMetres(), true).start();
+                    break;
+                case "ELEVATOR_LEVEL_2":
+                    new CmdMoveElevator(ElevatorLevel.LEVEL2.getHeightMetres(), true).start();
+                    break;
+                case "ELEVATOR_LEVEL_3":
+                    new CmdMoveElevator(ElevatorLevel.LEVEL3.getHeightMetres(), true).start();
+                    break;
+                case "FRONT_ARMS_VERTICAL":
+                    new CmdRotateFrontArms(Constants.FrontArms.VERTICAL_ANGLE_DEGREES, true).start();
+                    break;
+                case "FRONT_ARMS_HORIZONTAL":
+                    new CmdRotateFrontArms(Constants.FrontArms.HORIZONTAL_ANGLE_DEGREES, true).start();
+                    break;
+                case "EJECT":
+                    EndEffector.getInstance().eject();
+                    break;
+                case "PIN_TOGGLE":
+                    EndEffector.getInstance().togglePin();
+                    break;
+                case "LEFT_DRIVE_WHEELS_FORWARD":
+                    Drive.getInstance().setLeftPercent(0.30);
+                    break;
+                case "LEFT_DRIVE_WHEELS_REVERSE":
+                    Drive.getInstance().setLeftPercent(-0.30);
+                    break;
+                case "RIGHT_DRIVE_WHEELS_FORWARD":
+                    Drive.getInstance().setRightPercent(0.30);
+                    break;
+                case "RIGHT_DRIVE_WHEELS_REVERSE":
+                    Drive.getInstance().setRightPercent(-0.30);
+                    break;
+                case "LINEAR_ACTUATOR_RETRACT":
+                    new CmdSynchronousExtendLinearActuators(Constants.ClimbLegs.HOME_METRES);
+                    break;
+                case "LINEAR_ACTUATOR_EXTEND":
+                    new CmdSynchronousExtendLinearActuators(Constants.Field.HAB_LEVEL_1_TO_3_METRES);
+                    break;
+                case "SPIN_CLIMB_DRIVE_WHEEL":
+                    ClimbDrive.getInstance().setPercent(0.30);
+                    break;
+                case "SHUFFLE_LATERAL_SLIDE":
+                    new CommandGroup() {
+
+                        public Command init() {
+                            addSequential(new CmdMoveLateralSlide(0.2));
+                            addSequential(new CmdMoveLateralSlide(-0.2));
+                            addSequential(new CmdMoveLateralSlide(0.2));
+                            return this;
+                        }
+                    }.init().start();
+                    break;
+            }
+        }
+    }
+    private void buttonRealeased(EntryNotification notification) {
+        for (String command : notification.value.getStringArray()) {
+            handleRealease(command);
+        }
+    }
+    private void handleRealease(String command) {
+        if (isEnabled()) {
+            switch (command) {
+                case "LEFT_DRIVE_WHEELS_FORWARD":
+                    Drive.getInstance().setLeftPercent(0);
+                    break;
+                case "LEFT_DRIVE_WHEELS_REVERSE":
+                    Drive.getInstance().setLeftPercent(0);
+                    break;
+                case "RIGHT_DRIVE_WHEELS_FORWARD":
+                    Drive.getInstance().setRightPercent(0);
+                    break;
+                case "RIGHT_DRIVE_WHEELS_REVERSE":
+                    Drive.getInstance().setRightPercent(0);
+                    break;
+                case "SPIN_CLIMB_DRIVE_WHEEL":
+                    ClimbDrive.getInstance().setPercent(0);
+                    break;
+            }
+        }
     }
 }

@@ -14,7 +14,7 @@ public class CmdZeroElevator extends Command {
 
     @Override
     protected void initialize() {
-        elevator.setPercent(-Constants.Elevator.ZEROING_THROTTLE_PERCENT);
+        // elevator.setPercent(-Constants.Elevator.ZEROING_THROTTLE_PERCENT);
     }
 
     @Override

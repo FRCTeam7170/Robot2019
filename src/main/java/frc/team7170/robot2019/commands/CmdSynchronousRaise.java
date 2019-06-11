@@ -67,7 +67,7 @@ public class CmdSynchronousRaise extends Command {
     protected void end() {
         leftLinearActuator.killMotor();
         rightLinearActuator.killMotor();
-        frontArms.setAngle(frontArms.getAngle());
+        frontArms.setAngle(heightToFrontArmAngle(distanceMetres));
     }
 
     @Override

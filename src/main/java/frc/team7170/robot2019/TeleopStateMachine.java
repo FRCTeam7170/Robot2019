@@ -110,6 +110,10 @@ public class TeleopStateMachine {
         return INSTANCE;
     }
 
+    public void reset() {
+        fsm.forceTo(normalState);
+    }
+
     private void drive(Event event) {
         event.assertArgumentsTypes(Double.class, Double.class, Boolean.class);
 
@@ -128,14 +132,14 @@ public class TeleopStateMachine {
         event.assertArgumentsTypes(ElevatorLevel.class);
         ElevatorLevel elevatorLevel = (ElevatorLevel) event.arguments[0];
         new CmdMoveElevator(elevatorLevel.getHeightMetres(), true).start();
-        driveMultiplier = elevatorLevel.getDriveMultiplier();
+//        driveMultiplier = elevatorLevel.getDriveMultiplier();
     }
 
     private void elevateManual(Event event) {
         event.assertArgumentsTypes(Double.class);
         double elevatorPercent = (double) event.arguments[0];
         Elevator.getInstance().setPercent(elevatorPercent);
-        driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
+//        driveMultiplier = Constants.Drive.HOME_MULTIPLIER;
     }
 
     private void eject(Event event) {
