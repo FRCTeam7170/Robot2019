@@ -29,6 +29,7 @@ public class CmdClimb extends CommandGroup {
         addSequential(new CmdSynchronousRaise(
                 climbLevel.getHeightMetres(),
                 climbLevel.getHeightMetres() + Constants.Climb.FINAL_HEIGHT_EXTRA_METRES,
+
                 0.0,
                 climbLevel.getInitialAngleDegrees()
         ));
