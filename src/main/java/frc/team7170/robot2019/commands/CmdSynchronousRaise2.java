@@ -42,7 +42,7 @@ public class CmdSynchronousRaise2 extends Command {
         requires(leftLinearActuator);
         requires(rightLinearActuator);
         requires(frontArms);
-    }
+    }// nothing
 
     @Override
     protected void execute() {
