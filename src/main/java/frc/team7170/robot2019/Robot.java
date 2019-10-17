@@ -120,7 +120,7 @@ public class Robot extends TimedRobot implements Named {
                 .addPair(AxisActions.DRIVE_L, gamepad, gamepad.A_LY)
                 .addPair(AxisActions.DRIVE_R, gamepad, gamepad.A_RY)
                 .addPair(ButtonActions.TURTLE_RABBIT_TOGGLE, gamepad, gamepad.B_RJOY)
-//                .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
+                .addPair(AxisActions.ELEVATOR, gamepad, gamepad.A_TRIGGERS)
                 // .addPair(AxisActions.LEFT_LINEAR_ACTUATOR, gamepad, gamepad.A_LY)
                 // .addPair(AxisActions.RIGHT_LINEAR_ACTUATOR, gamepad, gamepad.A_RY)
                 // .addPair(AxisActions.FRONT_ARMS, gamepad, gamepad.A_LY)
